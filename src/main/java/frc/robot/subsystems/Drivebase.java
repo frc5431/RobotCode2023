@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleBuilder;
+import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
+import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -90,14 +90,14 @@ public class Drivebase extends SubsystemBase {
     public Drivebase() {
         m_pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
         
-        Mk4ModuleConfiguration moduleConfig = Mk4ModuleConfiguration.getDefaultSteerFalcon500();
+        MkModuleConfiguration moduleConfig = MkModuleConfiguration.getDefaultSteerFalcon500();
         moduleConfig.setDriveCurrentLimit(40.0);
         moduleConfig.setSteerCurrentLimit(30.0);
 
-        m_frontLeftModule = new Mk4SwerveModuleBuilder(moduleConfig)
+        m_frontLeftModule = new MkSwerveModuleBuilder(moduleConfig)
                 // .withLayout(getSMLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList))
                 //         .withPosition(0, 0))
-                .withGearRatio(Mk4SwerveModuleBuilder.GearRatio.L2)
+                .withGearRatio(SdsModuleConfigurations.MK4_L2)
                 .withDriveMotor(MotorType.FALCON, FRONT_LEFT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerMotor(MotorType.FALCON, FRONT_LEFT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
@@ -105,30 +105,30 @@ public class Drivebase extends SubsystemBase {
                 .build();
 
         // We will do the same for the other modules
-        m_frontRightModule = new Mk4SwerveModuleBuilder(moduleConfig)
+        m_frontRightModule = new MkSwerveModuleBuilder(moduleConfig)
                 // .withLayout(getSMLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList))
                 //         .withPosition(3, 0))
-                .withGearRatio(Mk4SwerveModuleBuilder.GearRatio.L2)
+                .withGearRatio(SdsModuleConfigurations.MK4_L2)
                 .withDriveMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerEncoderPort(FRONT_RIGHT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
                 .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET)
                 .build();
 
-        m_backLeftModule = new Mk4SwerveModuleBuilder(moduleConfig)
+        m_backLeftModule = new MkSwerveModuleBuilder(moduleConfig)
                 // .withLayout(getSMLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList))
                 //         .withPosition(6, 0))
-                .withGearRatio(Mk4SwerveModuleBuilder.GearRatio.L2)
+                .withGearRatio(SdsModuleConfigurations.MK4_L2)
                 .withDriveMotor(MotorType.FALCON, BACK_LEFT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerMotor(MotorType.FALCON, BACK_LEFT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerEncoderPort(BACK_LEFT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
                 .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET)
                 .build();
 
-        m_backRightModule = new Mk4SwerveModuleBuilder(moduleConfig)
+        m_backRightModule = new MkSwerveModuleBuilder(moduleConfig)
                 // .withLayout(getSMLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList))
                 //         .withPosition(9, 0))
-                .withGearRatio(Mk4SwerveModuleBuilder.GearRatio.L2)
+                .withGearRatio(SdsModuleConfigurations.MK4_L2)
                 .withDriveMotor(MotorType.FALCON, BACK_RIGHT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerMotor(MotorType.FALCON, BACK_RIGHT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
                 .withSteerEncoderPort(BACK_RIGHT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
