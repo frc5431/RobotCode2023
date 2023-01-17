@@ -7,13 +7,13 @@ import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -73,7 +73,7 @@ public class Drivebase extends SubsystemBase {
     
     public final WPI_Pigeon2 m_pigeon2;
 
-    public final SwerveDriveOdometry m_odometry;
+    public final SwerveDrivePoseEstimator m_poseEstimator;
 
     // These are our modules. We initialize them in the constructor.
     private final SwerveModule m_frontLeftModule;
@@ -135,7 +135,7 @@ public class Drivebase extends SubsystemBase {
                 .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET)
                 .build();
 
-        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getPositions());
+        m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(), getPositions(), new Pose2d());
         
 
         filter_vx = new SlewRateLimiter(SLEW_RATE_LIMIT_TRANSLATION);
@@ -150,9 +150,19 @@ public class Drivebase extends SubsystemBase {
         // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
     }
 
+
     public void resetOdometry(Pose2d pose) {
-        m_odometry.resetPosition(getGyroscopeRotation(), getPositions(), pose);
+        m_poseEstimator.resetPosition(getGyroscopeRotation(), getPositions(), pose);
     }
+
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        m_poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
+    public Pose2d getPosition() {
+        return m_poseEstimator.getEstimatedPosition();
+    }
+
 
     public void zeroGyroscope() {
         m_pigeon2.reset();
@@ -169,6 +179,7 @@ public class Drivebase extends SubsystemBase {
     public WPI_Pigeon2 getGyro() {
         return m_pigeon2;
     }
+
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         ChassisSpeeds speedsModified = new ChassisSpeeds(
@@ -195,9 +206,10 @@ public class Drivebase extends SubsystemBase {
         };
     }
 
+
     @Override
     public void periodic() {
-        m_odometry.update(getGyroscopeRotation(), getPositions());
+        m_poseEstimator.update(getGyroscopeRotation(), getPositions());
 
         // Hockey-lock by setting rotation to realllly low number
         if (m_chassisSpeeds.omegaRadiansPerSecond == 0) {
