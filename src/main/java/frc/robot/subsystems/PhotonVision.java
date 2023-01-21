@@ -16,8 +16,7 @@ public class PhotonVision extends SubsystemBase {
   public PhotonVision(Drivebase drivebase) {
     this.drivebase = drivebase;
   }
-  public PhotonTrackedTarget targetA1;
-  public Pose3d ApriltagPosition;
+  
 
   public PhotonTrackedTarget getResult(){
     var result = camera.getLatestResult();
@@ -25,7 +24,7 @@ public class PhotonVision extends SubsystemBase {
     return targetA1;
   }
 
-  public Pose3d getAprilTagPosition(){
+  public Pose3d getAprilTagPosition(PhotonTrackedTarget targetA1){
     int id = targetA1.getFiducialId();
 
     Optional<Pose3d> ApriltagPosition = Constants.layout.getTagPose(id);
@@ -34,21 +33,18 @@ public class PhotonVision extends SubsystemBase {
       return null;
     }
     return ApriltagPosition.get();
-    }
+  }
   
   public void sendResultDrivebase(Pose3d AbsPos, Pose3d RelPos) {
     drivebase.addVisionMeasurement(RelPos.relativeTo(AbsPos).toPose2d(), Timer.getFPGATimestamp());
   }
 
   @Override
+
   public void periodic() {
-      // TODO Auto-generated method stub
-      super.periodic();
-      Pose3d AbsPos = getAprilTagPosition();
-      Pose3d RelPos = Conversions.tPose3d(getResult().getBestCameraToTarget());
+      PhotonTrackedTarget result = getResult();
+      Pose3d RelPos = Conversions.tPose3d(result.getBestCameraToTarget());
+      Pose3d AbsPos = getAprilTagPosition(result);
       sendResultDrivebase(AbsPos, RelPos);
-
-
   }
-
 }
