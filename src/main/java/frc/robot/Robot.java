@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import java.util.ArrayList;
+
 public class Robot extends TimedRobot {
+  public static final ArrayList<Pair<Runnable, Double>> periodics = new ArrayList<>();
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -16,6 +20,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    // Initialization Should Have Finished
+    for(var period : periodics) {
+      addPeriodic(period.getFirst(), period.getSecond());
+    }
   }
 
   @Override

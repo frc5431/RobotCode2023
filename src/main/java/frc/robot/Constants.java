@@ -1,6 +1,32 @@
 package frc.robot;
 
+import java.io.IOException;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+
 public class Constants {
+    public static final Transform3d CAMERA_OFFSET = new Transform3d();
+
+    public static final double CAMERA_HEIGHT_METERS = 0;
+
+    public static final double LOW_APRILTAG_HEIGHT = 0.36;
+    public static final double APRILTAG_HEIGHT = 0.59;
+    public static final AprilTagFieldLayout layout = getLayout();
+
+    static AprilTagFieldLayout getLayout() {
+        try {
+            return AprilTagFieldLayout.loadFromResource(AprilTagFields.kDefaultField.m_resourceFile);
+        } catch (IOException e) {
+            System.out.println("Apriltag Fields somehow did not intialize, if you are getting this error, you have bigger things to worry about though.");
+            return null;
+        }
+    }
+
     public static final int ID_PIGEON2 = 13;
     public static final int ID_PHUB = 1;
 

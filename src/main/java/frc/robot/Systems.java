@@ -11,6 +11,7 @@ import frc.team5431.titan.core.solenoid.SingleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
+
     private Arm arm;
 
     private CANSparkMax armLeft;
@@ -19,10 +20,12 @@ public class Systems {
     private DoubleSolenoid dblSol1;
     private DoubleSolenoid dblSol2;
     private SingleSolenoid sglSol1;
+    private Vision vision;
 
 
     public Systems() {
         drivebase = new Drivebase();
+        vision = new Vision(drivebase);
 
         armLeft = new CANSparkMax(15, MotorType.kBrushless);
         armRight = new CANSparkMax(16, MotorType.kBrushless);
@@ -45,6 +48,10 @@ public class Systems {
         return drivebase;
     }
 
+    public Vision getVision() {
+        return vision;
+    }
+    
     public Arm getArm() {
         return arm;
     }
