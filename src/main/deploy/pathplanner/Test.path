@@ -1,0 +1,112 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8919374377210312,
+        "y": 1.0502066196440099
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9015723608370314,
+        "y": 0.4817461558000048
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": true,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Drop Cube"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.429986225357068,
+        "y": 0.8864129266720079
+      },
+      "prevControl": {
+        "x": 5.36050975948106,
+        "y": 0.8864129266720079
+      },
+      "nextControl": {
+        "x": 5.36050975948106,
+        "y": 0.8864129266720079
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "Pick Up Cone"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8823025146050314,
+        "y": 1.6186670834880137
+      },
+      "prevControl": {
+        "x": 1.8630326683730336,
+        "y": 0.10598415427600139
+      },
+      "nextControl": {
+        "x": 1.8905185019048152,
+        "y": 2.263622086521124
+      },
+      "holonomicAngle": -179.62442091232393,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": true,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.9538109845450475,
+        "y": 1.9558893925480159
+      },
+      "prevControl": {
+        "x": 3.510604521209044,
+        "y": 1.9462544694320163
+      },
+      "nextControl": null,
+      "holonomicAngle": -179.63272439266194,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": true,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Engage Charge Station"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 0.5018181818182205,
+      "names": [
+        "event"
+      ]
+    }
+  ]
+}
