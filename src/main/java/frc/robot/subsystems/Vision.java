@@ -19,12 +19,6 @@ public class Vision extends SubsystemBase {
     this.drivebase = drivebase;
     Robot.periodics.add(new Pair<>(this::detect, 0.2)); // 5 times per sec
   }
-  
-
-//  public PhotonTrackedTarget getResult() {
-//    var result = camera.getLatestResult();
-//    return result.getBestTarget();
-//  }
 
   public Pose3d getAprilTagPosition(PhotonTrackedTarget targetA1) {
     int id = targetA1.getFiducialId();
@@ -33,22 +27,6 @@ public class Vision extends SubsystemBase {
 
     return apriltagPosition.orElse(null);
   }
-
-//  public void sendResultDrivebase(Pose3d absPos, Pose3d relPos, double timestamp) {
-//    drivebase.addVisionMeasurement(relPos.relativeTo(absPos).toPose2d(), timestamp);
-//  }
-
-//  public void detect() {
-//    PhotonTrackedTarget result = getResult();
-//    if(result == null) {
-//      return;
-//    }
-//
-//    Pose3d relPos = Conversions.tPose3d(result.getBestCameraToTarget()).transformBy(Constants.CAMERA_OFFSET);
-//    Pose3d absPos = getAprilTagPosition(result);
-//    sendResultDrivebase(absPos, relPos, camera.getLatestResult().getTimestampSeconds());
-//  }
-
   public void detect() {
     var res = camera.getLatestResult();
 
