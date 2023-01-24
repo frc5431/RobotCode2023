@@ -33,8 +33,8 @@ public class RobotContainer {
     public RobotContainer() {
         drivebase.setDefaultCommand(new DefaultDriveCommand(
             systems,
+            () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
             () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> modifyAxis(driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
