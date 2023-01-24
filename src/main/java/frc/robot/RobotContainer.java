@@ -28,6 +28,10 @@ public class RobotContainer {
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
+        systems.getArm().setDefaultCommand(systems.getArm().runArmCommand(
+            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        ));
+
         configureBindings();
     }
 
@@ -45,9 +49,11 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
         
-        driver.a().onTrue(runOnce(systems.getDblSol1()::toggle));
-        driver.b().onTrue(runOnce(systems.getDblSol2()::toggle));
-        driver.x().onTrue(runOnce(systems.getSglSol1()::toggle));
+        driver.a().onTrue(runOnce(() -> systems.getDblSol1().toggle()));
+        driver.b().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
+        driver.x().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
+
+        
     }
 
     public Command getAutonomousCommand() {
