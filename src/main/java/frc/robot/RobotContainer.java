@@ -65,9 +65,9 @@ public class RobotContainer {
         driver.x().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
         // driver.leftBumper().whileTrue(systems.getArm().runArmCommand(0.1));
-        driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.1)));
+        driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.25)));
         // driver.rightBumper().whileTrue(systems.getArm().runArmCommand(-0.1));
-        driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(-0.1)));
+        driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(0.75)));
     }
 
     private void initAutoPaths() {

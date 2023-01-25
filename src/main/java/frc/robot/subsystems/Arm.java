@@ -39,10 +39,10 @@ public class Arm extends SubsystemBase {
         controller = arm1.getPIDController();
         encoder = arm1.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-        controller.setP(0.02);
+        controller.setP(0.5);
         controller.setI(0.00);
         controller.setD(0.0);
-        controller.setFF(0.01);
+        controller.setFF(0.00);
         controller.setOutputRange(-1, 1);
 
         controller.setFeedbackDevice(encoder);
@@ -51,30 +51,35 @@ public class Arm extends SubsystemBase {
         arm2.burnFlash();
     }
 
-    public void set(double amnt) {
+    public void incr(double amnt) {
         // double actualSpeed = MathUtil.clamp(speed, -1, 1) * MAX_SPEED;
         // arm1.set(actualSpeed);
         double currentPosition = encoder.getPosition();
         controller.setReference(currentPosition + amnt, ControlType.kPosition);
-        DriverStation.reportError("setting to pos "+(currentPosition+amnt), false);
+        DriverStation.reportWarning("setting to pos "+(currentPosition+amnt), false);
+    }
+
+    public void set(double pos) {
+        controller.setReference(pos, ControlType.kPosition);
+        DriverStation.reportWarning("setting to pos "+pos, false);
     }
 
     @Override
     public void periodic() {
         // controller.setReference(0, ControlType.kPosition);
         // SmartDashboard.putNumber("arm pos", encoder.getPosition()+Math.random());
-        DriverStation.reportError(""+encoder.getPosition(), false);
+        DriverStation.reportWarning(""+encoder.getPosition(), false);
     }
 
     public Command runArmCommand(double amnt) {
-        return new StartEndCommand(() -> this.set(amnt), () -> this.set(0), this);
+        return new StartEndCommand(() -> this.incr(amnt), () -> this.incr(0), this);
     }
 
     public Command runArmCommand(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
             () -> {},
-            () -> this.set(speedSupplier.getAsDouble()),
-            (i) -> this.set(0),
+            () -> this.incr(speedSupplier.getAsDouble()),
+            (i) -> this.incr(0),
             () -> false,
             this);
     }
