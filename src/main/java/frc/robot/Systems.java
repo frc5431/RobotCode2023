@@ -25,7 +25,7 @@ public class Systems {
 
     public Systems() {
         drivebase = new Drivebase();
-        vision = new Vision(drivebase);
+        // vision = new Vision(drivebase);
 
         armLeft = new CANSparkMax(15, MotorType.kBrushless);
         armRight = new CANSparkMax(16, MotorType.kBrushless);

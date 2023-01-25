@@ -38,9 +38,9 @@ public class RobotContainer {
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
-        systems.getArm().setDefaultCommand(systems.getArm().runArmCommand(
-            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        ));
+        // systems.getArm().setDefaultCommand(systems.getArm().runArmCommand(
+        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        // ));
 
         configureBindings();
         initAutoPaths();
@@ -64,7 +64,10 @@ public class RobotContainer {
         driver.b().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         driver.x().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        
+        // driver.leftBumper().whileTrue(systems.getArm().runArmCommand(0.1));
+        driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.1)));
+        // driver.rightBumper().whileTrue(systems.getArm().runArmCommand(-0.1));
+        driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(-0.1)));
     }
 
     private void initAutoPaths() {

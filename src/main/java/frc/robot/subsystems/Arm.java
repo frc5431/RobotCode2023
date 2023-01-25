@@ -2,12 +2,15 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -19,7 +22,7 @@ public class Arm extends SubsystemBase {
     private final CANSparkMax arm2;
 
     private final SparkMaxPIDController controller;
-    private final RelativeEncoder encoder;
+    private final AbsoluteEncoder encoder;
 
     // private final 
 
@@ -34,13 +37,15 @@ public class Arm extends SubsystemBase {
         arm2.setIdleMode(IdleMode.kBrake);
 
         controller = arm1.getPIDController();
-        encoder = arm1.getEncoder();
+        encoder = arm1.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-        controller.setP(0.1);
-        controller.setI(0.0);
+        controller.setP(0.02);
+        controller.setI(0.00);
         controller.setD(0.0);
-        controller.setFF(0.0);
+        controller.setFF(0.01);
         controller.setOutputRange(-1, 1);
+
+        controller.setFeedbackDevice(encoder);
 
         arm1.burnFlash();
         arm2.burnFlash();
@@ -51,16 +56,18 @@ public class Arm extends SubsystemBase {
         // arm1.set(actualSpeed);
         double currentPosition = encoder.getPosition();
         controller.setReference(currentPosition + amnt, ControlType.kPosition);
+        DriverStation.reportError("setting to pos "+(currentPosition+amnt), false);
     }
 
     @Override
     public void periodic() {
         // controller.setReference(0, ControlType.kPosition);
-        
+        // SmartDashboard.putNumber("arm pos", encoder.getPosition()+Math.random());
+        DriverStation.reportError(""+encoder.getPosition(), false);
     }
 
-    public Command runArmCommand(double speed) {
-        return new StartEndCommand(() -> this.set(speed), () -> this.set(0), this);
+    public Command runArmCommand(double amnt) {
+        return new StartEndCommand(() -> this.set(amnt), () -> this.set(0), this);
     }
 
     public Command runArmCommand(DoubleSupplier speedSupplier) {
