@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,7 @@ public class Arm extends SubsystemBase {
 
     // private final 
 
-    public static final double MAX_SPEED = 0.1;
+    // public static final double MAX_SPEED = 0.1;
 
     public Arm(CANSparkMax armLeft, CANSparkMax armRight) {
         arm1 = armLeft;
@@ -36,14 +37,20 @@ public class Arm extends SubsystemBase {
         arm1.setIdleMode(IdleMode.kBrake);
         arm2.setIdleMode(IdleMode.kBrake);
 
+        arm1.enableSoftLimit(SoftLimitDirection.kForward, true);
+        arm1.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+        arm1.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        arm1.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+
         controller = arm1.getPIDController();
         encoder = arm1.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
         controller.setP(0.5);
-        controller.setI(0.00);
+        controller.setI(0.0002);
         controller.setD(0.0);
         controller.setFF(0.00);
-        controller.setOutputRange(-1, 1);
+        controller.setOutputRange(-0.3, 0.3);
 
         controller.setFeedbackDevice(encoder);
 
@@ -67,7 +74,7 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // controller.setReference(0, ControlType.kPosition);
-        // SmartDashboard.putNumber("arm pos", encoder.getPosition()+Math.random());
+        SmartDashboard.putNumber("arm pos", encoder.getPosition()+Math.random());
         DriverStation.reportWarning(""+encoder.getPosition(), false);
     }
 

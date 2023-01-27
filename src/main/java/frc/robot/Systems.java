@@ -40,7 +40,8 @@ public class Systems {
 
         try (Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH)) {
             // compressor.enableDigital();
-            compressor.enableHybrid(60, 120);
+            // compressor.enableHybrid(60, 120);
+            compressor.disable();
         }
     }
 
