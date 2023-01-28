@@ -10,7 +10,7 @@ public class Systems {
 
     public Systems() {
         drivebase = new Drivebase();
-        vision = new Vision(drivebase);
+        // vision = new Vision(drivebase);
     }
 
     public Drivebase getDrivebase() {

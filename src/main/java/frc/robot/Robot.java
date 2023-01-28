@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.util.ArrayList;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 public class Robot extends TimedRobot {
   public static final ArrayList<Pair<Runnable, Double>> periodics = new ArrayList<>();
   private Command m_autonomousCommand;
@@ -20,6 +22,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    PathPlannerServer.startServer(5811);
     // Initialization Should Have Finished
     for(var period : periodics) {
       addPeriodic(period.getFirst(), period.getSecond());
