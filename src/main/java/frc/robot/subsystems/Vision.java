@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
   public Drivebase drivebase;
-  public PhotonCamera camera = new PhotonCamera("photonvision");
+  public PhotonCamera camera = new PhotonCamera("gloworm");
 
   public Vision(Drivebase drivebase) {
     this.drivebase = drivebase;
