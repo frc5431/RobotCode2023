@@ -39,7 +39,8 @@ public class DefaultDriveCommand extends CommandBase {
         double rot = m_rotationSupplier.getAsDouble();
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-        m_drivetrainSubsystem.drive(
+        // m_drivetrainSubsystem.drive(
+        m_drivetrainSubsystem.driveRaw(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                         x,
                         y,
