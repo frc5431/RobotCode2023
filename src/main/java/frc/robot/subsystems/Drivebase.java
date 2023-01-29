@@ -219,7 +219,11 @@ public class Drivebase extends SubsystemBase {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-        // SwerveModuleState.optimize(desiredState, currentAngle) maybe?
+
+        SwerveModulePosition[] positions = getPositions();
+        for (int i = 0; i < states.length; i++) {
+            states[i] = SwerveModuleState.optimize(states[i], positions[i].angle);
+        }
 
         double flVoltage;
         double frVoltage;
