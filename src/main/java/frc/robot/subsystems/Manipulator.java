@@ -1,18 +1,31 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+
+
 
 public class Manipulator {
-    
-    private Manipulator manipulator;
-    private DoubleSolenoid manipPisston;
 
+    public boolean extended = false;
+    public static final int manipForwardChannel = 4;
+    public static final int manipReverseChannel = 8;
 
-    manipPisston = new DoubleSolenoid(1,PneumaticsModuleType.REVPH, manipForwardChannel, manipReverseChannel);
-    manipulator = new Manipulator(manipPisston);
+    DoubleSolenoid manipPisston = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, manipForwardChannel, manipReverseChannel);
 
-    public void manipulatorPistonRun() {
-
+    //extends manipulator pistion using 1 double solinoide 
+    public void manipulatorRetract() {
+        if(extended){manipPisston.set(DoubleSolenoid.Value.kReverse);
+            extended = false;
+        }
+    }
+   
+    //retracts manipulator pistion using 1 double solinoide 
+    public void manipulatorDeploy() {
+        if(!extended){manipPisston.set(DoubleSolenoid.Value.kForward); 
+            extended = true;
+        }
     }
 
 }
