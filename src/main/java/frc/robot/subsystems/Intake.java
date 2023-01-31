@@ -47,9 +47,10 @@ public class Intake extends SubsystemBase {
     }
 
     /**
-     * Depending on the read value of the master solenoid, it will: <br>
-     * retract if the value is deployed or off <br>
-     * deploy if the value is retracted
+     * Depending on the read value of the master solenoid, it will:
+     * <ul>
+     *   <li> retract if the value is deployed or off
+     *   <li> deploy if the value is retracted
      */
     private void toggle() { // temporary commercialization
         DoubleSolenoid.Value masterSolenoidValue = pac.get();
