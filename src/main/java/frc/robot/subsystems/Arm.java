@@ -10,7 +10,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -19,74 +19,119 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
     
-    private final CANSparkMax arm1;
-    private final CANSparkMax arm2;
+    private final CANSparkMax outerArmLeft;
+    private final CANSparkMax outerArmRight;
+    private final CANSparkMax innerArm;
+    private final CANSparkMax innerArmFollow;
 
-    private final SparkMaxPIDController controller;
-    private final AbsoluteEncoder encoder;
+    private final SparkMaxPIDController outerLeftController;
+    private final AbsoluteEncoder outerLeftEncoder;
+    private final SparkMaxPIDController outerRightController;
+    private final AbsoluteEncoder outerRightEncoder;
+
+    private final SparkMaxPIDController innerController;
+    private final AbsoluteEncoder innerEncoder;
 
     // private final 
 
-    // public static final double MAX_SPEED = 0.1;
+    public static final double MAX_SPEED_OUTER = 0.28;
 
-    public Arm(CANSparkMax armLeft, CANSparkMax armRight) {
-        arm1 = armLeft;
-        arm2 = armRight;
+    private double setpoint = 0;
 
-        arm2.follow(arm1, true);
-        arm1.setIdleMode(IdleMode.kBrake);
-        arm2.setIdleMode(IdleMode.kBrake);
+    public Arm(CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight) {
+        this.outerArmLeft = outerArmLeft;
+        this.outerArmRight = outerArmRight;
+        this.innerArm = innerArmLeft;
+        this.innerArmFollow = innerArmRight;
 
-        arm1.enableSoftLimit(SoftLimitDirection.kForward, true);
-        arm1.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        this.outerArmLeft.setIdleMode(IdleMode.kBrake);
+        this.outerArmRight.setIdleMode(IdleMode.kBrake);
 
-        arm1.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
-        arm1.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+        outerLeftController = this.outerArmLeft.getPIDController();
+        outerRightController = this.outerArmRight.getPIDController();
+        outerLeftEncoder = this.outerArmLeft.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+        outerRightEncoder = this.outerArmRight.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-        controller = arm1.getPIDController();
-        encoder = arm1.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+        outerLeftController.setP(0.5);
+        // controller.setI(0.0002);
+        outerLeftController.setI(0.0);
+        outerLeftController.setD(0.0);
+        outerLeftController.setFF(0.00);
+        outerLeftController.setOutputRange(-1.0, 1.0);
 
-        controller.setP(0.5);
-        controller.setI(0.0002);
-        controller.setD(0.0);
-        controller.setFF(0.00);
-        controller.setOutputRange(-0.3, 0.3);
+        outerLeftController.setFeedbackDevice(outerLeftEncoder);
+        outerRightController.setFeedbackDevice(outerRightEncoder);
 
-        controller.setFeedbackDevice(encoder);
+        innerArmFollow.follow(innerArm, true);
+        innerArm.setIdleMode(IdleMode.kBrake);
+        innerArmFollow.setIdleMode(IdleMode.kBrake);
 
-        arm1.burnFlash();
-        arm2.burnFlash();
+        innerArm.enableSoftLimit(SoftLimitDirection.kForward, false);
+        innerArm.enableSoftLimit(SoftLimitDirection.kReverse, false);
+
+        // innerArm.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // innerArm.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+
+        innerController = innerArm.getPIDController();
+        innerEncoder = innerArm.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+
+        innerController.setP(0.5);
+        // controller.setI(0.0002);
+        innerController.setI(0.0);
+        innerController.setD(0.0);
+        innerController.setFF(0.00);
+        innerController.setOutputRange(-0.3, 0.3);
+
+        innerController.setFeedbackDevice(innerEncoder);
+
+        innerArm.burnFlash();
+        innerArmFollow.burnFlash();
     }
 
     public void incr(double amnt) {
-        // double actualSpeed = MathUtil.clamp(speed, -1, 1) * MAX_SPEED;
-        // arm1.set(actualSpeed);
-        double currentPosition = encoder.getPosition();
-        controller.setReference(currentPosition + amnt, ControlType.kPosition);
-        DriverStation.reportWarning("setting to pos "+(currentPosition+amnt), false);
+        double currentPosition = innerEncoder.getPosition();
+        setpoint = currentPosition + amnt;
+        innerController.setReference(setpoint, ControlType.kPosition);
+        SmartDashboard.putNumber("arm set", setpoint);
     }
 
     public void set(double pos) {
-        controller.setReference(pos, ControlType.kPosition);
-        DriverStation.reportWarning("setting to pos "+pos, false);
+        setpoint = pos;
+        innerController.setReference(setpoint, ControlType.kPosition);
+        SmartDashboard.putNumber("arm set", setpoint);
+    }
+
+    public void speed(double spd) {
+        double modSpd = MathUtil.clamp(spd, -1, 1);
+        outerArmLeft.set(modSpd*MAX_SPEED_OUTER);
+        outerArmRight.set(-modSpd*MAX_SPEED_OUTER);
     }
 
     @Override
     public void periodic() {
-        // controller.setReference(0, ControlType.kPosition);
-        SmartDashboard.putNumber("arm pos", encoder.getPosition()+Math.random());
-        DriverStation.reportWarning(""+encoder.getPosition(), false);
+        SmartDashboard.putNumber("arm pos", innerEncoder.getPosition());
+        SmartDashboard.putNumber("out arm lef spd", outerArmLeft.get());
+        SmartDashboard.putNumber("out arm rig spd", outerArmRight.get());
     }
 
     public Command runArmCommand(double amnt) {
         return new StartEndCommand(() -> this.incr(amnt), () -> this.incr(0), this);
     }
 
-    public Command runArmCommand(DoubleSupplier speedSupplier) {
+    public Command runArmCommand(DoubleSupplier incrSupplier) {
         return new FunctionalCommand(
             () -> {},
-            () -> this.incr(speedSupplier.getAsDouble()),
+            () -> this.incr(incrSupplier.getAsDouble()),
             (i) -> this.incr(0),
+            () -> false,
+            this);
+    }
+
+    public Command speedCmd(DoubleSupplier speedSupplier) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> this.speed(speedSupplier.getAsDouble()),
+            (i) -> this.speed(0),
             () -> false,
             this);
     }

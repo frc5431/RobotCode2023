@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.*;
@@ -54,7 +55,7 @@ public class Drivebase extends SubsystemBase {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
                     Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
-    public static final double MIN_ANGULAR_VELOCITY = 0.6;
+    public static final double MIN_ANGULAR_VELOCITY = 0.5;
     // Max input acceleration (ChassisSpeeds meters per second per second) for x/y movement
     public static final double SLEW_RATE_LIMIT_TRANSLATION = MAX_VELOCITY_METERS_PER_SECOND * 2;
     // Max input acceleration (ChassisSpeeds radians per second per second) for rotational movement
@@ -210,11 +211,27 @@ public class Drivebase extends SubsystemBase {
     @Override
     public void periodic() {
         m_poseEstimator.update(getGyroscopeRotation(), getPositions());
+        
+        final double zeroDeadzone = 0.001;
 
-        // Hockey-lock by setting rotation to realllly low number
-        if (m_chassisSpeeds.omegaRadiansPerSecond == 0) {
+        // Set deadzone on translation
+        if (Math.abs(m_chassisSpeeds.vxMetersPerSecond) < zeroDeadzone) {
+            m_chassisSpeeds.vxMetersPerSecond = 0;
+        }
+        if (Math.abs(m_chassisSpeeds.vyMetersPerSecond) < zeroDeadzone) {
+            m_chassisSpeeds.vyMetersPerSecond = 0;
+        }
+
+        // Hockey-lock if stopped by setting rotation to realllly low number
+        if (m_chassisSpeeds.vxMetersPerSecond == 0 && 
+            m_chassisSpeeds.vyMetersPerSecond == 0 && 
+            Math.abs(m_chassisSpeeds.omegaRadiansPerSecond) < zeroDeadzone) {
             m_chassisSpeeds.omegaRadiansPerSecond = 0.00001;
         }
+
+        SmartDashboard.putNumber("DT X spd", m_chassisSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("DT Y spd", m_chassisSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("DT O rot", m_chassisSpeeds.omegaRadiansPerSecond);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 

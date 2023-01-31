@@ -14,8 +14,10 @@ public class Systems {
 
     private Arm arm;
 
-    private CANSparkMax armLeft;
-    private CANSparkMax armRight;
+    private CANSparkMax armInnerLeft;
+    private CANSparkMax armInnerRight;
+    private CANSparkMax armOuterLeft;
+    private CANSparkMax armOuterRight;
 
     private DoubleSolenoid dblSol1;
     private DoubleSolenoid dblSol2;
@@ -27,9 +29,11 @@ public class Systems {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
 
-        armLeft = new CANSparkMax(15, MotorType.kBrushless);
-        armRight = new CANSparkMax(16, MotorType.kBrushless);
-        arm = new Arm(armLeft, armRight);
+        armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
+        armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
+        armOuterLeft = new CANSparkMax(18, MotorType.kBrushless);
+        armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
+        arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight);
 
         dblSol1 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 1, 14);
         dblSol2 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 0, 15);
@@ -40,8 +44,8 @@ public class Systems {
 
         try (Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH)) {
             // compressor.enableDigital();
-            compressor.enableHybrid(60, 120);
-            // compressor.disable();
+            // compressor.enableHybrid(60, 120);
+            compressor.disable();
         }
     }
 

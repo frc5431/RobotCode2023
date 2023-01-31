@@ -31,6 +31,8 @@ public class RobotContainer {
     private Command autonCommand;
 
     public RobotContainer() {
+        driver.setDeadzone(0.15);
+
         drivebase.setDefaultCommand(new DefaultDriveCommand(
             systems,
             () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
@@ -38,9 +40,9 @@ public class RobotContainer {
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
-        // systems.getArm().setDefaultCommand(systems.getArm().runArmCommand(
-        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
-        // ));
+        systems.getArm().setDefaultCommand(systems.getArm().speedCmd(
+            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        ));
 
         configureBindings();
         initAutoPaths();
