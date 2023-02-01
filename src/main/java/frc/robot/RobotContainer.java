@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
@@ -33,15 +33,16 @@ public class RobotContainer {
     public RobotContainer() {
         driver.setDeadzone(0.15);
 
-        drivebase.setDefaultCommand(new DefaultDriveCommand(
-            systems,
-            () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-        ));
+        // drivebase.setDefaultCommand(new DefaultDriveCommand(
+        //     systems,
+        //     () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+        //     () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+        //     () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+        // ));
 
-        systems.getArm().setDefaultCommand(systems.getArm().speedCmd(
-            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis())
+        systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
+            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
+            () -> modifyAxis(driver.getRightY())
         ));
 
         configureBindings();
@@ -67,9 +68,9 @@ public class RobotContainer {
         driver.x().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
         // driver.leftBumper().whileTrue(systems.getArm().runArmCommand(0.1));
-        driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.25)));
+        // driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.25)));
         // driver.rightBumper().whileTrue(systems.getArm().runArmCommand(-0.1));
-        driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(0.75)));
+        // driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(0.75)));
 
         driver.back().onTrue(runOnce(() -> systems.getArm().incr(-0.05)));
         driver.start().onTrue(runOnce(() -> systems.getArm().incr(0.05)));
@@ -127,5 +128,14 @@ public class RobotContainer {
         // value = Math.copySign(value * value, value);
 
         return value;
+    }
+
+    public void teleopPeriodic() {
+        double power = 0.0;
+        if (driver.rightBumper().getAsBoolean())
+            power += 0.07;
+        if (driver.leftBumper().getAsBoolean())
+            power -= 0.07;
+        systems.getWrist().set(power);
     }
 }

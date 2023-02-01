@@ -24,6 +24,8 @@ public class Systems {
     private SingleSolenoid sglSol1;
     private Vision vision;
 
+    private CANSparkMax wrist;
+
 
     public Systems() {
         drivebase = new Drivebase();
@@ -35,6 +37,8 @@ public class Systems {
         armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
         arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight);
 
+        wrist = new CANSparkMax(19, MotorType.kBrushless);
+
         dblSol1 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 1, 14);
         dblSol2 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 0, 15);
         sglSol1 = new SingleSolenoid(1, PneumaticsModuleType.REVPH, 13);
@@ -44,8 +48,8 @@ public class Systems {
 
         try (Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH)) {
             // compressor.enableDigital();
-            // compressor.enableHybrid(60, 120);
-            compressor.disable();
+            compressor.enableHybrid(60, 120);
+            // compressor.disable();
         }
     }
 
@@ -71,5 +75,9 @@ public class Systems {
 
     public SingleSolenoid getSglSol1() {
         return sglSol1;
+    }
+
+    public CANSparkMax getWrist() {
+        return wrist;
     }
 }

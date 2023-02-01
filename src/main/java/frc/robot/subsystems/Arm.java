@@ -34,7 +34,8 @@ public class Arm extends SubsystemBase {
 
     // private final 
 
-    public static final double MAX_SPEED_OUTER = 0.28;
+    public static final double MAX_SPEED_OUTER = 0.35;
+    public static final double MAX_SPEED_INNER = 0.25;
 
     private double setpoint = 0;
 
@@ -84,6 +85,8 @@ public class Arm extends SubsystemBase {
 
         innerController.setFeedbackDevice(innerEncoder);
 
+        this.outerArmLeft.burnFlash();
+        this.outerArmRight.burnFlash();
         innerArm.burnFlash();
         innerArmFollow.burnFlash();
     }
@@ -101,10 +104,15 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("arm set", setpoint);
     }
 
-    public void speed(double spd) {
+    public void speedOut(double spd) {
         double modSpd = MathUtil.clamp(spd, -1, 1);
         outerArmLeft.set(modSpd*MAX_SPEED_OUTER);
         outerArmRight.set(-modSpd*MAX_SPEED_OUTER);
+    }
+
+    public void speedIn(double spd) {
+        double modSpd = MathUtil.clamp(spd, -1, 1);
+        innerArm.set(modSpd*MAX_SPEED_INNER);
     }
 
     @Override
@@ -130,8 +138,23 @@ public class Arm extends SubsystemBase {
     public Command speedCmd(DoubleSupplier speedSupplier) {
         return new FunctionalCommand(
             () -> {},
-            () -> this.speed(speedSupplier.getAsDouble()),
-            (i) -> this.speed(0),
+            () -> this.speedOut(speedSupplier.getAsDouble()),
+            (i) -> this.speedOut(0),
+            () -> false,
+            this);
+    }
+
+    public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier) {
+        return new FunctionalCommand(
+            () -> {},
+            () -> {
+                this.speedOut(outSupplier.getAsDouble());
+                this.speedIn(innerSupplier.getAsDouble());
+            },
+            (i) -> {
+                this.speedOut(0);
+                this.speedIn(0);
+            },
             () -> false,
             this);
     }
