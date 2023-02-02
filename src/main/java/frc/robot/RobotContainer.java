@@ -146,4 +146,10 @@ public class RobotContainer {
     public void robotPeriodic() {
         SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
     }
+
+    public void teleopInit() {
+        systems.getArm().incrOut(0);
+        systems.getArm().incrIn(0);
+        systems.getArm().incrWrist(0);
+    }
 }

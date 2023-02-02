@@ -11,7 +11,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,10 +38,10 @@ public class Arm extends SubsystemBase {
     private final AbsoluteEncoder innerEncoder;
 
     private final CANSparkMax wrist;
-    private final SparkMaxPIDController wristController;
+    private final PIDController wristController;
     private final AbsoluteEncoder wristEncoder;
 
-    public static final double MAX_SPEED_OUTER = 0.35;
+    public static final double MAX_SPEED_OUTER = 1.0;
     public static final double MAX_SPEED_INNER = 0.4;
     public static final double MAX_SPEED_WRIST = 0.50;
 
@@ -56,6 +58,11 @@ public class Arm extends SubsystemBase {
     private Rotation2d forearmAngleToGround = new Rotation2d();
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
+
+    // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
+    public static final double wristCosineMultiplier = 
+        2.5 * 9.81 * Units.inchesToMeters(3.5);
+
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -120,16 +127,17 @@ public class Arm extends SubsystemBase {
         this.wrist.setInverted(false);
         this.wrist.setIdleMode(IdleMode.kBrake);
 
-        wristController = this.wrist.getPIDController();
+        wristController = new PIDController(0.4, 0.0, 0.0);
+        wristController.enableContinuousInput(0, 2*Math.PI);
         wristEncoder = this.wrist.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-        wristController.setP(0.5);
-        wristController.setI(0.0);
-        wristController.setD(0.0);
-        wristController.setFF(0.00);
-        wristController.setOutputRange(-MAX_SPEED_WRIST, MAX_SPEED_WRIST);
+        // wristController.setP(0.5);
+        // wristController.setI(0.0);
+        // wristController.setD(0.0);
+        // wristController.setFF(0.00);
+        // wristController.setOutputRange(-MAX_SPEED_WRIST, MAX_SPEED_WRIST);
 
-        wristController.setFeedbackDevice(wristEncoder);
+        // wristController.setFeedbackDevice(wristEncoder);
 
         outerEncoder.setPositionConversionFactor(2*Math.PI);
         innerEncoder.setPositionConversionFactor(2*Math.PI);
@@ -159,7 +167,7 @@ public class Arm extends SubsystemBase {
     public void incrWrist(double amntDeg) {
         double currentPosition = wristEncoder.getPosition();
         setpointWrist = currentPosition + degreesToRadians(amntDeg);
-        wristController.setReference(setpointWrist, ControlType.kPosition);
+        // wristController.setReference(setpointWrist, ControlType.kPosition);
         SmartDashboard.putNumber("wrist set", setpointWrist);
     }
 
@@ -177,7 +185,7 @@ public class Arm extends SubsystemBase {
 
     public void setWrist(double posDeg) {
         setpointWrist = degreesToRadians(posDeg);
-        wristController.setReference(setpointWrist, ControlType.kPosition);
+        // wristController.setReference(setpointWrist, ControlType.kPosition);
         SmartDashboard.putNumber("wrist set", setpointWrist);
     }
 
@@ -209,6 +217,12 @@ public class Arm extends SubsystemBase {
         bicepAngleToGround = bicepAngle.minus(DEG_90);
         forearmAngleToGround = bicepAngleToGround.minus(forearmAngle);
         handAngleToGround = forearmAngleToGround.plus(handAngle);
+
+        double wristPow = wristController.calculate(wristEncoder.getPosition(), setpointWrist);
+        // wristPow += MAX_SPEED_WRIST * Math.abs(handAngleToGround.getCos());
+        wrist.set(wristPow);
+
+        SmartDashboard.putNumber("wrist pid error", wristController.getPositionError());
 
         SmartDashboard.putNumber("bicep angle", bicepAngle.getDegrees());
         SmartDashboard.putNumber("bicep angle to ground", bicepAngleToGround.getDegrees());
