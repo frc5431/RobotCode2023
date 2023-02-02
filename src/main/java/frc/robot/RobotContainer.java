@@ -20,6 +20,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,21 +43,23 @@ public class RobotContainer {
         //     () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         // ));
 
-        systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
-            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-            () -> modifyAxis(driver.getRightY()),
-            () -> {
-                double power = 0.0;
-                if (driver.rightBumper().getAsBoolean())
-                    power += 0.1;
-                if (driver.leftBumper().getAsBoolean())
-                    power -= 0.1;
-                return power;
-            }
-        ));
+        // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
+        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
+        //     () -> modifyAxis(driver.getRightY()),
+        //     () -> {
+        //         double power = 0.0;
+        //         if (driver.rightBumper().getAsBoolean())
+        //             power += 0.25;
+        //         if (driver.leftBumper().getAsBoolean())
+        //             power -= 0.25;
+        //         return power;
+        //     }
+        // ));
 
         configureBindings();
         initAutoPaths();
+
+        Robot.periodics.add(Pair.of(() -> SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure()), 0.3));
     }
 
     private void configureBindings() {
@@ -144,7 +147,6 @@ public class RobotContainer {
     }
 
     public void robotPeriodic() {
-        SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
     }
 
     public void teleopInit() {
