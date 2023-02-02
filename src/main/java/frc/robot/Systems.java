@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.solenoid.DoubleSolenoid;
@@ -11,46 +12,50 @@ import frc.team5431.titan.core.solenoid.SingleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
-
-    private Arm arm;
-
-    private CANSparkMax armInnerLeft;
-    private CANSparkMax armInnerRight;
-    private CANSparkMax armOuterLeft;
-    private CANSparkMax armOuterRight;
-
-    private DoubleSolenoid dblSol1;
-    private DoubleSolenoid dblSol2;
-    private SingleSolenoid sglSol1;
     private Vision vision;
 
+    private Arm arm;
+    private Manipulator manipulator;
+
+    private CANSparkMax armOuterLeft;
+    private CANSparkMax armOuterRight;
+    private CANSparkMax armInnerLeft;
+    private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
 
+    private DoubleSolenoid paddles;
+    private DoubleSolenoid dblSol2;
+    private SingleSolenoid sglSol1;
+
+    private Compressor compressor;
+    private PneumaticHub phub;
 
     public Systems() {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
 
-        armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
-        armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
         armOuterLeft = new CANSparkMax(18, MotorType.kBrushless);
         armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
-        arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight);
-
+        armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
+        armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
         wrist = new CANSparkMax(19, MotorType.kBrushless);
+        arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        dblSol1 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 1, 14);
-        dblSol2 = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, 0, 15);
-        sglSol1 = new SingleSolenoid(1, PneumaticsModuleType.REVPH, 13);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 7);
+        manipulator = new Manipulator(paddles);
 
-        dblSol1.set(DoubleSolenoid.Value.kForward);
+        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5, 6);
+        sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8);
+
+        paddles.set(DoubleSolenoid.Value.kForward);
         dblSol2.set(DoubleSolenoid.Value.kForward);
 
-        try (Compressor compressor = new Compressor(1, PneumaticsModuleType.REVPH)) {
-            // compressor.enableDigital();
-            compressor.enableHybrid(60, 120);
-            // compressor.disable();
-        }
+        compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
+        phub = new PneumaticHub(Constants.ID_PHUB);
+
+        // compressor.enableDigital();
+        compressor.enableHybrid(60, 120);
+        // compressor.disable();
     }
 
     public Drivebase getDrivebase() {
@@ -65,8 +70,8 @@ public class Systems {
         return arm;
     }
 
-    public DoubleSolenoid getDblSol1() {
-        return dblSol1;
+    public Manipulator getManipulator() {
+        return manipulator;
     }
 
     public DoubleSolenoid getDblSol2() {
@@ -77,7 +82,11 @@ public class Systems {
         return sglSol1;
     }
 
-    public CANSparkMax getWrist() {
-        return wrist;
+    public Compressor getCompressor() {
+        return compressor;
+    }
+
+    public PneumaticHub getPneumaticHub() {
+        return phub;
     }
 }

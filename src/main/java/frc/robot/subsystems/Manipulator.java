@@ -1,31 +1,41 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-
-
-
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
 public class Manipulator {
 
-    public boolean extended = false;
-    public static final int manipForwardChannel = 4;
-    public static final int manipReverseChannel = 8;
+    private final DoubleSolenoid piston;
 
-    DoubleSolenoid manipPisston = new DoubleSolenoid(1, PneumaticsModuleType.REVPH, manipForwardChannel, manipReverseChannel);
+    public static final DoubleSolenoid.Value OPEN_STATE = kReverse;
+    public static final DoubleSolenoid.Value CLOSED_STATE = kForward;
+    private boolean isOpen;
 
-    //extends manipulator pistion using 1 double solinoide 
-    public void manipulatorRetract() {
-        if(extended){manipPisston.set(DoubleSolenoid.Value.kReverse);
-            extended = false;
-        }
-    }
-   
-    //retracts manipulator pistion using 1 double solinoide 
-    public void manipulatorDeploy() {
-        if(!extended){manipPisston.set(DoubleSolenoid.Value.kForward); 
-            extended = true;
-        }
+    public Manipulator(DoubleSolenoid piston) {
+        this.piston = piston;
+        isOpen = false;
     }
 
+    // open manipulator
+    public void open() {
+        if (piston.get() == CLOSED_STATE)
+            piston.set(OPEN_STATE);
+        isOpen = true;
+    }
+
+    // close manipulator
+    public void close() {
+        if (piston.get() == OPEN_STATE)
+            piston.set(CLOSED_STATE);
+        isOpen = false;
+    }
+
+    public void toggle() {
+        piston.toggle();
+        isOpen = piston.get() == OPEN_STATE;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
 }

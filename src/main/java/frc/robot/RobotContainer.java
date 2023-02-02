@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
@@ -22,12 +21,15 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
     private final Systems systems = new Systems();
     private final Drivebase drivebase = systems.getDrivebase();
     
     private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
+
     private Command autonCommand;
 
     public RobotContainer() {
@@ -42,7 +44,15 @@ public class RobotContainer {
 
         systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
             () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-            () -> modifyAxis(driver.getRightY())
+            () -> modifyAxis(driver.getRightY()),
+            () -> {
+                double power = 0.0;
+                if (driver.rightBumper().getAsBoolean())
+                    power += 0.1;
+                if (driver.leftBumper().getAsBoolean())
+                    power -= 0.1;
+                return power;
+            }
         ));
 
         configureBindings();
@@ -63,17 +73,17 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
         
-        driver.a().onTrue(runOnce(() -> systems.getDblSol1().toggle()));
-        driver.b().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
-        driver.x().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
+        driver.a().onTrue(runOnce(() -> systems.getManipulator().open()));
+        driver.b().onTrue(runOnce(() -> systems.getManipulator().close()));
+        driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
+        driver.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        // driver.leftBumper().whileTrue(systems.getArm().runArmCommand(0.1));
-        // driver.leftBumper().onTrue(runOnce(() -> systems.getArm().set(0.25)));
-        // driver.rightBumper().whileTrue(systems.getArm().runArmCommand(-0.1));
-        // driver.rightBumper().onTrue(runOnce(() -> systems.getArm().set(0.75)));
-
-        driver.back().onTrue(runOnce(() -> systems.getArm().incr(-0.05)));
-        driver.start().onTrue(runOnce(() -> systems.getArm().incr(0.05)));
+        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
+        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
+        operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(10))); // elbow runs opposite dir
+        operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(-10)));
+        operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-10)));
+        operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(10)));
     }
 
     private void initAutoPaths() {
@@ -131,11 +141,9 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        double power = 0.0;
-        if (driver.rightBumper().getAsBoolean())
-            power += 0.07;
-        if (driver.leftBumper().getAsBoolean())
-            power -= 0.07;
-        systems.getWrist().set(power);
+    }
+
+    public void robotPeriodic() {
+        SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
     }
 }
