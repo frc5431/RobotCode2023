@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
@@ -43,18 +44,20 @@ public class RobotContainer {
         //     () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         // ));
 
-        // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
-        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-        //     () -> modifyAxis(driver.getRightY()),
-        //     () -> {
-        //         double power = 0.0;
-        //         if (driver.rightBumper().getAsBoolean())
-        //             power += 0.25;
-        //         if (driver.leftBumper().getAsBoolean())
-        //             power -= 0.25;
-        //         return power;
-        //     }
-        // ));
+        systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
+            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
+            () -> modifyAxis(driver.getRightY())
+            // () -> {
+            //     double power = 0.0;
+            //     if (driver.rightBumper().getAsBoolean())
+            //         power += 0.08;
+            //     if (driver.leftBumper().getAsBoolean())
+            //         power -= 0.08;
+            //     return power;
+            // }
+        ));
+
+        // CommandScheduler.getInstance().removeDefaultCommand(systems.getArm());
 
         configureBindings();
         initAutoPaths();
@@ -64,29 +67,29 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Y button zeros the gyroscope
-        driver.y().onTrue(runOnce(drivebase::zeroGyroscope));
+        // driver.y().onTrue(runOnce(drivebase::zeroGyroscope));
         
         // D-Pad cardinal directions
-        driver.povUp().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
-        driver.povDown().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
-        driver.povLeft().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
-        driver.povRight().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+        // driver.povUp().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+        // driver.povDown().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+        // driver.povLeft().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+        // driver.povRight().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
         
         driver.a().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.b().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         driver.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
-        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
-        operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(10))); // elbow runs opposite dir
-        operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(-10)));
-        operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-10)));
-        operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(10)));
+        // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
+        // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
+        // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(10))); // elbow runs opposite dir
+        // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(-10)));
+        operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
+        operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
     }
 
     private void initAutoPaths() {
