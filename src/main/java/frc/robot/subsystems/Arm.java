@@ -43,9 +43,9 @@ public class Arm extends SubsystemBase {
     private final PIDController wristController;
     private final AbsoluteEncoder wristEncoder;
 
-    public static final double MAX_SPEED_OUTER = 0.8;
-    public static final double MAX_SPEED_INNER = 0.3;
-    public static final double MAX_SPEED_WRIST = 0.5;
+    public static final double MAX_SPEED_OUTER = 0.3; // 0.22 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
     private double setpointOut = 0;
     private double setpointIn = 0;
@@ -68,16 +68,16 @@ public class Arm extends SubsystemBase {
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderMinCosineMultiplier =
-        12 * 9.81 * Units.inchesToMeters(22);
+        8.78 * 9.81 * Units.inchesToMeters(18.624);
 
     public static final double shoulderMaxCosineMultiplier =
-        12 * 9.81 * Units.inchesToMeters(50);
+        8.78 * 9.81 * Units.inchesToMeters(31.239);
 
     public static final double forearmMinCosineMultiplier =
-        3.8 * 9.81 * Units.inchesToMeters(22);
+        3.7 * 9.81 * Units.inchesToMeters(22); // TODO: one last value
 
     public static final double forearmMaxCosineMultiplier =
-        3.8 * 9.81 * Units.inchesToMeters(22.93);
+        3.7 * 9.81 * Units.inchesToMeters(22.93);
 
     public static final double wristCosineMultiplier = 
         1.95 * 9.81 * Units.inchesToMeters(3.1);

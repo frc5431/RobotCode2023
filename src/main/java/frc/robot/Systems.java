@@ -54,6 +54,7 @@ public class Systems {
         phub = new PneumaticHub(Constants.ID_PHUB);
 
         // compressor.enableDigital();
+        // compressor.enableAnalog(60, 120);
         compressor.enableHybrid(60, 120);
         // compressor.disable();
     }
@@ -65,7 +66,7 @@ public class Systems {
     public Vision getVision() {
         return vision;
     }
-    
+
     public Arm getArm() {
         return arm;
     }

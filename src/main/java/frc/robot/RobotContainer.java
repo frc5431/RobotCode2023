@@ -50,9 +50,9 @@ public class RobotContainer {
             // () -> {
             //     double power = 0.0;
             //     if (driver.rightBumper().getAsBoolean())
-            //         power += 0.08;
+            //         power += 1;
             //     if (driver.leftBumper().getAsBoolean())
-            //         power -= 0.08;
+            //         power -= 1;
             //     return power;
             // }
         ));
@@ -62,7 +62,10 @@ public class RobotContainer {
         configureBindings();
         initAutoPaths();
 
-        Robot.periodics.add(Pair.of(() -> SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure()), 0.3));
+        Robot.periodics.add(Pair.of(() -> {
+            SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
+            SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
+        }, 0.3));
     }
 
     private void configureBindings() {
