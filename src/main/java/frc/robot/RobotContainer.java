@@ -150,6 +150,8 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
+        systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
+        SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
     }
 
     public void robotPeriodic() {

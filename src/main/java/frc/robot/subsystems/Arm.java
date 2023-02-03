@@ -74,7 +74,7 @@ public class Arm extends SubsystemBase {
         8.78 * 9.81 * Units.inchesToMeters(31.239);
 
     public static final double forearmMinCosineMultiplier =
-        3.7 * 9.81 * Units.inchesToMeters(22); // TODO: one last value
+        3.7 * 9.81 * Units.inchesToMeters(19.122);
 
     public static final double forearmMaxCosineMultiplier =
         3.7 * 9.81 * Units.inchesToMeters(22.93);

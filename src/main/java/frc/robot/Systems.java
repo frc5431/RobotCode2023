@@ -22,6 +22,7 @@ public class Systems {
     private CANSparkMax armInnerLeft;
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
+    private CANSparkMax intakeLeft;
 
     private DoubleSolenoid paddles;
     private DoubleSolenoid dblSol2;
@@ -43,6 +44,8 @@ public class Systems {
 
         paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 7);
         manipulator = new Manipulator(paddles);
+
+        intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
 
         dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5, 6);
         sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8);
@@ -89,5 +92,9 @@ public class Systems {
 
     public PneumaticHub getPneumaticHub() {
         return phub;
+    }
+
+    public CANSparkMax getIntakeLeft() {
+        return intakeLeft;
     }
 }
