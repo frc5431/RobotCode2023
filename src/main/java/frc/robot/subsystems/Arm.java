@@ -261,6 +261,18 @@ public class Arm extends SubsystemBase {
         double mapped = wristEncoder.getPosition();
         return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
     }
+    //Know what. TODO: ADD FUNCTIONALITY
+    public boolean shoulderAtSetpoint() {
+        return true;
+    }
+
+    public boolean elbowAtSetpoint() {
+        return true;
+    }
+
+    public boolean wristAtSetpoint() {
+        return true;
+    }
 
     @Override
     public void periodic() {
