@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.RunEndCommand;
+import frc.team5431.titan.core.misc.Calc;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
 import static edu.wpi.first.math.geometry.Rotation2d.fromRadians;
@@ -67,17 +68,23 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngleToGround = new Rotation2d();
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
-    public static final double shoulderMinCosineMultiplier =
-        8.78 * 9.81 * Units.inchesToMeters(18.624);
+    public static final double shoulderCosineMultiplierNoCOM =
+        8.78 * 9.81;
 
-    public static final double shoulderMaxCosineMultiplier =
-        8.78 * 9.81 * Units.inchesToMeters(31.239);
+    public static final double shoulderMinCOMMeters =
+        Units.inchesToMeters(18.624);
 
-    public static final double forearmMinCosineMultiplier =
-        3.7 * 9.81 * Units.inchesToMeters(19.122);
-
-    public static final double forearmMaxCosineMultiplier =
-        3.7 * 9.81 * Units.inchesToMeters(22.93);
+    public static final double shoulderMaxCOMMeters =
+        Units.inchesToMeters(31.239);
+    
+    public static final double elbowCosineMultiplierNoCOM =
+        3.7 * 9.81;
+    
+    public static final double elbowMinCOMMeters =
+        Units.inchesToMeters(19.122);
+    
+    public static final double elbowMaxCOMMeters =
+        Units.inchesToMeters(22.93);
 
     public static final double wristCosineMultiplier = 
         1.95 * 9.81 * Units.inchesToMeters(3.1);
@@ -117,6 +124,9 @@ public class Arm extends SubsystemBase {
         outerController.setD(0.0);
         outerController.setFF(0.00);
         outerController.setOutputRange(-MAX_SPEED_OUTER, MAX_SPEED_OUTER);
+        outerController.setPositionPIDWrappingEnabled(true);
+        outerController.setPositionPIDWrappingMinInput(0);
+        outerController.setPositionPIDWrappingMaxInput(2*Math.PI);
 
         outerController.setFeedbackDevice(outerEncoder);
 
@@ -139,6 +149,9 @@ public class Arm extends SubsystemBase {
         innerController.setD(0.0);
         innerController.setFF(0.00);
         innerController.setOutputRange(-MAX_SPEED_INNER, MAX_SPEED_INNER);
+        innerController.setPositionPIDWrappingEnabled(true);
+        innerController.setPositionPIDWrappingMinInput(0);
+        innerController.setPositionPIDWrappingMaxInput(2*Math.PI);
 
         innerController.setFeedbackDevice(innerEncoder);
 
@@ -186,22 +199,24 @@ public class Arm extends SubsystemBase {
     public void setOut(double posDeg) {
         setpointOut = degreesToRadians(posDeg);
         Rotation2d ba2g = calcBicepAngleToGround(fromRadians(setpointOut));
-        double arbFF = shoulderMinCosineMultiplier * ba2g.getCos() / SHOULDER_TORQUE_TOTAL;
+        double arbFF = shoulderCosineMultiplierNoCOM * getCOMBicepMeters() * ba2g.getCos() / SHOULDER_TORQUE_TOTAL;
         outerController.setReference(setpointOut, ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
         SmartDashboard.putNumber("shoulder set", setpointOut);
+        SmartDashboard.putNumber("shoulder arbff", arbFF);
     }
 
     public void setIn(double posDeg) {
         setpointIn = degreesToRadians(posDeg);
         Rotation2d fa2g = calcForearmAngleToGround(bicepAngle, fromRadians(setpointIn));
-        double arbFF = -forearmMinCosineMultiplier * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
-        System.out.println("famcm " + forearmMinCosineMultiplier);
-        System.out.println("fa2g deg " + fa2g.getDegrees());
-        System.out.println("fa2g cos " + fa2g.getCos());
-        System.out.println("fa t total " + FOREARM_TORQUE_TOTAL);
-        System.out.println("arbff " + arbFF);
+        double arbFF = -elbowCosineMultiplierNoCOM * getCOMForearmMeters() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
+        // System.out.println("famcm " + forearmMinCosineMultiplier);
+        // System.out.println("fa2g deg " + fa2g.getDegrees());
+        // System.out.println("fa2g cos " + fa2g.getCos());
+        // System.out.println("fa t total " + FOREARM_TORQUE_TOTAL);
+        // System.out.println("arbff " + arbFF);
         innerController.setReference(setpointIn, ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
         SmartDashboard.putNumber("elbow set", setpointIn);
+        SmartDashboard.putNumber("elbow arbff", arbFF);
     }
 
     public void setWrist(double posDeg) {
@@ -237,6 +252,16 @@ public class Arm extends SubsystemBase {
         return calcForearmAngleToGround(bicepAngle, forearmAngle).plus(handAngle);
     }
 
+    public double getCOMBicepMeters() {
+        double mapped = -innerEncoder.getPosition();
+        return Calc.map(Math.cos(mapped), 1, -1, shoulderMaxCOMMeters, shoulderMinCOMMeters);
+    }
+
+    public double getCOMForearmMeters() {
+        double mapped = wristEncoder.getPosition();
+        return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("shoulder spd", outerArm.get());
@@ -252,7 +277,6 @@ public class Arm extends SubsystemBase {
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
 
         double wristPow = wristController.calculate(wristEncoder.getPosition(), setpointWrist);
-        // wristPow += MAX_SPEED_WRIST * Math.abs(handAngleToGround.getCos());
         Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(setpointWrist));
         double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
         SmartDashboard.putNumber("wrist arbff", arbFF);

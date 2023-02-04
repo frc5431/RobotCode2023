@@ -44,18 +44,18 @@ public class RobotContainer {
         //     () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         // ));
 
-        systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
-            () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-            () -> modifyAxis(driver.getRightY())
-            // () -> {
-            //     double power = 0.0;
-            //     if (driver.rightBumper().getAsBoolean())
-            //         power += 1;
-            //     if (driver.leftBumper().getAsBoolean())
-            //         power -= 1;
-            //     return power;
-            // }
-        ));
+        // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
+        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
+        //     () -> modifyAxis(driver.getRightY())
+        //     // () -> {
+        //     //     double power = 0.0;
+        //     //     if (driver.rightBumper().getAsBoolean())
+        //     //         power += 1;
+        //     //     if (driver.leftBumper().getAsBoolean())
+        //     //         power -= 1;
+        //     //     return power;
+        //     // }
+        // ));
 
         // CommandScheduler.getInstance().removeDefaultCommand(systems.getArm());
 
@@ -87,10 +87,10 @@ public class RobotContainer {
         driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         driver.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
-        // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
-        // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(10))); // elbow runs opposite dir
-        // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(-10)));
+        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
+        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
+        operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(10))); // elbow runs opposite dir
+        operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(-10)));
         operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
         operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
     }
@@ -150,8 +150,8 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
-        SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
+        // systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
+        // SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
     }
 
     public void robotPeriodic() {

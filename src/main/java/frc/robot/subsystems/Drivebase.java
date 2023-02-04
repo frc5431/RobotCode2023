@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
@@ -20,6 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Drivebase extends SubsystemBase {
     
@@ -205,6 +209,15 @@ public class Drivebase extends SubsystemBase {
             m_backLeftModule.getPosition(),
             m_backRightModule.getPosition()
         };
+    }
+
+    public List<WPI_TalonFX> getMotors() {
+        List<WPI_TalonFX> retval = new ArrayList<>();
+        for (SwerveModule s : new SwerveModule[]{ m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule }) {
+            retval.add((WPI_TalonFX) s.getSteerMotor());
+            retval.add((WPI_TalonFX) s.getDriveMotor());
+        }
+        return retval;
     }
 
 
