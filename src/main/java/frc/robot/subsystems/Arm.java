@@ -54,9 +54,9 @@ public class Arm extends SubsystemBase {
     public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
-    private double setpointOut = 0;
-    private double setpointIn = 0;
-    private double setpointWrist = 0;
+    // private double setpointOut = 0;
+    // private double setpointIn = 0;
+    // private double setpointWrist = 0;
 
     private static final Rotation2d DEG_90 = fromDegrees(90);
     private static final double TORQUE_NM_NEO = 2.6;
@@ -329,8 +329,8 @@ public class Arm extends SubsystemBase {
         forearmAngleToGround = calcForearmAngleToGround(bicepAngle, forearmAngle);
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
 
-        double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), setpointWrist);
-        Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(setpointWrist));
+        double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), wristComponent.getSetpointRadians());
+        Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(wristComponent.getSetpointRadians()));
         double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
         SmartDashboard.putNumber("wrist arbff", arbFF);
         wristPow += arbFF;
