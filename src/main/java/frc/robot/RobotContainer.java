@@ -111,12 +111,12 @@ public class RobotContainer {
         operator.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         operator.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
-        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
-        operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
-        operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
-        operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
-        operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
+        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().getOuter().add(-10)));
+        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().getOuter().add(10)));
+        operator.back().onTrue(runOnce(() -> systems.getArm().getInner().add(-10))); // elbow runs opposite dir
+        operator.start().onTrue(runOnce(() -> systems.getArm().getInner().add(10)));
+        operator.povLeft().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
+        operator.povRight().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
 
     }
@@ -199,8 +199,8 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
-        systems.getArm().incrOut(0);
-        systems.getArm().incrIn(0);
-        systems.getArm().incrWrist(0);
+        systems.getArm().getOuter().add(0);
+        systems.getArm().getInner().add(0);
+        systems.getArm().getWrist().add(0);
     }
 }

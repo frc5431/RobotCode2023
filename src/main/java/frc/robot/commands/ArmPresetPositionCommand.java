@@ -19,13 +19,13 @@ public class ArmPresetPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        arm.setOut(pos.getOuter());
-        arm.setIn(pos.getInner());
-        arm.setWrist(pos.getWrist());
+        arm.getOuter().set(pos.getOuter());
+        arm.getInner().set(pos.getInner());
+        arm.getWrist().set(pos.getWrist());
     }
 
     @Override
     public boolean isFinished() {
-        return arm.elbowAtSetpoint() && arm.shoulderAtSetpoint() && arm.wristAtSetpoint();
+        return arm.getInner().atSetpoint() && arm.getOuter().atSetpoint() && arm.getWrist().atSetpoint();
     }
 }
