@@ -71,7 +71,8 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
 
-    private final double SETPOINT_TOLERANCE = Units.degreesToRadians(1);
+    private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
+    private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
 
     private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
@@ -184,6 +185,10 @@ public class Arm extends SubsystemBase {
         innerEncoder.setPositionConversionFactor(2*Math.PI);
         wristEncoder.setPositionConversionFactor(2*Math.PI);
 
+        outerEncoder.setVelocityConversionFactor(2*Math.PI);
+        innerEncoder.setVelocityConversionFactor(2*Math.PI);
+        wristEncoder.setVelocityConversionFactor(2*Math.PI);
+
         outerArm.burnFlash();
         outerArmFollow.burnFlash();
         innerArm.burnFlash();
@@ -280,17 +285,19 @@ public class Arm extends SubsystemBase {
         return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
     }
 
-    //Know what. TODO: ADD FUNCTIONALITY
     public boolean shoulderAtSetpoint() {
-        return (outerEncoder.getPosition() - setpointOut) < SETPOINT_TOLERANCE;
+        return (outerEncoder.getPosition() - setpointOut) < SETPOINT_POSITION_TOLERANCE 
+            && outerEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
     }
 
     public boolean elbowAtSetpoint() {
-        return (innerEncoder.getPosition() - setpointIn) < SETPOINT_TOLERANCE;
+        return (innerEncoder.getPosition() - setpointIn) < SETPOINT_POSITION_TOLERANCE
+            && innerEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
     }
 
     public boolean wristAtSetpoint() {
-        return (wristEncoder.getPosition() - setpointWrist) < SETPOINT_TOLERANCE;
+        return (wristEncoder.getPosition() - setpointWrist) < SETPOINT_POSITION_TOLERANCE
+            && wristEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
     }
     
     @Override
