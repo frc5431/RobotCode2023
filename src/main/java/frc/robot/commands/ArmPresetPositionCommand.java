@@ -10,9 +10,6 @@ public class ArmPresetPositionCommand extends CommandBase {
 
     private final Arm arm;
     private final PresetPosition pos;
-    public ArmPresetPositionCommand(Systems systems, double outer, double inner, double wrist) {
-        this(systems, new PresetPosition(outer, inner, wrist));
-    }
 
     public ArmPresetPositionCommand(Systems systems, PresetPosition preset) {
         addRequirements(systems.getArm());

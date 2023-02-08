@@ -22,8 +22,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
@@ -37,6 +40,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         driver.setDeadzone(0.15);
+        operator.setDeadzone(0.15);
 
         drivebase.setDefaultCommand(new DefaultDriveCommand(
             systems,
@@ -113,6 +117,8 @@ public class RobotContainer {
         operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
         operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
         operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
+
+
     }
 
     private void initAutoPaths() {
@@ -172,6 +178,21 @@ public class RobotContainer {
     public void teleopPeriodic() {
         // systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
         // SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
+        var gp = systems.getArm().getGoal();
+        double leftx = operator.getLeftX();
+        double lefty = -operator.getLeftY();
+        if (Math.abs(leftx) < 0.15) leftx = 0;
+        if (Math.abs(lefty) < 0.15) lefty = 0;
+        leftx *= 0.01;
+        lefty *= 0.01;
+        double tx = gp.getX() + leftx;
+        double ty = gp.getY() + lefty;
+        
+        double total_length = Units.inchesToMeters(60);
+        tx = MathUtil.clamp(tx, -total_length, total_length);
+        ty = MathUtil.clamp(ty, -total_length, total_length);
+        gp = new Translation2d(tx, ty);
+        systems.getArm().setGoal(gp);
     }
 
     public void robotPeriodic() {

@@ -14,11 +14,13 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.RunEndCommand;
+import frc.robot.util.InverseKinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
@@ -66,6 +68,13 @@ public class Arm extends SubsystemBase {
     private Rotation2d forearmAngleToGround = new Rotation2d();
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
+
+    private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
+    private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
+
+    private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+
+    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(0), -Units.inchesToMeters(30));
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
@@ -174,11 +183,23 @@ public class Arm extends SubsystemBase {
         innerEncoder.setPositionConversionFactor(2*Math.PI);
         wristEncoder.setPositionConversionFactor(2*Math.PI);
 
+        outerEncoder.setVelocityConversionFactor(2*Math.PI);
+        innerEncoder.setVelocityConversionFactor(2*Math.PI);
+        wristEncoder.setVelocityConversionFactor(2*Math.PI);
+
         outerArm.burnFlash();
         outerArmFollow.burnFlash();
         innerArm.burnFlash();
         innerArmFollow.burnFlash();
         this.wrist.burnFlash();
+    }
+
+    public void setGoal(Translation2d v) {
+        goalPose = v;
+    }
+
+    public Translation2d getGoal() {
+        return goalPose;
     }
 
     public void incrOut(double amntDeg) {
@@ -274,6 +295,21 @@ public class Arm extends SubsystemBase {
         return true;
     }
 
+    public boolean shoulderAtSetpoint() {
+        return (outerEncoder.getPosition() - setpointOut) < SETPOINT_POSITION_TOLERANCE 
+            && outerEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
+    }
+
+    public boolean elbowAtSetpoint() {
+        return (innerEncoder.getPosition() - setpointIn) < SETPOINT_POSITION_TOLERANCE
+            && innerEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
+    }
+
+    public boolean wristAtSetpoint() {
+        return (wristEncoder.getPosition() - setpointWrist) < SETPOINT_POSITION_TOLERANCE
+            && wristEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
+    }
+    
     @Override
     public void periodic() {
         SmartDashboard.putNumber("shoulder spd", outerArm.get());
@@ -308,6 +344,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
         SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
+
+        solveKinematics(goalPose);
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
@@ -336,5 +374,19 @@ public class Arm extends SubsystemBase {
                 this.speedIn(0);
             },
             this);
+    }
+
+    public void solveKinematics(Translation2d goal) {
+        var ik = solver.solveForPosition(goal);
+        if (!Double.isNaN(ik.getOuter()))
+            setOut(ik.getOuter());
+        if (!Double.isNaN(ik.getInner()))
+            setIn(ik.getInner());
+
+        SmartDashboard.putNumber("Goal X", Units.metersToInches(goal.getX()));
+        SmartDashboard.putNumber("Goal Y", Units.metersToInches(goal.getY()));
+        SmartDashboard.putNumber("InvKin Out", ik.getOuter());
+        SmartDashboard.putNumber("InvKin In",  ik.getInner());
+        // System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
     }
 }
