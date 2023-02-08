@@ -23,6 +23,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -113,6 +114,8 @@ public class RobotContainer {
         operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
         operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
         operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
+
+
     }
 
     private void initAutoPaths() {
@@ -172,6 +175,9 @@ public class RobotContainer {
     public void teleopPeriodic() {
         // systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
         // SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
+        var gp = systems.getArm().getGoal();
+        gp = new Translation2d(gp.getX() + operator.getLeftX(), gp.getY() + operator.getLeftY());
+        systems.getArm().setGoal(gp);
     }
 
     public void robotPeriodic() {

@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import org.apache.commons.lang3.Conversion;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
@@ -14,11 +16,13 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.RunEndCommand;
+import frc.robot.util.InverseKinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
@@ -67,8 +71,11 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
 
-    private final double tolerance = 1;
+    private final double SETPOINT_TOLERANCE = Units.degreesToRadians(1);
 
+    private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+
+    private Translation2d goalPose = new Translation2d(0,0);
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
@@ -184,6 +191,14 @@ public class Arm extends SubsystemBase {
         this.wrist.burnFlash();
     }
 
+    public void setGoal(Translation2d v) {
+        goalPose = v;
+    }
+
+    public Translation2d getGoal() {
+        return goalPose;
+    }
+
     public void incrOut(double amntDeg) {
         double currentPosition = outerEncoder.getPosition();
         setOut(radiansToDegrees(currentPosition + degreesToRadians(amntDeg)));
@@ -266,18 +281,18 @@ public class Arm extends SubsystemBase {
     }
 
     //Know what. TODO: ADD FUNCTIONALITY
-    public boolean shoulderAtSetpoint(double setpoint) {
-        return innerEncoder.getPosition() - setpoint < tolerance;
+    public boolean shoulderAtSetpoint() {
+        return (outerEncoder.getPosition() - setpointOut) < SETPOINT_TOLERANCE;
     }
 
-    public boolean elbowAtSetpoint(double setpoint) {
-        return outerEncoder.getPosition() - setpoint < tolerance;
+    public boolean elbowAtSetpoint() {
+        return (innerEncoder.getPosition() - setpointIn) < SETPOINT_TOLERANCE;
     }
 
-    public boolean wristAtSetpoint(double setpoint) {
-        return wristEncoder.getPosition() - setpoint < tolerance;
+    public boolean wristAtSetpoint() {
+        return (wristEncoder.getPosition() - setpointWrist) < SETPOINT_TOLERANCE;
     }
-
+    
     @Override
     public void periodic() {
         SmartDashboard.putNumber("shoulder spd", outerArm.get());
@@ -312,6 +327,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
         SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
+
+        solveKinematics(goalPose);
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
@@ -340,5 +357,12 @@ public class Arm extends SubsystemBase {
                 this.speedIn(0);
             },
             this);
+    }
+
+    public void solveKinematics(Translation2d goal) {
+        var ik = solver.solveForPosition(goal);
+        // setIn(ik.getInner());
+        // setOut(ik.getOuter());
+        System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
     }
 }

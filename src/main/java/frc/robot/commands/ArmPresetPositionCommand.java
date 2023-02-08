@@ -10,9 +10,6 @@ public class ArmPresetPositionCommand extends CommandBase {
 
     private final Arm arm;
     private final PresetPosition pos;
-    public ArmPresetPositionCommand(Systems systems, double outer, double inner, double wrist) {
-        this(systems, new PresetPosition(outer, inner, wrist));
-    }
 
     public ArmPresetPositionCommand(Systems systems, PresetPosition preset) {
         addRequirements(systems.getArm());
@@ -29,6 +26,6 @@ public class ArmPresetPositionCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return arm.elbowAtSetpoint(pos.getOuter()) && arm.shoulderAtSetpoint(pos.getInner()) && arm.wristAtSetpoint(pos.getWrist());
+        return arm.elbowAtSetpoint() && arm.shoulderAtSetpoint() && arm.wristAtSetpoint();
     }
 }

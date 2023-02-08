@@ -29,10 +29,10 @@ public class InverseKinematicsSolver {
         return p1 - p2;
     }
 
-    PresetPosition solveForPosition(Translation2d goal) {
-        double outerAngle = solveSegment2Angle(goal); //Replace once implemented
-        double innerAngle = solveSegment1Angle(outerAngle, goal);
+    public PresetPosition solveForPosition(Translation2d goal) {
+        double q2 = solveSegment2Angle(goal); //Replace once implemented
+        double q1 = solveSegment1Angle(q2, goal);
 
-        return new PresetPosition(outerAngle - Math.PI/2, -innerAngle, 0);
+        return PresetPosition.fromRadians(q1 + Math.PI/2, -q2, 0);
     }
 }
