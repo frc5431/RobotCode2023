@@ -67,6 +67,9 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
 
+    private final double tolerance = 1;
+
+
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
         8.78 * 9.81;
@@ -261,17 +264,18 @@ public class Arm extends SubsystemBase {
         double mapped = wristEncoder.getPosition();
         return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
     }
+
     //Know what. TODO: ADD FUNCTIONALITY
-    public boolean shoulderAtSetpoint() {
-        return true;
+    public boolean shoulderAtSetpoint(double setpoint) {
+        return innerEncoder.getPosition() - setpoint < tolerance;
     }
 
-    public boolean elbowAtSetpoint() {
-        return true;
+    public boolean elbowAtSetpoint(double setpoint) {
+        return outerEncoder.getPosition() - setpoint < tolerance;
     }
 
-    public boolean wristAtSetpoint() {
-        return true;
+    public boolean wristAtSetpoint(double setpoint) {
+        return wristEncoder.getPosition() - setpoint < tolerance;
     }
 
     @Override
