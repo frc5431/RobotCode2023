@@ -33,6 +33,6 @@ public class InverseKinematicsSolver {
         double outerAngle = solveSegment2Angle(goal); //Replace once implemented
         double innerAngle = solveSegment1Angle(outerAngle, goal);
 
-        return new PresetPosition(outerAngle, innerAngle, 0);
+        return new PresetPosition(outerAngle - Math.PI/2, -innerAngle, 0);
     }
 }
