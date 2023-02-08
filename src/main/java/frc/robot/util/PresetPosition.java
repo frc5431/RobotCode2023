@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import static edu.wpi.first.math.util.Units.radiansToDegrees;
-
 public class PresetPosition {
     double outer = 0;
     double inner = 0;
@@ -23,7 +22,7 @@ public class PresetPosition {
         this.inner = inner;
         this.wrist = wrist;
     }
-
+    
     public static PresetPosition fromRadians(double outer, double inner, double wrist){
         return new PresetPosition(radiansToDegrees(outer), radiansToDegrees(inner), radiansToDegrees(wrist));
     }
