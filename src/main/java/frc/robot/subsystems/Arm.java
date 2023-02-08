@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import org.apache.commons.lang3.Conversion;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
@@ -76,7 +74,7 @@ public class Arm extends SubsystemBase {
 
     private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
-    private Translation2d goalPose = new Translation2d(0,0);
+    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(0), -Units.inchesToMeters(30));
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
@@ -368,8 +366,15 @@ public class Arm extends SubsystemBase {
 
     public void solveKinematics(Translation2d goal) {
         var ik = solver.solveForPosition(goal);
-        // setIn(ik.getInner());
-        // setOut(ik.getOuter());
-        System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
+        if (!Double.isNaN(ik.getOuter()))
+            setOut(ik.getOuter());
+        if (!Double.isNaN(ik.getInner()))
+            setIn(ik.getInner());
+
+        SmartDashboard.putNumber("Goal X", Units.metersToInches(goal.getX()));
+        SmartDashboard.putNumber("Goal Y", Units.metersToInches(goal.getY()));
+        SmartDashboard.putNumber("InvKin Out", ik.getOuter());
+        SmartDashboard.putNumber("InvKin In",  ik.getInner());
+        // System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
     }
 }

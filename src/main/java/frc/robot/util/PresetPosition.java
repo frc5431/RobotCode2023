@@ -1,7 +1,7 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.math.util.Units.radiansToDegrees;
+
 public class PresetPosition {
     double outer = 0;
     double inner = 0;

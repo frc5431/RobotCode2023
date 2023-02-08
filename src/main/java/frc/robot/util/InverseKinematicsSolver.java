@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class InverseKinematicsSolver {
@@ -19,7 +18,7 @@ public class InverseKinematicsSolver {
         double p1 = Math.pow(goal.getX(),2) + Math.pow(goal.getY(),2) - Math.pow(l1,2) - Math.pow(l2,2);
         double p2 = 2*l1*l2;
 
-        return -Math.acos(p1/p2);
+        return Math.acos(p1/p2);
     }
 
     double solveSegment1Angle(double q2, Translation2d goal) {
