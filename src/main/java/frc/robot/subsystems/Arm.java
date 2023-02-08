@@ -282,18 +282,6 @@ public class Arm extends SubsystemBase {
         double mapped = wristEncoder.getPosition();
         return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
     }
-    //Know what. TODO: ADD FUNCTIONALITY
-    public boolean shoulderAtSetpoint() {
-        return true;
-    }
-
-    public boolean elbowAtSetpoint() {
-        return true;
-    }
-
-    public boolean wristAtSetpoint() {
-        return true;
-    }
 
     public boolean shoulderAtSetpoint() {
         return (outerEncoder.getPosition() - setpointOut) < SETPOINT_POSITION_TOLERANCE 
@@ -388,5 +376,23 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("InvKin Out", ik.getOuter());
         SmartDashboard.putNumber("InvKin In",  ik.getInner());
         // System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
+    }
+
+    public class ArmComponent {
+        CANSparkMax motor;
+        Optional<CANSparkMax> follow;
+        SparkMaxPIDController controller;
+        AbsoluteEncoder absoluteEncoder;
+
+        public ArmComponent(CANSparkMax motor, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder) {
+            this.motor = motor;
+            this.follow = Optional.empty();
+            this.controller = controller;
+            this.absoluteEncoder = absoluteEncoder;
+        }
+        public ArmComponent(CANSparkMax motor, CANSparkMax follow, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder) {
+            this(motor, controller, absoluteEncoder);
+            this.follow = Optional.of(follow);
+        }
     }
 }
