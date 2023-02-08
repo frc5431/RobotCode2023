@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.*;
+import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -35,7 +36,8 @@ public class RobotContainer {
     
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-
+    private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
+    
     private Command autonCommand;
 
     public RobotContainer() {
@@ -188,9 +190,10 @@ public class RobotContainer {
         double tx = gp.getX() + leftx;
         double ty = gp.getY() + lefty;
         
-        double total_length = Units.inchesToMeters(60);
-        tx = MathUtil.clamp(tx, -total_length, total_length);
-        ty = MathUtil.clamp(ty, -total_length, total_length);
+        double limit = armLimit.findLimit(ty);
+        
+        tx = MathUtil.clamp(tx, -limit, limit);
+        ty = MathUtil.clamp(ty, -limit, limit);
         gp = new Translation2d(tx, ty);
         systems.getArm().setGoal(gp);
     }
