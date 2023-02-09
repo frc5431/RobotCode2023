@@ -189,12 +189,14 @@ public class RobotContainer {
         lefty *= 0.01;
         double tx = gp.getX() + leftx;
         double ty = gp.getY() + lefty;
+
         
-        double limit = armLimit.findLimit(ty);
-        
-        tx = MathUtil.clamp(tx, -limit, limit);
-        ty = MathUtil.clamp(ty, -limit, limit);
         gp = new Translation2d(tx, ty);
+        // double xlimit = armLimit.findLimit(ty);
+        // double ylimit = armLimit.findLimit(tx);
+        if(!armLimit.isPointInsideCircle(gp)) {
+            gp = armLimit.getClosestPointOnCircle(gp);
+        }
         systems.getArm().setGoal(gp);
     }
 
