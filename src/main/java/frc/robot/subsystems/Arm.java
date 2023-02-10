@@ -58,7 +58,7 @@ public class Arm extends SubsystemBase {
     private static final double TORQUE_NM_NEO = 2.6;
 
     public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 60 * 2;
-    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5 * 4.5 * 2;
+    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5 * 84/20 * 2;
     public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 9;
 
     // measured
@@ -74,7 +74,7 @@ public class Arm extends SubsystemBase {
 
     private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
-    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(0), -Units.inchesToMeters(30));
+    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(5), -Units.inchesToMeters(30));
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =

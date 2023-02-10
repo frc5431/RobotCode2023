@@ -108,8 +108,8 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
 
-        operator.a().onTrue(runOnce(() -> systems.getManipulator().open()));
-        operator.b().onTrue(runOnce(() -> systems.getManipulator().close()));
+        driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
+        driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         operator.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         operator.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
