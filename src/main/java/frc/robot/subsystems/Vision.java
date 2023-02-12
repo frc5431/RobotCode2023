@@ -46,13 +46,5 @@ public class Vision extends SubsystemBase {
   }
 
 
-  public void colorGet(){
-    
 
-
-
-
-
-
-  }
 }

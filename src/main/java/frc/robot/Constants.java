@@ -2,6 +2,9 @@ package frc.robot;
 
 import java.io.IOException;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -62,4 +65,11 @@ public class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(123.047); // 115.664
+
+
+    //#region Auto Constants
+    public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(0.5, 0, 0);
+    //#endregion Auto Constants
 }

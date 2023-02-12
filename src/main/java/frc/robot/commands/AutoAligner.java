@@ -9,10 +9,9 @@ import frc.robot.subsystems.Drivebase;
 
 public class AutoAligner extends CommandBase{
     public final Pigeon2 pigy;
-
     public final Drivebase drivebase;
     public PIDController pid = new PIDController(0, 0, 0);
-    ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);
+    public ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);
     
     public AutoAligner(Drivebase drivebase){
            this.pigy = drivebase.getGyro();
@@ -21,8 +20,13 @@ public class AutoAligner extends CommandBase{
     }       
 
     @Override
+    public void initialize(){
+        boolean robotIsBackwards = Math.abs(180 - pigy.getYaw()) <= 1;
+        double direction = robotIsBackwards ? 1 : -1;
+    }
+
+    @Override
     public void execute(){
-        double direction = Math.abs(180 - pigy.getYaw()) <= 1 ? 1 : -1;
         cs.vxMetersPerSecond = pid.calculate(pigy.getPitch(), 0);
         drivebase.drive(cs);  
     }
