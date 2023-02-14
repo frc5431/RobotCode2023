@@ -42,13 +42,13 @@ public class Systems {
         // wrist = new CANSparkMax(19, MotorType.kBrushless);
         // arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 7);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 6, 7);
         manipulator = new Manipulator(paddles);
 
         // intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
 
-        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5, 6);
-        sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8);
+        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8, 9);
+        sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5);
 
         paddles.set(DoubleSolenoid.Value.kForward);
         dblSol2.set(DoubleSolenoid.Value.kForward);

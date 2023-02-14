@@ -110,7 +110,7 @@ public class RobotContainer {
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
-        operator.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
+        driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         operator.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
