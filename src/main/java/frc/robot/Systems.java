@@ -35,20 +35,20 @@ public class Systems {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
 
-        armOuterLeft = new CANSparkMax(18, MotorType.kBrushless);
-        armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
-        armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
-        armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
-        wrist = new CANSparkMax(19, MotorType.kBrushless);
-        arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
+        // armOuterLeft = new CANSparkMax(18, MotorType.kBrushless);
+        // armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
+        // armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
+        // armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
+        // wrist = new CANSparkMax(19, MotorType.kBrushless);
+        // arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 7);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 6, 7);
         manipulator = new Manipulator(paddles);
 
-        intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
+        // intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
 
-        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5, 6);
-        sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8);
+        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8, 9);
+        sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5);
 
         paddles.set(DoubleSolenoid.Value.kForward);
         dblSol2.set(DoubleSolenoid.Value.kForward);
@@ -57,8 +57,8 @@ public class Systems {
         phub = new PneumaticHub(Constants.ID_PHUB);
 
         // compressor.enableDigital();
-        // compressor.enableAnalog(60, 120);
-        compressor.enableHybrid(60, 120);
+        compressor.enableAnalog(60, 120);
+        // compressor.enableHybrid(60, 120);
         // compressor.disable();
     }
 

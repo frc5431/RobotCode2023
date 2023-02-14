@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.*;
+import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -35,7 +36,8 @@ public class RobotContainer {
     
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-
+    // private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
+    
     private Command autonCommand;
 
     public RobotContainer() {
@@ -106,17 +108,17 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
 
-        operator.a().onTrue(runOnce(() -> systems.getManipulator().open()));
-        operator.b().onTrue(runOnce(() -> systems.getManipulator().close()));
-        operator.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
+        driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
+        driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
+        driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
         operator.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
 
-        operator.leftBumper().onTrue(runOnce(() -> systems.getArm().getOuter().add(-10)));
-        operator.rightBumper().onTrue(runOnce(() -> systems.getArm().getOuter().add(10)));
-        operator.back().onTrue(runOnce(() -> systems.getArm().getInner().add(-10))); // elbow runs opposite dir
-        operator.start().onTrue(runOnce(() -> systems.getArm().getInner().add(10)));
-        operator.povLeft().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
-        operator.povRight().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
+        // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
+        // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
+        // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
+        // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
+        // operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
+        // operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
 
 
     }
@@ -176,23 +178,24 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        // systems.getIntakeLeft().set(modifyAxis(driver.getLeftY()));
-        // SmartDashboard.putNumber("inleft", systems.getIntakeLeft().get());
-        var gp = systems.getArm().getGoal();
-        double leftx = operator.getLeftX();
-        double lefty = -operator.getLeftY();
-        if (Math.abs(leftx) < 0.15) leftx = 0;
-        if (Math.abs(lefty) < 0.15) lefty = 0;
-        leftx *= 0.01;
-        lefty *= 0.01;
-        double tx = gp.getX() + leftx;
-        double ty = gp.getY() + lefty;
-        
-        double total_length = Units.inchesToMeters(60);
-        tx = MathUtil.clamp(tx, -total_length, total_length);
-        ty = MathUtil.clamp(ty, -total_length, total_length);
-        gp = new Translation2d(tx, ty);
-        systems.getArm().setGoal(gp);
+        // var gp = systems.getArm().getGoal();
+        // double leftx = operator.getLeftX();
+        // double lefty = -operator.getLeftY();
+        // if (Math.abs(leftx) < 0.15) leftx = 0;
+        // if (Math.abs(lefty) < 0.15) lefty = 0;
+        // leftx *= 0.01;
+        // lefty *= 0.01;
+        // double tx = gp.getX() + leftx;
+        // double ty = gp.getY() + lefty;
+
+
+        // gp = new Translation2d(tx, ty);
+        // // double xlimit = armLimit.findLimit(ty);
+        // // double ylimit = armLimit.findLimit(tx);
+        // if(!armLimit.isPointInsideCircle(gp)) {
+        //     gp = armLimit.getClosestPointOnCircle(gp);
+        // }
+        // systems.getArm().setGoal(gp);
     }
 
     public void robotPeriodic() {
