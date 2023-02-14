@@ -31,50 +31,50 @@ import static edu.wpi.first.math.util.Units.radiansToDegrees;
 
 public class Arm extends SubsystemBase {
     
-    private final CANSparkMax outerArm;
-    private final CANSparkMax outerArmFollow;
-    private final CANSparkMax innerArm;
-    private final CANSparkMax innerArmFollow;
+    protected final CANSparkMax outerArm;
+    protected final CANSparkMax outerArmFollow;
+    protected final CANSparkMax innerArm;
+    protected final CANSparkMax innerArmFollow;
 
-    private final SparkMaxPIDController outerController;
-    private final AbsoluteEncoder outerEncoder;
+    protected final SparkMaxPIDController outerController;
+    protected final AbsoluteEncoder outerEncoder;
 
-    private final SparkMaxPIDController innerController;
-    private final AbsoluteEncoder innerEncoder;
+    protected final SparkMaxPIDController innerController;
+    protected final AbsoluteEncoder innerEncoder;
 
-    private final CANSparkMax wrist;
-    private final PIDController wristController;
-    private final AbsoluteEncoder wristEncoder;
-
+    protected final CANSparkMax wrist;
+    protected final PIDController wristController;
+    protected final AbsoluteEncoder wristEncoder;
+    
     public static final double MAX_SPEED_OUTER = 0.3; // 0.22 to hold at horz
     public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
-    private double setpointOut = 0;
-    private double setpointIn = 0;
-    private double setpointWrist = 0;
+    protected double setpointOut = 0;
+    protected double setpointIn = 0;
+    protected double setpointWrist = 0;
 
-    private static final Rotation2d DEG_90 = fromDegrees(90);
-    private static final double TORQUE_NM_NEO = 2.6;
+    protected static final Rotation2d DEG_90 = fromDegrees(90);
+    protected static final double TORQUE_NM_NEO = 2.6;
 
     public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 60 * 2;
     public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5 * 84/20 * 2;
     public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 9;
 
     // measured
-    private Rotation2d bicepAngle = new Rotation2d();
-    private Rotation2d bicepAngleToGround = new Rotation2d();
-    private Rotation2d forearmAngle = new Rotation2d();
-    private Rotation2d forearmAngleToGround = new Rotation2d();
-    private Rotation2d handAngle = new Rotation2d();
-    private Rotation2d handAngleToGround = new Rotation2d();
+    protected Rotation2d bicepAngle = new Rotation2d();
+    protected Rotation2d bicepAngleToGround = new Rotation2d();
+    protected Rotation2d forearmAngle = new Rotation2d();
+    protected Rotation2d forearmAngleToGround = new Rotation2d();
+    protected Rotation2d handAngle = new Rotation2d();
+    protected Rotation2d handAngleToGround = new Rotation2d();
 
-    private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
-    private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
+    protected final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
+    protected final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
 
-    private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+    protected InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
-    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(5), -Units.inchesToMeters(30));
+    protected Translation2d goalPose = new Translation2d(Units.inchesToMeters(5), -Units.inchesToMeters(30));
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
