@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -13,7 +14,6 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -165,17 +165,19 @@ public class Arm extends SubsystemBase {
         wrist.setInverted(false);
         wrist.setIdleMode(IdleMode.kBrake);
 
-        PIDController wristController = new PIDController(0.15, 0.0, 0.0);
-        wristController.enableContinuousInput(0, 2*Math.PI);
+        SparkMaxPIDController wristController = wrist.getPIDController();
         AbsoluteEncoder wristEncoder = wrist.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
-        // wristController.setP(0.5);
-        // wristController.setI(0.0);
-        // wristController.setD(0.0);
-        // wristController.setFF(0.00);
-        // wristController.setOutputRange(-MAX_SPEED_WRIST, MAX_SPEED_WRIST);
+        wristController.setP(0.15);
+        wristController.setI(0.0);
+        wristController.setD(0.0);
+        wristController.setFF(0.00);
+        wristController.setOutputRange(-MAX_SPEED_WRIST, MAX_SPEED_WRIST);
+        wristController.setPositionPIDWrappingEnabled(true);
+        wristController.setPositionPIDWrappingMinInput(0);
+        wristController.setPositionPIDWrappingMaxInput(2*Math.PI);
 
-        // wristController.setFeedbackDevice(wristEncoder);
+        wristController.setFeedbackDevice(wristEncoder);
 
         outerEncoder.setPositionConversionFactor(2*Math.PI);
         innerEncoder.setPositionConversionFactor(2*Math.PI);
@@ -194,6 +196,7 @@ public class Arm extends SubsystemBase {
         outerComponent = new ArmComponent(outerArmLeft, outerArmRight, outerController, outerEncoder, MAX_SPEED_OUTER, (component) -> {
             Rotation2d ba2g = calcBicepAngleToGround(fromRadians(component.getSetpointRadians()));
             double arbFF = shoulderCosineMultiplierNoCOM * getCOMBicepMeters() * ba2g.getCos() / SHOULDER_TORQUE_TOTAL;
+
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
             SmartDashboard.putNumber("shoulder arbff", arbFF);
@@ -208,10 +211,14 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("elbow arbff", arbFF);
         });
 
-        wristComponent = new ArmComponent(wrist, null, wristEncoder, MAX_SPEED_WRIST, (component) -> {
-            SmartDashboard.putNumber("wrist set", component.getSetpointDegrees());
+        wristComponent = new ArmComponent(wrist, wristController, wristEncoder, MAX_SPEED_WRIST, (component) -> {
+            Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(component.getSetpointRadians()));
+            double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
+
+            component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
+            SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
+            SmartDashboard.putNumber("wrist arbff", arbFF);
         });
-        wristComponent.setPIDController(wristController);
     }
 
     public ArmComponent getOuter() {
@@ -329,15 +336,15 @@ public class Arm extends SubsystemBase {
         forearmAngleToGround = calcForearmAngleToGround(bicepAngle, forearmAngle);
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
 
-        double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), wristComponent.getSetpointRadians());
-        Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(wristComponent.getSetpointRadians()));
-        double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
-        SmartDashboard.putNumber("wrist arbff", arbFF);
-        wristPow += arbFF;
-        wristPow = MathUtil.clamp(wristPow, -MAX_SPEED_WRIST, MAX_SPEED_WRIST);
-        wristComponent.setSpeed(wristPow);
+        // double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), wristComponent.getSetpointRadians());
+        // Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(wristComponent.getSetpointRadians()));
+        // double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
+        // SmartDashboard.putNumber("wrist arbff", arbFF);
+        // wristPow += arbFF;
+        // wristPow = MathUtil.clamp(wristPow, -MAX_SPEED_WRIST, MAX_SPEED_WRIST);
+        // wristComponent.setSpeed(wristPow);
 
-        SmartDashboard.putNumber("wrist pid error", wristComponent.getPIDController().getPositionError());
+        // SmartDashboard.putNumber("wrist pid error", wristComponent.getPIDController().getPositionError());
 
         SmartDashboard.putNumber("bicep angle", bicepAngle.getDegrees());
         SmartDashboard.putNumber("bicep angle to ground", bicepAngleToGround.getDegrees());
@@ -399,9 +406,8 @@ public class Arm extends SubsystemBase {
         CANSparkMax motor;
         Optional<CANSparkMax> follow;
         SparkMaxPIDController controller;
-        PIDController pidController = null;
         AbsoluteEncoder absoluteEncoder;
-        Setter setter;
+        Consumer<ArmComponent> setter;
         double setpoint;
         final double MAX_SPEED;
 
@@ -417,20 +423,12 @@ public class Arm extends SubsystemBase {
             return controller;
         }
 
-        PIDController getPIDController() {
-            return pidController;
-        }
-
-        void setPIDController(PIDController controller) {
-            pidController = controller;
-        }
-
         AbsoluteEncoder getEncoder() {
             return absoluteEncoder;
         }
 
 
-        public ArmComponent(CANSparkMax motor, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder, double max, Setter setter) {
+        public ArmComponent(CANSparkMax motor, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder, double max, Consumer<ArmComponent> setter) {
             this.motor = motor;
             this.follow = Optional.empty();
             this.controller = controller;
@@ -438,7 +436,7 @@ public class Arm extends SubsystemBase {
             this.setter = setter;
             this.MAX_SPEED = max;
         }
-        public ArmComponent(CANSparkMax motor, CANSparkMax follow, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder, double max, Setter setter) {
+        public ArmComponent(CANSparkMax motor, CANSparkMax follow, SparkMaxPIDController controller, AbsoluteEncoder absoluteEncoder, double max, Consumer<ArmComponent> setter) {
             this(motor, controller, absoluteEncoder, max, setter);
             this.follow = Optional.of(follow);
         }
@@ -462,17 +460,17 @@ public class Arm extends SubsystemBase {
         
         public void set(double value) {
             setSetpointDegrees(value);
-            setter.set(this);
+            setter.accept(this);
         }
 
         public void setRadians(double value) {
             setSetpointRadians(value);
-            setter.set(this);
+            setter.accept(this);
         }
 
         public void add(double value) {
             setSetpointDegrees(getSetpointDegrees() + value);
-            setter.set(this);
+            setter.accept(this);
         }
 
         public void setSpeed(double value) {
@@ -483,10 +481,6 @@ public class Arm extends SubsystemBase {
         public boolean atSetpoint() {
             return (absoluteEncoder.getPosition() - setpoint) < SETPOINT_POSITION_TOLERANCE 
                 && absoluteEncoder.getVelocity() < SETPOINT_VELOCITY_TOLERANCE;
-        }
-
-        interface Setter {
-            void set(ArmComponent component);
         }
     }
 }
