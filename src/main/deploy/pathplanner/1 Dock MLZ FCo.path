@@ -1,0 +1,82 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.9693192025471065,
+        "y": 2.149866097164433
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.0836737821835123,
+        "y": 2.1384306392007923
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Extend Arm",
+          "Place Starting Cone",
+          "Retract Arm"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.243770193674481,
+        "y": 2.149866097164433
+      },
+      "prevControl": {
+        "x": 2.1637219879289975,
+        "y": 2.149866097164433
+      },
+      "nextControl": {
+        "x": 3.237189646391327,
+        "y": 2.149866097164433
+      },
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "Deploy Dead Wheels"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.901911598402369,
+        "y": 2.10412426530987
+      },
+      "prevControl": {
+        "x": 3.5245414856022292,
+        "y": 2.1269951812371524
+      },
+      "nextControl": null,
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Start Autobalance"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": []
+}
