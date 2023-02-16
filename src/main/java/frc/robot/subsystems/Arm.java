@@ -58,8 +58,8 @@ public class Arm extends SubsystemBase {
     private static final double TORQUE_NM_NEO = 2.6;
 
     public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 60 * 2;
-    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5 * 84/20 * 2;
-    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 9;
+    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5*4 * 84/20 * 2;
+    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 3*3;
 
     // measured
     private Rotation2d bicepAngle = new Rotation2d();
@@ -78,25 +78,25 @@ public class Arm extends SubsystemBase {
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
-        8.78 * 9.81;
+        9.426 * 9.81;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(18.624);
+        Units.inchesToMeters(16.234);
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(31.239);
-    
+        Units.inchesToMeters(40.625);
+
     public static final double elbowCosineMultiplierNoCOM =
-        3.7 * 9.81;
-    
+        4.356 * 9.81;
+
     public static final double elbowMinCOMMeters =
-        Units.inchesToMeters(19.122);
-    
+        Units.inchesToMeters(22.789);
+
     public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(22.93);
+        Units.inchesToMeters(24.943);
 
     public static final double wristCosineMultiplier = 
-        1.95 * 9.81 * Units.inchesToMeters(3.1);
+        2.656 * 9.81 * Units.inchesToMeters(3.1);
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -280,7 +280,7 @@ public class Arm extends SubsystemBase {
 
     public double getCOMForearmMeters() {
         double mapped = wristEncoder.getPosition();
-        return Calc.map(Math.cos(mapped), 1, -1, elbowMaxCOMMeters, elbowMinCOMMeters);
+        return Calc.map(Math.cos(mapped), 1, 0, elbowMaxCOMMeters, elbowMinCOMMeters);
     }
 
     public boolean shoulderAtSetpoint() {
@@ -333,7 +333,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
         SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
 
-        solveKinematics(goalPose);
+        // solveKinematics(goalPose);
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {

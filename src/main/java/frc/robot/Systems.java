@@ -35,14 +35,14 @@ public class Systems {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
 
-        armOuterLeft = new CANSparkMax(18, MotorType.kBrushless);
-        armOuterRight = new CANSparkMax(17, MotorType.kBrushless);
-        armInnerLeft = new CANSparkMax(15, MotorType.kBrushless);
-        armInnerRight = new CANSparkMax(16, MotorType.kBrushless);
+        armOuterLeft = new CANSparkMax(17, MotorType.kBrushless);
+        armOuterRight = new CANSparkMax(18, MotorType.kBrushless);
+        armInnerLeft = new CANSparkMax(16, MotorType.kBrushless);
+        armInnerRight = new CANSparkMax(15, MotorType.kBrushless);
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 6, 7);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
         manipulator = new Manipulator(paddles);
 
         // intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
