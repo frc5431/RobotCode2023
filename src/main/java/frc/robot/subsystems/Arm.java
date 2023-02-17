@@ -78,13 +78,13 @@ public class Arm extends SubsystemBase {
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
-        8.2 * 9.81;
+        8.0 * 9.81;
 
     public static final double shoulderMinCOMMeters =
         Units.inchesToMeters(18.624);
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(31.239);
+        Units.inchesToMeters(37);
 
     public static final double elbowCosineMultiplierNoCOM =
         3.0 * 9.81;
