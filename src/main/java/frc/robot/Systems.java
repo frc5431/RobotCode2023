@@ -47,7 +47,7 @@ public class Systems {
 
         // intakeLeft = new CANSparkMax(20, MotorType.kBrushless);
 
-        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 8, 9);
+        dblSol2 = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 8);
         sglSol1 = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 5);
 
         paddles.set(DoubleSolenoid.Value.kForward);

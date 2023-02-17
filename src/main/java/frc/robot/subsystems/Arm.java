@@ -46,8 +46,8 @@ public class Arm extends SubsystemBase {
     private final PIDController wristController;
     private final AbsoluteEncoder wristEncoder;
 
-    public static final double MAX_SPEED_OUTER = 0.3; // 0.22 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_OUTER = 0.25; // 0.22 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.08;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
     private double setpointOut = 0;
@@ -78,25 +78,25 @@ public class Arm extends SubsystemBase {
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
-        9.426 * 9.81;
+        8.2 * 9.81;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(16.234);
+        Units.inchesToMeters(18.624);
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(40.625);
+        Units.inchesToMeters(31.239);
 
     public static final double elbowCosineMultiplierNoCOM =
-        4.356 * 9.81;
+        3.0 * 9.81;
 
     public static final double elbowMinCOMMeters =
-        Units.inchesToMeters(22.789);
+        Units.inchesToMeters(20);
 
     public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(24.943);
+        Units.inchesToMeters(22.93);
 
     public static final double wristCosineMultiplier = 
-        2.656 * 9.81 * Units.inchesToMeters(3.1);
+        1.85 * 9.81 * Units.inchesToMeters(3.1);
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -164,7 +164,7 @@ public class Arm extends SubsystemBase {
 
         innerController.setFeedbackDevice(innerEncoder);
 
-        this.wrist.setInverted(false);
+        this.wrist.setInverted(true);
         this.wrist.setIdleMode(IdleMode.kBrake);
 
         wristController = new PIDController(0.15, 0.0, 0.0);
@@ -333,7 +333,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
         SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
 
-        // solveKinematics(goalPose);
+        solveKinematics(goalPose);
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
