@@ -19,9 +19,9 @@ public class ArmPresetPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        arm.getOuter().set(pos.getOuter());
-        arm.getInner().set(pos.getInner());
-        arm.getWrist().set(pos.getWrist());
+        arm.getOuter().setDegrees(pos.getOuter());
+        arm.getInner().setDegrees(pos.getInner());
+        arm.getWrist().setDegrees(pos.getWrist());
     }
 
     @Override
