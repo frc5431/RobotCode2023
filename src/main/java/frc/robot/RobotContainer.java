@@ -23,6 +23,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -190,11 +191,16 @@ public class RobotContainer {
 
 
         gp = new Translation2d(tx, ty);
-        // double xlimit = armLimit.findLimit(ty);
-        // double ylimit = armLimit.findLimit(tx);
+        
         if(!armLimit.isPointInsideCircle(gp)) {
             gp = armLimit.getClosestPointOnCircle(gp);
         }
+
+        gp = new Translation2d(
+            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.125), Units.inchesToMeters(6 + 48  - 13.125)), 
+            MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78 + 13.125))
+        );
+        
         systems.getArm().setGoal(gp);
     }
 
