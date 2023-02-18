@@ -290,6 +290,10 @@ public class Arm extends SubsystemBase {
         // System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
     }
 
+    public Translation2d getWristRobotSpacePosition() {
+        return solver.solveForwardKinematics(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+    }
+
     public class ArmComponent {
         private final CANSparkMax motor;
         private final Optional<CANSparkMax> follow;
@@ -386,4 +390,5 @@ public class Arm extends SubsystemBase {
             return absoluteEncoder;
         }
     }
+    
 }
