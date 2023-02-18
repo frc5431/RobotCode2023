@@ -47,7 +47,7 @@ public class Arm extends SubsystemBase {
     private final AbsoluteEncoder wristEncoder;
 
     public static final double MAX_SPEED_OUTER = 0.25; // 0.22 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.08;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.12;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
     private double setpointOut = 0;
@@ -74,7 +74,7 @@ public class Arm extends SubsystemBase {
 
     private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
-    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(5), -Units.inchesToMeters(30));
+    private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
     public static final double shoulderCosineMultiplierNoCOM =
@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
         Units.inchesToMeters(18.624);
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(37);
+        Units.inchesToMeters(40.625);
 
     public static final double elbowCosineMultiplierNoCOM =
         3.0 * 9.81;
