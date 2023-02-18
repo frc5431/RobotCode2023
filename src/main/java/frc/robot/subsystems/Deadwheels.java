@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Deadwheels {
 
     private final DoubleSolenoid piston;
-    private static final DoubleSolenoid.Value OPEN_STATE = kReverse;
-    private static final DoubleSolenoid.Value CLOSED_STATE = kForward;
+    private static final DoubleSolenoid.Value DOWN_STATE = kReverse;
+    private static final DoubleSolenoid.Value UP_STATE = kForward;
 
     private boolean isDeployed;
 
@@ -21,20 +21,19 @@ public class Deadwheels {
     }
 
     public void deploy() {
-        if (piston.get() == CLOSED_STATE)
-            piston.set(OPEN_STATE);
-            isDeployed = true;
+        if (piston.get() == UP_STATE)
+            piston.set(DOWN_STATE);
+        isDeployed = true;
     }
 
     public void retract() {
-        if (piston.get() == OPEN_STATE)
-            piston.set(CLOSED_STATE);
-            isDeployed = false;
+        if (piston.get() == DOWN_STATE)
+            piston.set(UP_STATE);
+        isDeployed = false;
     }
 
-    public void toggleDeadwheels() {
+    public void toggle() {
         piston.toggle();
         isDeployed = !isDeployed;
     }
-   
 }

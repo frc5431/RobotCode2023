@@ -109,15 +109,17 @@ public class RobotContainer {
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
-        driver.x().onTrue(runOnce(() -> systems.getDblSol2().toggle()));
-        operator.y().onTrue(runOnce(() -> systems.getSglSol1().toggle()));
+        driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
+        operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        operator.a().onTrue(systems.getIntake().intakeStow());
+        operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
         // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
         // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
-        operator.povLeft().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
-        operator.povRight().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
+        operator.povDown().onTrue(runOnce(() -> systems.getArm().incrWrist(-20)));
+        operator.povUp().onTrue(runOnce(() -> systems.getArm().incrWrist(20)));
 
     }
 
