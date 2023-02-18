@@ -3,69 +3,97 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    CANSparkMax intakeMotor;
-    CANSparkMax f_intakeMotor;
 
-    DoubleSolenoid pac;
-    DoubleSolenoid f_pac;
+    public static final double DEFAULT_SPEED = 1.0;
+    
+    private final CANSparkMax intakeMotor;
+    private final CANSparkMax intakeMotorFollow;
 
+    private final DoubleSolenoid piston;
+    private static final DoubleSolenoid.Value DOWN_STATE = kReverse;
+    private static final DoubleSolenoid.Value UP_STATE = kForward;
+
+    private boolean isDeployed;
 
     /**
      * Initializes the Intake
-     * @param parentMotor The left intake motor
-     * @param followerMotor The right intake motor
-     * @param pneumaticArmControl The left double solenoid
+     * @param intakeLeft The left intake motor
+     * @param intakeRight The right intake motor
+     * @param deployPiston The left double solenoid
      * @param followerPneumaticArmControl The right double solenoid
      */
-    public Intake(CANSparkMax parentMotor, CANSparkMax followerMotor, DoubleSolenoid pneumaticArmControl, DoubleSolenoid followerPneumaticArmControl) {
-        this.intakeMotor = parentMotor;
-        this.f_intakeMotor = followerMotor;
+    public Intake(CANSparkMax intakeLeft, CANSparkMax intakeRight, DoubleSolenoid deployPiston) {
+        intakeMotor = intakeLeft;
+        intakeMotorFollow = intakeRight;
 
-        followerMotor.follow(intakeMotor, true); // oppose parent
+        intakeMotor.setInverted(false);
+        intakeMotorFollow.follow(intakeMotor, true); // oppose parent
 
-        pac = pneumaticArmControl;
-        f_pac = followerPneumaticArmControl;
+        piston = deployPiston;
+
+        isDeployed = false;
+    }
+
+    public boolean isDeployed() {
+        return isDeployed;
     }
 
     /**
      * Deploys the intake out of the robot.
      */
     public void deploy() {
-        pac.set(kForward);
-        f_pac.set(kForward);
+        if (piston.get() == UP_STATE)
+            piston.set(DOWN_STATE);
+        isDeployed = true;
     }
 
     /**
      * Retracts the intake back into the robot.
      */
     public void retract() {
-        pac.set(kReverse);
-        f_pac.set(kReverse);
+        if (piston.get() == DOWN_STATE)
+            piston.set(UP_STATE);
+        isDeployed = false;
     }
 
     /**
-     * Depending on the read value of the master solenoid, it will:
-     * <ul>
-     *   <li> retract if the value is deployed or off
-     *   <li> deploy if the value is retracted
+     * Toggle the intake deployed status
      */
-    private void toggle() { // temporary commercialization
-        DoubleSolenoid.Value masterSolenoidValue = pac.get();
-        if(masterSolenoidValue == kForward || masterSolenoidValue == kOff) {
-            retract();
-            return;
-        }
-        deploy();
+    public void toggle() {
+        piston.toggle();
+        isDeployed = !isDeployed;
     }
 
     /**
      * Preferably use this instead, as it is a direct call.
      * @param speed determines how fast the motors spin.
      */
-    public void run(double speed) {
+    public void set(double speed) {
         intakeMotor.set(speed);
+    }
+
+    public Command runIntakeCommand(boolean reverse) {
+        return runIntakeCommand(reverse ? -DEFAULT_SPEED : DEFAULT_SPEED);
+    }
+
+    public Command runIntakeCommand(double speed) {
+        return new StartEndCommand(() -> this.set(speed), () -> this.set(0), this);
+    }
+
+    public Command floorIntakeCommand() {
+        return runOnce(this::deploy).andThen(runIntakeCommand(false));
+    }
+
+    public Command intakeStow() {
+        return runOnce(() -> {
+            this.set(0);
+            this.retract();
+        });
     }
 }
