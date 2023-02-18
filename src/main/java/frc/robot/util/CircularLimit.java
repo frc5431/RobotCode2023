@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 
 public class CircularLimit {
     double radius;

@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.RunEndCommand;
-import frc.robot.util.InverseKinematicsSolver;
+import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
@@ -72,7 +72,7 @@ public class Arm extends SubsystemBase {
     private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
     private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
 
-    private InverseKinematicsSolver solver = new InverseKinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+    private KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
@@ -332,8 +332,15 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
         SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
+        SmartDashboard.putBoolean("shoulder atSetpoint", shoulderAtSetpoint());
+        SmartDashboard.putBoolean("elbow atSetpoint", elbowAtSetpoint());
+        SmartDashboard.putBoolean("wrist atSetpoint", wristAtSetpoint());
 
         solveKinematics(goalPose);
+    }
+
+    public KinematicsSolver getSolver() {
+        return solver;
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
@@ -362,6 +369,11 @@ public class Arm extends SubsystemBase {
                 this.speedIn(0);
             },
             this);
+    }
+
+    public void setGoalToCurrentPosition() {
+        Translation2d newGoal = solver.solveForwardKinematics(outerEncoder.getPosition(), innerEncoder.getPosition());
+        setGoal(newGoal);
     }
 
     public void solveKinematics(Translation2d goal) {

@@ -205,5 +205,7 @@ public class RobotContainer {
         systems.getArm().incrOut(0);
         systems.getArm().incrIn(0);
         systems.getArm().incrWrist(0);
+
+        systems.getArm().setGoalToCurrentPosition();
     }
 }
