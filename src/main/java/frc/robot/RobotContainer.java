@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.JumpToGoalPositionCommand;
+import frc.robot.commands.WristAngleCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
@@ -128,6 +130,38 @@ public class RobotContainer {
         operator.a().onTrue(systems.getIntake().intakeStow());
         operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
         operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+
+        operator.rightBumper().onTrue(new JumpToGoalPositionCommand( // Start
+            systems.getArm(),
+            new Translation2d(4.38, -29.34),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ).alongWith(
+            new WristAngleCommand(systems.getArm().getWrist(), 104)
+        ));
+
+        operator.leftTrigger().onTrue(new JumpToGoalPositionCommand( // Normal Grab
+            systems.getArm(),
+            new Translation2d(6.17, -34.24),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.rightTrigger().onTrue(new JumpToGoalPositionCommand( // Inverted Grab
+            systems.getArm(),
+            new Translation2d(3.84, -25.69),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.povRight().onTrue(new JumpToGoalPositionCommand( // High node
+            systems.getArm(),
+            new Translation2d(40.875, 27.66),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.povLeft().onTrue(new JumpToGoalPositionCommand( // Middle node & grab from slidy boi
+            systems.getArm(),
+            new Translation2d(32.03, 2.83),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
