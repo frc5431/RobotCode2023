@@ -22,6 +22,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
@@ -75,6 +76,7 @@ public class RobotContainer {
         }, 0.3));
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
+        List<CANSparkMax> sparks = systems.getArm().getSparks();
 
         String[] falconNames = new String[]{
             "FLSteer",
@@ -87,9 +89,20 @@ public class RobotContainer {
             "BRDrive"
         };
 
+        String[] sparkNames = new String[]{
+            "OuterL",
+            "OuterR",
+            "InnerL",
+            "InnerR",
+            "Wrist"
+        };
+
         Robot.periodics.add(Pair.of(() -> {
             for (int i = 0; i < falcons.size(); i++) {
                 SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getTemperature());
+            }
+            for (int i = 0; i < sparks.size(); i++) {
+                SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.1));
     }
@@ -114,6 +127,7 @@ public class RobotContainer {
         operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         operator.a().onTrue(systems.getIntake().intakeStow());
         operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
@@ -198,7 +212,7 @@ public class RobotContainer {
 
         gp = new Translation2d(
             MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.125), Units.inchesToMeters(6 + 48  - 13.125)), 
-            MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78 + 13.125))
+            MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78))
         );
         
         systems.getArm().setGoal(gp);

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -88,6 +89,8 @@ public class Arm extends SubsystemBase {
     public static final double wristCosineMultiplier = 
         1.85 * 9.81 * Units.inchesToMeters(3.1);
 
+    private final List<CANSparkMax> sparks;
+
     /* Arm encoder directions (robot facing right)
      * - shoulder
      *   - encoder CCW+
@@ -122,11 +125,13 @@ public class Arm extends SubsystemBase {
         wrist.setInverted(true);
         wrist.setIdleMode(IdleMode.kBrake);
 
-        outerArmLeft.burnFlash();
-        outerArmRight.burnFlash();
-        innerArmLeft.burnFlash();
-        innerArmRight.burnFlash();
-        wrist.burnFlash();
+        sparks = List.of(outerArmLeft, outerArmRight, innerArmLeft, innerArmRight, wrist);
+
+        sparks.forEach((spark) -> {
+            spark.enableVoltageCompensation(12.0);
+            spark.setSmartCurrentLimit(40, 20);
+            spark.burnFlash();
+        });
 
         outerComponent = new ArmComponent(outerArmLeft, outerArmRight, new MotionMagic(0.5, 0.0, 0.0, 0.0), MAX_SPEED_OUTER, (component) -> {
             Rotation2d ba2g = calcBicepAngleToGround(fromRadians(component.getSetpointRadians()));
@@ -241,6 +246,10 @@ public class Arm extends SubsystemBase {
 
     public KinematicsSolver getSolver() {
         return solver;
+    }
+
+    public List<CANSparkMax> getSparks() {
+        return sparks;
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {

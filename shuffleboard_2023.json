@@ -480,6 +480,116 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "4,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/shoulder atSetpoint",
+              "_title": "shoulder atSetpoint",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/elbow atSetpoint",
+              "_title": "elbow atSetpoint",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "17,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/wrist atSetpoint",
+              "_title": "wrist atSetpoint",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "20,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OuterL Temp",
+              "_title": "OuterL Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "23,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/OuterR Temp",
+              "_title": "OuterR Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,5": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/InnerL Temp",
+              "_title": "InnerL Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "23,5": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/InnerR Temp",
+              "_title": "InnerR Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,6": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Wrist Temp",
+              "_title": "Wrist Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

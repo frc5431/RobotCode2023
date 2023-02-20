@@ -52,7 +52,7 @@ public class Systems {
 
         intakeLeft = new CANSparkMax(21, MotorType.kBrushless);
         intakeRight = new CANSparkMax(20, MotorType.kBrushless);
-        intake_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 13, 14);
+        intake_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 12, 13);
         intake = new Intake(intakeLeft, intakeRight, intake_piston);
 
         paddles.set(DoubleSolenoid.Value.kForward);
