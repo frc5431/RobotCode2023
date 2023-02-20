@@ -12,7 +12,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivebase;
+import frc.robot.Systems;
+import frc.robot.commands.AutoAligner;
+
 
 // init sendablechooser in robotcontainer's constructor ✅
 // 	getfullauto retreives path groups
@@ -42,14 +46,22 @@ public class AutonLoader {
       .withProperties(Map.of("min", 0, "max", 1))
       .getEntry();
 
-    public AutonLoader(Drivebase drivebase) {
-        this.drivebase = drivebase;
+    public AutonLoader(Systems systems) {
 
         // This is just an example event map. It would be better to have a constant,
         // global event map
         // in your code that will be used by all path following commands.
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+        eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().toggle()));
+        eventMap.put("intakeDrop", new RunCommand(() -> systems.getDeadwheels().toggle()));
+        eventMap.put("intakeRun", new RunCommand(() -> systems.getIntake()));
+        eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().open()));
+        eventMap.put("manipulatorClose", new RunCommand(() -> systems.getManipulator().close()));
+        eventMap.put("autobalance", new AutoAligner(drivebase));
+        // eventMap.put("groundPickup", new GroundPickup());
+        // eventMap.put("groundPlace", new PlaceGround())
+
 
         // Create the AutoBuilder. This only needs to be created once when robot code
         // starts, not every time you want to create an auto command. A good place to
@@ -73,13 +85,6 @@ public class AutonLoader {
                           // commands
         );
 
-
-        Command finalCommand = null;
-
-        // for (Filename iterable_element : iterable) {
-            
-        // }
-
         shouldBalance.getBoolean(false);
     }
 
@@ -88,6 +93,8 @@ public class AutonLoader {
 
         return autoBuilder.fullAuto(pathGroup);
     }
+
+    
 
     public Command procureAuton() {
         return chooser.getSelected();
