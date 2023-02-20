@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.AutoAligner;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.JumpToGoalPositionCommand;
+import frc.robot.commands.WristAngleCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
@@ -23,7 +25,9 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -82,6 +86,7 @@ public class RobotContainer {
         }, 0.3));
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
+        List<CANSparkMax> sparks = systems.getArm().getSparks();
 
         String[] falconNames = new String[] {
                 "FLSteer",
@@ -94,9 +99,20 @@ public class RobotContainer {
                 "BRDrive"
         };
 
+        String[] sparkNames = new String[]{
+            "OuterL",
+            "OuterR",
+            "InnerL",
+            "InnerR",
+            "Wrist"
+        };
+
         Robot.periodics.add(Pair.of(() -> {
             for (int i = 0; i < falcons.size(); i++) {
                 SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getTemperature());
+            }
+            for (int i = 0; i < sparks.size(); i++) {
+                SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.1));
     }
@@ -121,6 +137,39 @@ public class RobotContainer {
         operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         operator.a().onTrue(systems.getIntake().intakeStow());
         operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+
+        operator.rightBumper().onTrue(new JumpToGoalPositionCommand( // Start
+            systems.getArm(),
+            new Translation2d(4.38, -29.34),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ).alongWith(
+            new WristAngleCommand(systems.getArm().getWrist(), 104)
+        ));
+
+        operator.leftTrigger().onTrue(new JumpToGoalPositionCommand( // Normal Grab
+            systems.getArm(),
+            new Translation2d(6.17, -34.24),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.rightTrigger().onTrue(new JumpToGoalPositionCommand( // Inverted Grab
+            systems.getArm(),
+            new Translation2d(3.84, -25.69),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.povRight().onTrue(new JumpToGoalPositionCommand( // High node
+            systems.getArm(),
+            new Translation2d(40.875, 27.66),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
+
+        operator.povLeft().onTrue(new JumpToGoalPositionCommand( // Middle node & grab from slidy boi
+            systems.getArm(),
+            new Translation2d(32.03, 2.83),
+            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        ));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
@@ -173,11 +222,16 @@ public class RobotContainer {
 
 
         gp = new Translation2d(tx, ty);
-        // double xlimit = armLimit.findLimit(ty);
-        // double ylimit = armLimit.findLimit(tx);
+        
         if(!armLimit.isPointInsideCircle(gp)) {
             gp = armLimit.getClosestPointOnCircle(gp);
         }
+
+        gp = new Translation2d(
+            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.125), Units.inchesToMeters(6 + 48  - 13.125)), 
+            MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78))
+        );
+        
         systems.getArm().setGoal(gp);
     }
 

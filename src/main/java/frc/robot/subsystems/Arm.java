@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -36,7 +37,7 @@ public class Arm extends SubsystemBase {
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
 
-    public static final double MAX_SPEED_OUTER = 0.3; // 0.22 to hold at horz
+    public static final double MAX_SPEED_OUTER = 0.12; // 0.073 to hold at horz
     public static final double MAX_SPEED_INNER = 0.12;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
@@ -47,7 +48,7 @@ public class Arm extends SubsystemBase {
     private static final Rotation2d DEG_90 = fromDegrees(90);
     private static final double TORQUE_NM_NEO = 2.6;
 
-    public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 60 * 2;
+    public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 100 * 2;
     public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5*4 * 84/20 * 2;
     public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 3*3;
 
@@ -71,7 +72,7 @@ public class Arm extends SubsystemBase {
         8.15 * 9.81;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(18.624);
+        Units.inchesToMeters(18.624); // 0.473 meters
 
     public static final double shoulderMaxCOMMeters =
         Units.inchesToMeters(40.625);
@@ -87,6 +88,8 @@ public class Arm extends SubsystemBase {
 
     public static final double wristCosineMultiplier = 
         1.85 * 9.81 * Units.inchesToMeters(3.1);
+
+    private final List<CANSparkMax> sparks;
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -122,11 +125,13 @@ public class Arm extends SubsystemBase {
         wrist.setInverted(true);
         wrist.setIdleMode(IdleMode.kBrake);
 
-        outerArmLeft.burnFlash();
-        outerArmRight.burnFlash();
-        innerArmLeft.burnFlash();
-        innerArmRight.burnFlash();
-        wrist.burnFlash();
+        sparks = List.of(outerArmLeft, outerArmRight, innerArmLeft, innerArmRight, wrist);
+
+        sparks.forEach((spark) -> {
+            spark.enableVoltageCompensation(12.0);
+            spark.setSmartCurrentLimit(40, 30);
+            spark.burnFlash();
+        });
 
         outerComponent = new ArmComponent(outerArmLeft, outerArmRight, new MotionMagic(0.5, 0.0, 0.0, 0.0), MAX_SPEED_OUTER, (component) -> {
             Rotation2d ba2g = calcBicepAngleToGround(fromRadians(component.getSetpointRadians()));
@@ -241,6 +246,10 @@ public class Arm extends SubsystemBase {
 
     public KinematicsSolver getSolver() {
         return solver;
+    }
+
+    public List<CANSparkMax> getSparks() {
+        return sparks;
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
