@@ -6,6 +6,7 @@ import java.util.Map;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.Systems;
 import frc.robot.commands.AutoAligner;
+import frc.robot.commands.JumpToGoalPositionCommand;
 
 
 // init sendablechooser in robotcontainer's constructor ✅
@@ -52,15 +54,19 @@ public class AutonLoader {
         // global event map
         // in your code that will be used by all path following commands.
         HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+    //  eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().toggle()));
         eventMap.put("intakeDrop", new RunCommand(() -> systems.getDeadwheels().toggle()));
         eventMap.put("intakeRun", new RunCommand(() -> systems.getIntake()));
         eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().open()));
         eventMap.put("manipulatorClose", new RunCommand(() -> systems.getManipulator().close()));
         eventMap.put("autobalance", new AutoAligner(drivebase));
-        // eventMap.put("groundPickup", new GroundPickup());
-        // eventMap.put("groundPlace", new PlaceGround())
+        eventMap.put("groundPickup", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(6.17, -34.24),
+        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
+        eventMap.put("innerGrab", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(3.84, -25.69),
+        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
+    
+      //  eventMap.put("groundPlace", new PlaceGround())
 
 
         // Create the AutoBuilder. This only needs to be created once when robot code
