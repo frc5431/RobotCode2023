@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class KinematicsSolver {
@@ -28,16 +29,16 @@ public class KinematicsSolver {
         return p1 - p2;
     }
 
-    public PresetPosition solveForPosition(Translation2d goal) {
+    public Pair<Double, Double> posToAngles(Translation2d goal) {
         double q2 = solveSegment2Angle(goal); //Replace once implemented
         double q1 = solveSegment1Angle(q2, goal);
 
-        return PresetPosition.fromRadians(q1 + Math.PI/2, -q2, 0);
+        return Pair.of(q1 + Math.PI/2, -q2);
     }
 
-    public Translation2d solveForwardKinematics(double q1, double q2) {
-        double fixed_q1 = q1 - Math.PI/2;
-        double fixed_q2 = -q2;
+    public Translation2d anglesToPos(double q1Radians, double q2Radians) {
+        double fixed_q1 = q1Radians - Math.PI/2;
+        double fixed_q2 = -q2Radians;
         double x = l1 * Math.cos(fixed_q1) + l2 * Math.cos(fixed_q1 + fixed_q2);
         double y = l1 * Math.sin(fixed_q1) + l2 * Math.sin(fixed_q1 + fixed_q2);
         return new Translation2d(x, y);

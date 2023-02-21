@@ -7,12 +7,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
+import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.JumpToGoalPositionCommand;
 import frc.robot.commands.WristAngleCommand;
 import frc.robot.commands.WristOpenCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
+import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -146,7 +147,7 @@ public class RobotContainer {
             systems.getArm(),
             systems.getManipulator(),
             new Translation2d(4.38, -29.34),
-            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES,
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             0,
             false
         ));
@@ -164,7 +165,7 @@ public class RobotContainer {
             systems.getArm(),
             systems.getManipulator(),
             new Translation2d(6.17, -34.24),
-            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES,
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
             true
         ));
@@ -181,7 +182,7 @@ public class RobotContainer {
             systems.getArm(),
             systems.getManipulator(),
             new Translation2d(3.84, -25.69),
-            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES,
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
             true
         ));
@@ -189,20 +190,20 @@ public class RobotContainer {
         operator.povRight().onTrue(new WristAngleCommand( // High node
             systems.getArm().getWrist(),
             0
-        ).andThen(new JumpToGoalPositionCommand(
-            systems.getArm(),
+        ).andThen(new ArmToGoalCommand(
+            systems,
             new Translation2d(40.875, 27.66),
-            JumpToGoalPositionCommand.USE_INCHES
+            ArmToGoalCommand.USE_INCHES
         ))/*.andThen(new WristAngleCommand(
                 systems.getArm().getWrist(),
                 300
             )
         )*/);
 
-        operator.povLeft().onTrue(new JumpToGoalPositionCommand( // Middle node & grab from slidy boi
-            systems.getArm(),
+        operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+            systems,
             new Translation2d(32.03, 2.83),
-            JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
         ));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
@@ -269,6 +270,7 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
+        // TODO extract into default command for arm
         var gp = systems.getArm().getGoal();
         double leftx = operator.getLeftX();
         double lefty = -operator.getLeftY();

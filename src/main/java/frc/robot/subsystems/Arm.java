@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -63,7 +64,7 @@ public class Arm extends SubsystemBase {
     private final double SETPOINT_POSITION_TOLERANCE = 2.5;
     private final double SETPOINT_VELOCITY_TOLERANCE = 5;
 
-    private KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+    public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
@@ -205,9 +206,9 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("shoulder spd", outerComponent.getMotor().get());
-        SmartDashboard.putNumber("elbow spd", innerComponent.getMotor().get());
-        SmartDashboard.putNumber("wrist spd", wristComponent.getMotor().get());
+        SmartDashboard.putNumber("shoulder spd", outerComponent.getMotor().getAppliedOutput());
+        SmartDashboard.putNumber("elbow spd", innerComponent.getMotor().getAppliedOutput());
+        SmartDashboard.putNumber("wrist spd", wristComponent.getMotor().getAppliedOutput());
 
         bicepAngle = fromRadians(outerComponent.getEncoder().getPosition());
         forearmAngle = fromRadians(innerComponent.getEncoder().getPosition());
@@ -246,10 +247,6 @@ public class Arm extends SubsystemBase {
         solveKinematics(goalPose);
     }
 
-    public KinematicsSolver getSolver() {
-        return solver;
-    }
-
     public List<CANSparkMax> getSparks() {
         return sparks;
     }
@@ -283,26 +280,25 @@ public class Arm extends SubsystemBase {
     }
 
     public void setGoalToCurrentPosition() {
-        Translation2d newGoal = solver.solveForwardKinematics(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+        Translation2d newGoal = solver.anglesToPos(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
         setGoal(newGoal);
     }
 
     public void solveKinematics(Translation2d goal) {
-        var ik = solver.solveForPosition(goal);
-        if (!Double.isNaN(ik.getOuter()))
-            getOuter().setDegrees(ik.getOuter());
-        if (!Double.isNaN(ik.getInner()))
-            getInner().setDegrees(ik.getInner());
+        Pair<Double, Double> ik = solver.posToAngles(goal);
+        if (!Double.isNaN(ik.getFirst()))
+            getOuter().setRadians(ik.getFirst());
+        if (!Double.isNaN(ik.getSecond()))
+            getInner().setRadians(ik.getSecond());
 
         SmartDashboard.putNumber("Goal X", Units.metersToInches(goal.getX()));
         SmartDashboard.putNumber("Goal Y", Units.metersToInches(goal.getY()));
-        SmartDashboard.putNumber("InvKin Out", ik.getOuter());
-        SmartDashboard.putNumber("InvKin In",  ik.getInner());
-        // System.out.println(String.format("Pos: %s, %s. Produced angles: %s, %s", goal.getX(), goal.getY(), ik.getOuter(), ik.getInner()));
+        SmartDashboard.putNumber("InvKin Out", ik.getFirst());
+        SmartDashboard.putNumber("InvKin In",  ik.getSecond());
     }
 
     public Translation2d getWristRobotSpacePosition() {
-        return solver.solveForwardKinematics(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+        return solver.anglesToPos(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
     }
 
     public class ArmComponent {
