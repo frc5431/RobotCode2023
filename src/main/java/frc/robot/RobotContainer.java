@@ -10,10 +10,8 @@ import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.WristAngleCommand;
-import frc.robot.commands.WristOpenCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
-import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -144,8 +142,7 @@ public class RobotContainer {
         //     new WristOpenCommand(systems.getManipulator(), true)
         // ));
         operator.rightBumper().onTrue(new ArmMoveCommandGroup(
-            systems.getArm(),
-            systems.getManipulator(),
+            systems,
             new Translation2d(4.38, -29.34),
             ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             0,
