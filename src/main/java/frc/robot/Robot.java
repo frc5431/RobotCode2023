@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -19,6 +20,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    DriverStation.silenceJoystickConnectionWarning(false);
     m_robotContainer = new RobotContainer();
     // Initialization Should Have Finished
     for(var period : periodics) {
@@ -82,4 +84,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
+
+  @Override
+  public void simulationInit() {
+    DriverStation.silenceJoystickConnectionWarning(true);
+  }
 }
