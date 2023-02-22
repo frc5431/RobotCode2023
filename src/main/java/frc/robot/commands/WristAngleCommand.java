@@ -21,6 +21,6 @@ public class WristAngleCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return wrist.atSetpoint();
     }
 }

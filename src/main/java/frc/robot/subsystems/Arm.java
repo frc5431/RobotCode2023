@@ -60,8 +60,8 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
 
-    private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
-    private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
+    private final double SETPOINT_POSITION_TOLERANCE = 2.5;
+    private final double SETPOINT_VELOCITY_TOLERANCE = 5;
 
     private KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
@@ -236,10 +236,12 @@ public class Arm extends SubsystemBase {
 
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
-        SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
+        SmartDashboard.putNumber("wrist cur", handAngle.getDegrees());
         SmartDashboard.putBoolean("shoulder atSetpoint", outerComponent.atSetpoint());
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
+
+        SmartDashboard.putNumber("ingebinge", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
 
         solveKinematics(goalPose);
     }
@@ -310,6 +312,7 @@ public class Arm extends SubsystemBase {
         private final AbsoluteEncoder absoluteEncoder;
         private final Consumer<ArmComponent> setter;
         public final double MAX_SPEED;
+        public String name;
 
         private double setpoint;
 
@@ -338,6 +341,19 @@ public class Arm extends SubsystemBase {
 
             motor.burnFlash();
         }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void UpdateDash() {
+            if(name.isEmpty()) {
+                SmartDashboard.putNumber(name + " goal angle", getSetpointDegrees());
+                SmartDashboard.putNumber(name + " encoder angle", absoluteEncoder.getPosition());
+                SmartDashboard.putBoolean(name + " at Setpoint", this.atSetpoint());
+            }
+        }
+
         public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
             this(motor, null, pidConstants, maxSpeed, setter);
         }
@@ -380,7 +396,8 @@ public class Arm extends SubsystemBase {
 
         public boolean atSetpoint() {
             return Math.abs(absoluteEncoder.getPosition() - setpoint) < SETPOINT_POSITION_TOLERANCE 
-                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE;
+                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE
+                ;
         }
 
         public CANSparkMax getMotor() {

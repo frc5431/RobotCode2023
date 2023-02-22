@@ -38,4 +38,12 @@ public class Manipulator {
     public boolean isOpen() {
         return isOpen;
     }
+
+    public DoubleSolenoid.Value getStateFromBool(boolean isOpen) {
+        return isOpen ? OPEN_STATE : CLOSED_STATE; 
+    }
+
+    public void setState(DoubleSolenoid.Value val) {
+        piston.set(val);
+    }
 }
