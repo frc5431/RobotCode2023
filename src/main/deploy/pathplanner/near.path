@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9693192025471065,
-        "y": 2.698768079419182
+        "x": 1.946448286619825,
+        "y": 4.3912158580379925
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0836737821835127,
-        "y": 2.6873326214555413
+        "x": 2.918462213529277,
+        "y": 4.631360475274445
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -16,11 +16,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "Extend Arm",
-          "Place Starting Cone",
-          "Retract Arm"
-        ],
+        "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
@@ -28,26 +24,24 @@
     },
     {
       "anchorPoint": {
-        "x": 2.278076567565403,
-        "y": 2.698768079419182
+        "x": 4.119185299711541,
+        "y": 4.699973223056289
       },
       "prevControl": {
-        "x": 2.1980283618199197,
-        "y": 2.698768079419182
+        "x": 3.1266418444349102,
+        "y": 4.578081921531089
       },
       "nextControl": {
-        "x": 3.271496020282249,
-        "y": 2.698768079419182
+        "x": 4.771006403639055,
+        "y": 4.780021428801773
       },
-      "holonomicAngle": -180.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "Deploy Dead Wheels"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -55,35 +49,26 @@
     },
     {
       "anchorPoint": {
-        "x": 3.867605224511448,
-        "y": 2.6758971634919013
+        "x": 7.172452576003582,
+        "y": 6.03792180480224
       },
       "prevControl": {
-        "x": 3.490235111711308,
-        "y": 2.6987680794191835
+        "x": 6.189003191130491,
+        "y": 5.500455280511132
       },
       "nextControl": null,
-      "holonomicAngle": -180.0,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "Start Autobalance"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": [
-    {
-      "position": 1.178181818181816,
-      "names": [
-        "deadwheelDeploy"
-      ]
-    }
-  ]
+  "markers": []
 }
