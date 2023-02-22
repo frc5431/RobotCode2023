@@ -31,11 +31,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-=======
+
 import edu.wpi.first.math.util.Units;
->>>>>>> master
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
@@ -44,13 +41,9 @@ public class RobotContainer {
 
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-<<<<<<< HEAD
-    private final AutonLoader autonLoader = new AutonLoader(drivebase);
-=======
+    private final AutonLoader autonLoader = new AutonLoader(systems);
     private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
-    
     private Command autonCommand;
->>>>>>> master
 
     public RobotContainer() {
 

@@ -14,8 +14,8 @@ public class AutoAligner extends CommandBase{
     public ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);
     
     public AutoAligner(Drivebase drivebase){
-           this.pigy = drivebase.getGyro();
            this.drivebase = drivebase;
+           this.pigy = drivebase.getGyro();
            pid.setTolerance(2.5);
     }       
 
