@@ -78,15 +78,15 @@ public class AutonLoader {
                 true,
                 drivebase);
 
-     /*    var deployDir = Filesystem.getDeployDirectory().toPath();
-        
+        Path deployDir = Filesystem.getDeployDirectory().toPath();
 
-        for (File pathFile : pathFiles) {
-            String pathFileName = pathFile.getName();
+        for (Path pathFile : deployDir) {
+            String pathFileName = pathFile.toFile().getName();
             chooser.addOption(pathFileName, getFullAuto(pathFileName));
         }
+        
         Shuffleboard.getTab("Auton").add(chooser);
-    } */
+    } 
 
     public Command getFullAuto(String pathName) {
         System.out.println(pathName);
