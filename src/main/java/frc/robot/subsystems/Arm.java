@@ -19,6 +19,8 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -91,6 +93,9 @@ public class Arm extends SubsystemBase {
         1.85 * 9.81 * Units.inchesToMeters(3.1);
 
     private final List<CANSparkMax> sparks;
+    private MechanismLigament2d bicepViz;
+    private MechanismLigament2d forearmViz;
+    private MechanismLigament2d manipViz;
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -160,6 +165,16 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         });
+
+        // Viz
+        Mechanism2d mech = new Mechanism2d(4, 4);
+        var root = mech.getRoot("arm", 0, 0);
+
+        bicepViz = root.append(new MechanismLigament2d("shoulder", 1, 90));
+        forearmViz = bicepViz.append(new MechanismLigament2d("elbow", 1, 22));
+        manipViz = forearmViz.append(new MechanismLigament2d("wrist", 1, -45));
+        
+        SmartDashboard.putData("ArmViz", mech);
     }
 
     public ArmComponent getOuter() {
@@ -214,6 +229,10 @@ public class Arm extends SubsystemBase {
         forearmAngle = fromRadians(innerComponent.getEncoder().getPosition());
         handAngle = fromRadians(wristComponent.getEncoder().getPosition());
 
+        bicepAngle = Rotation2d.fromDegrees(Math.random()*90);
+        forearmAngle = Rotation2d.fromDegrees(Math.random()*90);
+        handAngle = Rotation2d.fromDegrees(Math.random()*90);
+
         bicepAngleToGround = calcBicepAngleToGround(bicepAngle);
         forearmAngleToGround = calcForearmAngleToGround(bicepAngle, forearmAngle);
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
@@ -241,6 +260,11 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putBoolean("shoulder atSetpoint", outerComponent.atSetpoint());
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
+
+
+        bicepViz.setAngle(bicepAngle);
+        forearmViz.setAngle(forearmAngle);
+        manipViz.setAngle(handAngle);
 
         solveKinematics(goalPose);
     }
