@@ -3,6 +3,7 @@ package frc.robot;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.opencv.highgui.HighGui;
@@ -77,16 +78,28 @@ public class AutonLoader {
                 eventMap,
                 true,
                 drivebase);
-
-        Path deployDir = Filesystem.getDeployDirectory().toPath();
-
-        for (Path pathFile : deployDir) {
-            String pathFileName = pathFile.toFile().getName();
-            chooser.addOption(pathFileName, getFullAuto(pathFileName));
-        }
         
-        Shuffleboard.getTab("Auton").add(chooser);
-    } 
+    
+        ArrayList<String> pathsSim = new ArrayList<String>();
+        pathsSim.add("far.path");
+        pathsSim.add("farBalance.path");
+        pathsSim.add("midBalance.path");
+        pathsSim.add("near.path");
+        pathsSim.add("nearBalance.path");
+
+    /*         ArrayList<String> pathsRio = new ArrayList<String>();
+    set     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/far.path");
+    this    pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/farBalance.path");
+    to the  pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/midBalance.path");
+    rio     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/near.path");
+    path    pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/nearBalance.path");
+    */
+
+        for (String pathNames : pathsSim) {
+            chooser.addOption(pathNames, getFullAuto(pathNames));
+        }
+
+    }
 
     public Command getFullAuto(String pathName) {
         System.out.println(pathName);
