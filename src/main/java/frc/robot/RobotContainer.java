@@ -162,8 +162,7 @@ public class RobotContainer {
         //     new WristOpenCommand(systems.getManipulator(), true)
         // ));
         operator.leftTrigger().onTrue(new ArmMoveCommandGroup(
-            systems.getArm(),
-            systems.getManipulator(),
+            systems,
             new Translation2d(6.17, -34.24),
             ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
@@ -179,8 +178,7 @@ public class RobotContainer {
         // ));
 
         operator.rightTrigger().onTrue(new ArmMoveCommandGroup(
-            systems.getArm(),
-            systems.getManipulator(),
+            systems,
             new Translation2d(3.84, -25.69),
             ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
