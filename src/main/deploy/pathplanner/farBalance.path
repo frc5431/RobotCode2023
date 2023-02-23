@@ -16,8 +16,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "placeHigh"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -49,19 +51,19 @@
     },
     {
       "anchorPoint": {
-        "x": 5.617230292948461,
-        "y": 2.744509911273745
+        "x": 5.6057948349848195,
+        "y": 2.7216389953464644
       },
       "prevControl": {
-        "x": 5.42282750756657,
-        "y": 2.9389126966556356
+        "x": 5.714281114741466,
+        "y": 2.7216389953464644
       },
       "nextControl": {
-        "x": 5.42282750756657,
-        "y": 2.9389126966556356
+        "x": 5.502875713312054,
+        "y": 2.7216389953464644
       },
       "holonomicAngle": 0,
-      "isReversal": true,
+      "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
@@ -88,8 +90,11 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "deadwheelRaise",
+          "autoBalance"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -99,7 +104,7 @@
     {
       "position": 1.8109090909090626,
       "names": [
-        "event"
+        "deadwheelDrop"
       ]
     }
   ]
