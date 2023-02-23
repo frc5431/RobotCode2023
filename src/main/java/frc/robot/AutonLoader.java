@@ -94,7 +94,7 @@ public class AutonLoader {
     rio     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/near.path");
     path    pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/nearBalance.path");
     */
-
+s
         for (String pathNames : pathsSim) {
             chooser.addOption(pathNames, getFullAuto(pathNames));
         }
