@@ -41,7 +41,7 @@ public class AutonLoader {
      * 
      * IF YOU HAVE A NULLREFERENCE OR UNINITIALIZED BUG, IT'S POSSIBLY FROM HERE.
      */
-    private SwerveAutoBuilder autoBuilder = null;
+    private SwerveAutoBuilder autoBuilder;
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
     private final GenericEntry shouldBalance = Shuffleboard.getTab("Auton").add("Balance", false)
@@ -81,11 +81,11 @@ public class AutonLoader {
         
     
         ArrayList<String> pathsSim = new ArrayList<String>();
-        pathsSim.add("far.path");
-        pathsSim.add("farBalance.path");
-        pathsSim.add("midBalance.path");
-        pathsSim.add("near.path");
-        pathsSim.add("nearBalance.path");
+        pathsSim.add("far");
+        pathsSim.add("farBalance");
+        pathsSim.add("midBalance");
+        pathsSim.add("near");
+        pathsSim.add("nearBalance");
 
     /*         ArrayList<String> pathsRio = new ArrayList<String>();
     set     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/far.path");
