@@ -66,6 +66,9 @@ public class AutonLoader {
                 JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
         eventMap.put("armHigh", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
                 JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
+        eventMap.put("placeHigh", new SequentialCommandGroup( new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
+        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES)).andThen(new RunCommand(() -> Manipulator.open())
+        )); 
 
         // This can be reused for all autos.
         autoBuilder = new SwerveAutoBuilder(

@@ -38,4 +38,12 @@ public class Manipulator {
     public boolean isOpen() {
         return isOpen;
     }
+
+//  new RunCommand(() -> Manipulator.open());
+
+//  new RunCommand(() -> Manipulator.close());
+
+//  new RunCommand(() -> Manipulator.toggle());
+
+
 }
