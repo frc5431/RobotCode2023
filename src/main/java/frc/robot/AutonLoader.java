@@ -86,6 +86,9 @@ public class AutonLoader {
         for (String pathNames : paths) {
                 chooser.addOption(pathNames, getFullAuto(pathNames));
         }
+        for (String pathNames : balancePaths) {
+                chooser.addOption(pathNames, getFullAuto(pathNames));
+        }
 
         Shuffleboard.getTab("Auton").add(chooser);
     }

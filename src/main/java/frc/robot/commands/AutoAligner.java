@@ -22,7 +22,7 @@ public class AutoAligner extends CommandBase{
     @Override
     public void initialize(){
         boolean robotIsBackwards = Math.abs(180 - pigy.getYaw()) <= 1;
-        double direction = robotIsBackwards ? 1 : -1;
+        double direction = robotIsBackwards ? 1 : -1; // TODO direction is not used?
     }
 
     @Override
