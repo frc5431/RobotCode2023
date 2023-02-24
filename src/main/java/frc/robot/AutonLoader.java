@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutoAligner;
-import frc.robot.commands.JumpToGoalPositionCommand;
-import frc.robot.subsystems.Drivebase;
+import frc.robot.subsystems.Drivebase; 
 
 // init sendablechooser in robotcontainer's constructor ✅
 // 	getfullauto retreives path groups
@@ -57,26 +57,21 @@ public class AutonLoader {
         this.drivebase = systems.getDrivebase();
 
         HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().toggle()));
-        eventMap.put("deadwheelRaise", new RunCommand(() -> systems.getDeadwheels().toggle()));
+        eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().retract()));
+        eventMap.put("deadwheelRaise", new RunCommand(() -> systems.getDeadwheels().deploy()));
         // eventMap.put("intakeDrop", new RunCommand(() ->
         // systems.getDeadwheels().toggle()));
         // eventMap.put("intakeRun", new RunCommand(() ->
         // systems.getIntake().deploy()));
         eventMap.put("manipulatorOpen", new RunCommand(() -> systems.getManipulator().open()));
         eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().close()));
-        eventMap.put("autoBalance", new AutoAligner(drivebase));
-        eventMap.put("armGround", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(6.17, -34.24),
-                JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
-        eventMap.put("armInner", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(3.84, -25.69),
-                JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
-        eventMap.put("armHigh", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
-                JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
-        eventMap.put("placeHigh", new SequentialCommandGroup( new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
-        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES)).andThen(new RunCommand(() -> systems.getManipulator().open())
-        )); 
+        eventMap.put("autoBalance", new RunCommand(() -> systems.getDeadwheels().retract()).andThen (new AutoAligner(drivebase)));
+        eventMap.put("armGround", new ArmToGoalCommand(systems, new Translation2d(6.17, -34.24), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("armInner", new ArmToGoalCommand(systems, new Translation2d(3.84, -25.69), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("armHigh", new ArmToGoalCommand(systems, new Translation2d(40.875, 27.66), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("placeHigh", new SequentialCommandGroup( new ArmToGoalCommand(systems, new Translation2d(40.875, 27.66),
+        ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES).andThen(new RunCommand(() -> systems.getManipulator().open())))); 
 
-        // This can be reused for all autos.
         autoBuilder = new SwerveAutoBuilder(
                 drivebase::getPosition,
                 drivebase::resetOdometry,
@@ -87,12 +82,7 @@ public class AutonLoader {
                 eventMap,
                 true,
                 drivebase);
-        
-    
-  
 
-
-        
         for (String pathNames : paths) {
                 chooser.addOption(pathNames, getFullAuto(pathNames));
         }
