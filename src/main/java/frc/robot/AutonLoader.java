@@ -1,39 +1,45 @@
 package frc.robot;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.opencv.highgui.HighGui;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.shuffleboard.*;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.commands.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AutoAligner;
+import frc.robot.commands.JumpToGoalPositionCommand;
 import frc.robot.subsystems.Drivebase;
 
 // init sendablechooser in robotcontainer's constructor ✅
 // 	getfullauto retreives path groups
 // 	(add them to the chooser)
-
-// def getAutonomousCommand()
-// {
-// 	return chooser.getSelected()
-// }
-
 // TODO: map events to commands
-
 // TODO: Custom widget!!! That complains if you don't choose...
+
+//public ArrayList<String> balancePaths = new ArrayList<String>();
+//balancePaths.add("farBalance");
+//balancePaths.add("midBalance");
+//balancePaths.add("nearBalance");
+
+
+
 public class AutonLoader {
+
+    private static final String[] paths = {
+    "far", "near"
+    };
+
+    private static final String[] balancePaths = {
+    "farBalance", "middleBalance", "nearBalance"
+    };
+
     private Drivebase drivebase;
 
     /**
@@ -44,8 +50,8 @@ public class AutonLoader {
     private SwerveAutoBuilder autoBuilder;
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
-    private final GenericEntry shouldBalance = Shuffleboard.getTab("Auton").add("Balance", false)
-            .withWidget(BuiltInWidgets.kBooleanBox).getEntry();
+    private final GenericEntry shouldBalance = Shuffleboard.getTab("Auton").add("Should Balance", false)
+            .withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     public AutonLoader(Systems systems) {
         this.drivebase = systems.getDrivebase();
@@ -67,7 +73,7 @@ public class AutonLoader {
         eventMap.put("armHigh", new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
                 JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES));
         eventMap.put("placeHigh", new SequentialCommandGroup( new JumpToGoalPositionCommand(systems.getArm(), new Translation2d(40.875, 27.66),
-        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES)).andThen(new RunCommand(() -> Manipulator.open())
+        JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES)).andThen(new RunCommand(() -> systems.getManipulator().open())
         )); 
 
         // This can be reused for all autos.
@@ -83,35 +89,24 @@ public class AutonLoader {
                 drivebase);
         
     
-        ArrayList<String> pathsSim = new ArrayList<String>();
-        pathsSim.add("far");
-        pathsSim.add("farBalance");
-        pathsSim.add("midBalance");
-        pathsSim.add("near");
-        pathsSim.add("nearBalance");
+  
 
-    /*         ArrayList<String> pathsRio = new ArrayList<String>();
-    set     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/far.path");
-    this    pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/farBalance.path");
-    to the  pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/midBalance.path");
-    rio     pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/near.path");
-    path    pathsRio.add("C:/Users/saddl/OneDrive/Documents/GitHub/RobotCode2023/src/main/deploy/pathplanner/nearBalance.path");
-    */
-s
-        for (String pathNames : pathsSim) {
-            chooser.addOption(pathNames, getFullAuto(pathNames));
+
+        
+        for (String pathNames : paths) {
+                chooser.addOption(pathNames, getFullAuto(pathNames));
         }
 
+        Shuffleboard.getTab("Auton").add(chooser);
     }
 
     public Command getFullAuto(String pathName) {
-        System.out.println(pathName);
         var pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
         return autoBuilder.fullAuto(pathGroup);
     }
 
     public Command procureAuton() {
-        var mostOfAuto = chooser.getSelected();
+       var mostOfAuto = chooser.getSelected();
 
         if (shouldBalance.getBoolean(false)) {
             return mostOfAuto.andThen(new AutoAligner(drivebase));
