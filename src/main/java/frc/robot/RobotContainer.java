@@ -7,11 +7,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
+import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -203,7 +205,9 @@ public class RobotContainer {
             systems,
             new Translation2d(40.875, 21.69),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        )));
+        ).alongWith(new RunCommand(() -> {
+                Arm.solver.collapsePreferingBottom = false;
+        }))));
 
         operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
@@ -218,6 +222,9 @@ public class RobotContainer {
         operator.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
         operator.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
+        if(Math.abs(operator.getLeftY()) < 0.2) {
+            Arm.solver.collapsePreferingBottom = operator.getLeftY() < 0;
+        }
     }
 
     private void initAutoPaths() {
