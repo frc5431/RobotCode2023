@@ -21,8 +21,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.RunEndCommand;
 import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.robot.MotionMagic;
@@ -160,8 +160,6 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         });
-
-        
     }
 
     public ArmComponent getOuter() {
@@ -254,13 +252,13 @@ public class Arm extends SubsystemBase {
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
-        return new RunEndCommand(
+        return Commands.runEnd(
             () -> {
                 this.getOuter().setSpeed(outSupplier.getAsDouble());
                 this.getInner().setSpeed(innerSupplier.getAsDouble());
                 this.getWrist().setSpeed(wristSupplier.getAsDouble());
             },
-            (i) -> {
+            () -> {
                 this.getOuter().setSpeed(0);
                 this.getInner().setSpeed(0);
                 this.getWrist().setSpeed(0);
@@ -269,12 +267,12 @@ public class Arm extends SubsystemBase {
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier) {
-        return new RunEndCommand(
+        return Commands.runEnd(
             () -> {
                 this.getOuter().setSpeed(outSupplier.getAsDouble());
                 this.getInner().setSpeed(innerSupplier.getAsDouble());
             },
-            (i) -> {
+            () -> {
                 this.getOuter().setSpeed(0);
                 this.getInner().setSpeed(0);
             },
@@ -344,7 +342,7 @@ public class Arm extends SubsystemBase {
             this.name = name;
         }
 
-        public void UpdateDash() {
+        public void updateDashboard() {
             if(!name.isEmpty()) {
                 SmartDashboard.putNumber(name + " goal angle", getSetpointDegrees());
                 SmartDashboard.putNumber(name + " encoder angle", absoluteEncoder.getPosition());
@@ -413,6 +411,18 @@ public class Arm extends SubsystemBase {
         public AbsoluteEncoder getEncoder() {
             return absoluteEncoder;
         }
+
+        // Will currently require all of the arm, so no other command can
+        // be scheduled in parallel
+        // TODO make ArmComponent into its own SubsystemBase
+        public Command setDegreesCommand(double degrees) {
+            return runOnce(() -> this.setDegrees(degrees))
+                    .andThen(Commands.waitUntil(this::atSetpoint));
+        }
+
+        public Command setRadiansCommand(double radians) {
+            return runOnce(() -> this.setRadians(radians))
+                    .andThen(Commands.waitUntil(this::atSetpoint));
+        }
     }
-    
 }

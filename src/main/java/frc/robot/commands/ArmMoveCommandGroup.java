@@ -9,8 +9,7 @@ public class ArmMoveCommandGroup extends ParallelCommandGroup {
     public ArmMoveCommandGroup(Systems systems, Translation2d position, int jumpFlags, double wristAngle, boolean open) {
         addCommands(
             new ArmToGoalCommand(systems, PresetPosition.fromGoal(position, wristAngle), jumpFlags),
-            new WristOpenCommand(systems.getManipulator(), open)
+            systems.getManipulator().manipCommand(open)
         );
     }
-
 }

@@ -12,7 +12,6 @@ import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
-import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -198,11 +197,9 @@ public class RobotContainer {
         ));
 
         // In  theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operator.povRight().onTrue(new ArmToGoalCommand( // High node
-            systems,
-            PresetPosition.fromGoal(new Translation2d(0,0), 0),
-            ArmToGoalCommand.IGNORE_POSITION | ArmToGoalCommand.FINISH_INSTANTLY
-        ).andThen(new ArmToGoalCommand(
+        operator.povRight().onTrue( // High node
+            systems.getArm().getWrist().setDegreesCommand(0)
+        .andThen(new ArmToGoalCommand(
             systems,
             new Translation2d(40.875, 21.69),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY

@@ -13,8 +13,6 @@ public class ArmToGoalCommand extends CommandBase {
     public static final int USE_PID = 1;
     public static final int FINISH_INSTANTLY = 2;
     public static final int USE_INCHES = 4;
-    public static final int IGNORE_POSITION = 8;
-    public static final int IGNORE_ROTATION = 16;
 
     public static final double DISTANCE_TOLERANCE = 0.5;
     
@@ -28,11 +26,7 @@ public class ArmToGoalCommand extends CommandBase {
 
     public ArmToGoalCommand(Systems systems, PresetPosition presetPosition, int flags) {
         this(systems, presetPosition.getWristPos(), flags);
-
-        //Untested, but i think it'll work
-        if((flags & IGNORE_ROTATION) == IGNORE_ROTATION) {
-            this.wristDegrees = presetPosition.getWrist();
-        }
+        this.wristDegrees = presetPosition.getWrist();
     }
 
     public ArmToGoalCommand(Systems systems, Translation2d goalPosition, int flags) {
@@ -61,9 +55,6 @@ public class ArmToGoalCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if((flags & IGNORE_POSITION) == IGNORE_POSITION) {
-            return;
-        }
         var currentPosition = arm.getWristRobotSpacePosition(); // in meters
         var updatedPosition = goalPosition; // in meters, or converted to m from in
         if((flags & USE_PID) == USE_PID && (flags & FINISH_INSTANTLY) == 0) {
@@ -83,6 +74,7 @@ public class ArmToGoalCommand extends CommandBase {
         
         Translation2d pos = arm.getWristRobotSpacePosition();
         double distanceFromGoal = pos.minus(goalPosition).getNorm();
-        return (Math.abs(distanceFromGoal) <= DISTANCE_TOLERANCE || ((flags & IGNORE_POSITION) == 0)) && arm.getWrist().atSetpoint(); // distance should already be absolute, but doesn't hurt to check
+        boolean wristAtSetpoint = Double.isNaN(wristDegrees) || arm.getWrist().atSetpoint(); // shortcut setpoint check if we didn't even set wrist
+        return (Math.abs(distanceFromGoal) <= DISTANCE_TOLERANCE) && wristAtSetpoint; // distance should already be absolute, but doesn't hurt to check
     }
 }
