@@ -23,12 +23,12 @@ public class Systems {
     private CANSparkMax armInnerLeft;
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
-    private CANSparkMax intakeLeft;
-    private CANSparkMax intakeRight;
+    // private CANSparkMax intakeLeft;
+    // private CANSparkMax intakeRight;
 
     private DoubleSolenoid paddles;
     private DoubleSolenoid deadwheels_piston;
-    private DoubleSolenoid intake_piston;
+    // private DoubleSolenoid intake_piston;
 
     private Compressor compressor;
     private PneumaticHub phub;

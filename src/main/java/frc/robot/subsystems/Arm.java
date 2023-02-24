@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
     private final ArmComponent wristComponent;
 
     public static final double MAX_SPEED_OUTER = 0.12; // 0.073 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.12;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.21;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
     // private double setpointOut = 0;
@@ -160,6 +160,8 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         });
+
+        
     }
 
     public ArmComponent getOuter() {
@@ -242,7 +244,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
 
-        SmartDashboard.putNumber("ingebinge", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
+        SmartDashboard.putNumber("wrist error", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
 
         solveKinematics(goalPose);
     }
@@ -343,7 +345,7 @@ public class Arm extends SubsystemBase {
         }
 
         public void UpdateDash() {
-            if(name.isEmpty()) {
+            if(!name.isEmpty()) {
                 SmartDashboard.putNumber(name + " goal angle", getSetpointDegrees());
                 SmartDashboard.putNumber(name + " encoder angle", absoluteEncoder.getPosition());
                 SmartDashboard.putBoolean(name + " at Setpoint", this.atSetpoint());
