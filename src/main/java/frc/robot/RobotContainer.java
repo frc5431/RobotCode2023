@@ -163,9 +163,9 @@ public class RobotContainer {
         // ).alongWith(
         //     new WristOpenCommand(systems.getManipulator(), true)
         // ));
-        operator.leftTrigger().onTrue(new ArmMoveCommandGroup(
+        operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // arm ground/start
             systems,
-            new Translation2d(6.17, -34.24),
+            new Translation2d(Constants.armGroundX, Constants.armGroundY),
             ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
             true
@@ -181,7 +181,7 @@ public class RobotContainer {
 
         operator.rightTrigger().onTrue(new ArmMoveCommandGroup(
             systems,
-            new Translation2d(3.84, -25.69),
+            new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
             ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
             280,
             true
@@ -192,7 +192,7 @@ public class RobotContainer {
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
-            new Translation2d(40.875, 21.69),
+            new Translation2d(Constants.armHighX, Constants.armHighY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 

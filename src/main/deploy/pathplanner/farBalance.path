@@ -106,6 +106,12 @@
       "names": [
         "deadwheelDrop"
       ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "placeHigh"
+      ]
     }
   ]
 }

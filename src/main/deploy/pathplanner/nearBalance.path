@@ -16,7 +16,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "placeHigh"
+        ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
@@ -99,13 +101,7 @@
     {
       "position": 2.0945454545453734,
       "names": [
-        "dropDeadWheels"
-      ]
-    },
-    {
-      "position": 2.945454545454564,
-      "names": [
-        "raiseDeadWheels"
+        "deadwheelDrop"
       ]
     }
   ]

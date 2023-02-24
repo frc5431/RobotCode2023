@@ -17,23 +17,12 @@ import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutoAligner;
 import frc.robot.subsystems.Drivebase; 
 
-// init sendablechooser in robotcontainer's constructor ✅
-// 	getfullauto retreives path groups
-// 	(add them to the chooser)
-// TODO: map events to commands
 // TODO: Custom widget!!! That complains if you don't choose...
-
-//public ArrayList<String> balancePaths = new ArrayList<String>();
-//balancePaths.add("farBalance");
-//balancePaths.add("midBalance");
-//balancePaths.add("nearBalance");
-
-
 
 public class AutonLoader {
 
     private static final String[] paths = {
-    "far", "near"
+    "far", "mid", "near"
     };
 
     private static final String[] balancePaths = {
@@ -59,19 +48,25 @@ public class AutonLoader {
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().retract()));
         eventMap.put("deadwheelRaise", new RunCommand(() -> systems.getDeadwheels().deploy()));
-        // eventMap.put("intakeDrop", new RunCommand(() ->
-        // systems.getDeadwheels().toggle()));
-        // eventMap.put("intakeRun", new RunCommand(() ->
-        // systems.getIntake().deploy()));
+        eventMap.put("intakeDrop", new RunCommand(() ->
+            systems.getDeadwheels().toggle()));
+        eventMap.put("intakeRun", new RunCommand(() ->
+        systems.getIntake().deploy()));
         eventMap.put("manipulatorOpen", new RunCommand(() -> systems.getManipulator().open()));
         eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().close()));
         eventMap.put("autoBalance", new RunCommand(() -> systems.getDeadwheels().retract()).andThen (new AutoAligner(drivebase)));
-        eventMap.put("armGround", new ArmToGoalCommand(systems, new Translation2d(6.17, -34.24), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
-        eventMap.put("armInner", new ArmToGoalCommand(systems, new Translation2d(3.84, -25.69), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
-        eventMap.put("armHigh", new ArmToGoalCommand(systems, new Translation2d(40.875, 27.66), ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
-        eventMap.put("placeHigh", new SequentialCommandGroup( new ArmToGoalCommand(systems, new Translation2d(40.875, 27.66),
-        ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES).andThen(new RunCommand(() -> systems.getManipulator().open())))); 
-
+        eventMap.put("armGround", new ArmToGoalCommand(systems, new Translation2d(Constants.armGroundX, Constants.armGroundY),
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("armInner", new ArmToGoalCommand(systems, new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY), 
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("armHigh", new ArmToGoalCommand(systems, new Translation2d(Constants.armHighX, Constants.armHighY),
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES));
+        eventMap.put("placeHigh", new SequentialCommandGroup(new ArmToGoalCommand(systems, new Translation2d(Constants.armHighX, Constants.armHighY),
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES)
+                .andThen(new RunCommand(() -> systems.getManipulator().open()))
+                    .andThen(new ArmToGoalCommand(systems, new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
+                        ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES)))); 
+                        
         autoBuilder = new SwerveAutoBuilder(
                 drivebase::getPosition,
                 drivebase::resetOdometry,
@@ -82,18 +77,23 @@ public class AutonLoader {
                 eventMap,
                 true,
                 drivebase);
-
-        for (String pathNames : paths) {
-                chooser.addOption(pathNames, getFullAuto(pathNames));
-        }
-        for (String pathNames : balancePaths) {
-                chooser.addOption(pathNames, getFullAuto(pathNames));
+        
+        for (String pathNames : getChosenPaths()) {
+                chooser.addOption(pathNames, getAuto(pathNames));
         }
 
         Shuffleboard.getTab("Auton").add(chooser);
     }
 
-    public Command getFullAuto(String pathName) {
+    public String[] getChosenPaths(){
+        if(shouldBalance.getBoolean(true)){
+            return balancePaths;
+        } else {
+            return paths;
+        }
+    }
+
+    public Command getAuto(String pathName) {
         var pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
         return autoBuilder.fullAuto(pathGroup);
     }

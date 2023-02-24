@@ -99,7 +99,19 @@
     {
       "position": 2.2690909090909166,
       "names": [
-        "event"
+        "deadwheelDrop"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "placeHigh"
+      ]
+    },
+    {
+      "position": 0.14,
+      "names": [
+        "deadwheelDrop"
       ]
     }
   ]

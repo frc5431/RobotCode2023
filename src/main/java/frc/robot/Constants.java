@@ -18,6 +18,17 @@ public class Constants {
     public static final double APRILTAG_HEIGHT = 0.59;
     public static final AprilTagFieldLayout layout = getLayout();
 
+    public static final double armHighX = 40.875;
+    public static final double armHighY = 27.66;
+
+    public static final double armInnerGrabX = 3.84;
+    public static final double armInnerGrabY = -25.69;
+    
+    public static final double armGroundX = 6.17;
+    public static final double armGroundY = -34.24;
+
+
+
     static AprilTagFieldLayout getLayout() {
         try {
             return AprilTagFieldLayout.loadFromResource(AprilTagFields.kDefaultField.m_resourceFile);
