@@ -21,8 +21,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.RunEndCommand;
 import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.robot.MotionMagic;
@@ -39,7 +39,7 @@ public class Arm extends SubsystemBase {
     private final ArmComponent wristComponent;
 
     public static final double MAX_SPEED_OUTER = 0.12; // 0.073 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.12;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.21;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.1;  // 0.064 to hold at horz
 
     // private double setpointOut = 0;
@@ -61,8 +61,8 @@ public class Arm extends SubsystemBase {
     private Rotation2d handAngle = new Rotation2d();
     private Rotation2d handAngleToGround = new Rotation2d();
 
-    private final double SETPOINT_POSITION_TOLERANCE = Units.degreesToRadians(1);
-    private final double SETPOINT_VELOCITY_TOLERANCE = Units.degreesToRadians(5);
+    private final double SETPOINT_POSITION_TOLERANCE = 2.5;
+    private final double SETPOINT_VELOCITY_TOLERANCE = 5;
 
     public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
@@ -237,10 +237,12 @@ public class Arm extends SubsystemBase {
 
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
-        SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
+        SmartDashboard.putNumber("wrist cur", handAngle.getDegrees());
         SmartDashboard.putBoolean("shoulder atSetpoint", outerComponent.atSetpoint());
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
+
+        SmartDashboard.putNumber("wrist error", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
 
         solveKinematics(goalPose);
     }
@@ -250,13 +252,13 @@ public class Arm extends SubsystemBase {
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier, DoubleSupplier wristSupplier) {
-        return new RunEndCommand(
+        return Commands.runEnd(
             () -> {
                 this.getOuter().setSpeed(outSupplier.getAsDouble());
                 this.getInner().setSpeed(innerSupplier.getAsDouble());
                 this.getWrist().setSpeed(wristSupplier.getAsDouble());
             },
-            (i) -> {
+            () -> {
                 this.getOuter().setSpeed(0);
                 this.getInner().setSpeed(0);
                 this.getWrist().setSpeed(0);
@@ -265,12 +267,12 @@ public class Arm extends SubsystemBase {
     }
 
     public Command defaultCommand(DoubleSupplier outSupplier, DoubleSupplier innerSupplier) {
-        return new RunEndCommand(
+        return Commands.runEnd(
             () -> {
                 this.getOuter().setSpeed(outSupplier.getAsDouble());
                 this.getInner().setSpeed(innerSupplier.getAsDouble());
             },
-            (i) -> {
+            () -> {
                 this.getOuter().setSpeed(0);
                 this.getInner().setSpeed(0);
             },
@@ -306,6 +308,7 @@ public class Arm extends SubsystemBase {
         private final AbsoluteEncoder absoluteEncoder;
         private final Consumer<ArmComponent> setter;
         public final double MAX_SPEED;
+        public String name;
 
         private double setpoint;
 
@@ -334,6 +337,19 @@ public class Arm extends SubsystemBase {
 
             motor.burnFlash();
         }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void updateDashboard() {
+            if(!name.isEmpty()) {
+                SmartDashboard.putNumber(name + " goal angle", getSetpointDegrees());
+                SmartDashboard.putNumber(name + " encoder angle", absoluteEncoder.getPosition());
+                SmartDashboard.putBoolean(name + " at Setpoint", this.atSetpoint());
+            }
+        }
+
         public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
             this(motor, null, pidConstants, maxSpeed, setter);
         }
@@ -376,7 +392,8 @@ public class Arm extends SubsystemBase {
 
         public boolean atSetpoint() {
             return Math.abs(absoluteEncoder.getPosition() - setpoint) < SETPOINT_POSITION_TOLERANCE 
-                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE;
+                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE
+                ;
         }
 
         public CANSparkMax getMotor() {
@@ -394,6 +411,18 @@ public class Arm extends SubsystemBase {
         public AbsoluteEncoder getEncoder() {
             return absoluteEncoder;
         }
+
+        // Will currently require all of the arm, so no other command can
+        // be scheduled in parallel
+        // TODO make ArmComponent into its own SubsystemBase
+        public Command setDegreesCommand(double degrees) {
+            return runOnce(() -> this.setDegrees(degrees))
+                    .andThen(Commands.waitUntil(this::atSetpoint));
+        }
+
+        public Command setRadiansCommand(double radians) {
+            return runOnce(() -> this.setRadians(radians))
+                    .andThen(Commands.waitUntil(this::atSetpoint));
+        }
     }
-    
 }

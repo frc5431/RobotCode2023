@@ -4,7 +4,10 @@ import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Deadwheels {
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Deadwheels extends SubsystemBase {
 
     private final DoubleSolenoid piston;
     private static final DoubleSolenoid.Value DOWN_STATE = kReverse;
@@ -38,14 +41,10 @@ public class Deadwheels {
         isDeployed = !isDeployed;
     }
 
-
-
-    
-//  new RunCommand(() -> piston.deploy());
-
-//  new RunCommand(() -> piston.toggle());
-
-//  new RunCommand(() -> piston.retract());
-
-
+    public Command deadwheelsCommand(boolean deploy) {
+        return runOnce(() -> {
+            if (deploy) this.deploy();
+            else this.retract();
+        });
+    }
 }

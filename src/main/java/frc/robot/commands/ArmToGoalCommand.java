@@ -14,7 +14,7 @@ public class ArmToGoalCommand extends CommandBase {
     public static final int FINISH_INSTANTLY = 2;
     public static final int USE_INCHES = 4;
 
-    public static final double DISTANCE_TOLERANCE = Units.inchesToMeters(1.5);
+    public static final double DISTANCE_TOLERANCE = 0.5;
     
     private final Arm arm;
     private final PIDController xPidController;
@@ -63,6 +63,7 @@ public class ArmToGoalCommand extends CommandBase {
                 yPidController.calculate(currentPosition.getY(), goalPosition.getY())
             );
         }
+        
         arm.setGoal(updatedPosition);
     }
 
@@ -70,10 +71,10 @@ public class ArmToGoalCommand extends CommandBase {
     public boolean isFinished() {
         if((flags & FINISH_INSTANTLY) == FINISH_INSTANTLY)
             return true;
-
+        
         Translation2d pos = arm.getWristRobotSpacePosition();
         double distanceFromGoal = pos.minus(goalPosition).getNorm();
-        
-        return Math.abs(distanceFromGoal) <= DISTANCE_TOLERANCE; // distance should already be absolute, but doesn't hurt to check
+        boolean wristAtSetpoint = Double.isNaN(wristDegrees) || arm.getWrist().atSetpoint(); // shortcut setpoint check if we didn't even set wrist
+        return (Math.abs(distanceFromGoal) <= DISTANCE_TOLERANCE) && wristAtSetpoint; // distance should already be absolute, but doesn't hurt to check
     }
 }

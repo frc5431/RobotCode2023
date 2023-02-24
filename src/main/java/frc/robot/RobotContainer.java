@@ -5,13 +5,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.AutoAligner;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
-import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
@@ -108,6 +109,8 @@ public class RobotContainer {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.1));
+
+        //systems.getArm().setDefaultCommand(autonCommand);
     }
 
     private void configureBindings() {
@@ -127,34 +130,81 @@ public class RobotContainer {
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
-        operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        operator.a().onTrue(systems.getIntake().intakeStow());
-        operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-
-        operator.rightBumper().onTrue(new ArmToGoalCommand( // Start
+        // This controlls the arm, however we decided this would be on the driver's side. Not the operator's. - Rudy (and josh & brain)
+        driver.rightTrigger().onTrue(new ArmMoveCommandGroup(
             systems,
-            PresetPosition.fromGoal(new Translation2d(4.38, -29.34), 104),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
+            new Translation2d(14.34, -11.95),
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            302,
+            false
         ));
 
-        operator.leftTrigger().onTrue(new ArmToGoalCommand( // Normal Grab
+
+        // operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        // operator.a().onTrue(systems.getIntake().intakeStow());
+        // operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        // operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+
+        // operator.rightBumper().onTrue(new JumpToGoalPositionCommand( // Start
+        //     systems.getArm(),
+        //     new Translation2d(4.38, -29.34),
+        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        // ).alongWith(
+        //     new WristAngleCommand(systems.getArm().getWrist(), 104)
+        // ).alongWith(
+        //     new WristOpenCommand(systems.getManipulator(), true)
+        // ));
+        operator.rightBumper().onTrue(new ArmMoveCommandGroup(
+            systems,
+            new Translation2d(4, -25),
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            0,
+            false
+        ));
+
+        systems.getArm().getCurrentCommand();
+
+        // operator.leftTrigger().onTrue(new JumpToGoalPositionCommand( // Normal Grab
+        //     systems.getArm(),
+        //     new Translation2d(6.17, -34.24),
+        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        // ).alongWith(
+        //     new WristAngleCommand(systems.getArm().getWrist(), 0)
+        // ).alongWith(
+        //     new WristOpenCommand(systems.getManipulator(), true)
+        // ));
+        operator.leftTrigger().onTrue(new ArmMoveCommandGroup(
             systems,
             new Translation2d(6.17, -34.24),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            280,
+            true
         ));
 
-        operator.rightTrigger().onTrue(new ArmToGoalCommand( // Inverted Grab
+        // operator.rightTrigger().onTrue(new JumpToGoalPositionCommand( // Inverted Grab
+        //     systems.getArm(),
+        //     new Translation2d(3.84, -25.69),
+        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
+        // ).alongWith(
+        //     new WristAngleCommand(systems.getArm().getWrist(), 280)
+        // ));
+
+        operator.rightTrigger().onTrue(new ArmMoveCommandGroup(
             systems,
             new Translation2d(3.84, -25.69),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
+            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            280,
+            true
         ));
 
-        operator.povRight().onTrue(new ArmToGoalCommand( // High node
+        // In  theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
+        operator.povRight().onTrue( // High node
+            systems.getArm().getWrist().setDegreesCommand(0)
+        .andThen(new ArmToGoalCommand(
             systems,
-            new Translation2d(40.875, 27.66),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
-        ));
+            new Translation2d(40.875, 21.69),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        )));
 
         operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
@@ -225,6 +275,8 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void robotPeriodic() {

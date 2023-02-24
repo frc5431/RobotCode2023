@@ -1,9 +1,13 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-public class Manipulator {
+public class Manipulator extends SubsystemBase {
 
     private final DoubleSolenoid piston;
 
@@ -39,11 +43,14 @@ public class Manipulator {
         return isOpen;
     }
 
-//  new RunCommand(() -> Manipulator.open());
+    public Command manipCommand(boolean open) {
+        return runOnce(() -> {
+            if (open) this.open();
+            else this.close();
+        });
+    }
 
-//  new RunCommand(() -> Manipulator.close());
-
-//  new RunCommand(() -> Manipulator.toggle());
-
-
+    public Command toggleCommand() {
+        return runOnce(this::toggle);
+    }
 }
