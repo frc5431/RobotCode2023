@@ -1,20 +1,16 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team5431.titan.core.solenoid.SingleSolenoid;
 
 public class Deadwheels extends SubsystemBase {
 
-    private final DoubleSolenoid piston;
-    private static final DoubleSolenoid.Value DOWN_STATE = kReverse;
-    private static final DoubleSolenoid.Value UP_STATE = kForward;
+    private final SingleSolenoid piston;
 
     private boolean isDeployed;
 
-    public Deadwheels(DoubleSolenoid piston) {
+    public Deadwheels(SingleSolenoid piston) {
         this.piston = piston;
         isDeployed = false;
     }
@@ -24,14 +20,12 @@ public class Deadwheels extends SubsystemBase {
     }
 
     public void deploy() {
-        if (piston.get() == UP_STATE)
-            piston.set(DOWN_STATE);
+        piston.set(true);
         isDeployed = true;
     }
 
     public void retract() {
-        if (piston.get() == DOWN_STATE)
-            piston.set(UP_STATE);
+        piston.set(false);
         isDeployed = false;
     }
 

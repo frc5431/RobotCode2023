@@ -6,13 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.*;
 import frc.robot.util.CircularLimit;
+import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
@@ -58,11 +58,10 @@ public class RobotContainer {
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
-        systems.getLeds().setDefaultCommand(new InstantCommand(
+        systems.getLeds().setDefaultCommand(runEnd(
             () -> systems.getLeds().ledCommand(getPatternFromAlliance()), 
-            systems.getLeds()) {
-                public boolean isFinished() { return false; }
-        });
+            () -> {}, 
+            systems.getLeds()));
 
         // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
         //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
@@ -86,8 +85,6 @@ public class RobotContainer {
             SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
             SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         }, 0.3));
-
-        SmartDashboard.putData(CommandScheduler.getInstance());
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = systems.getArm().getSparks();
@@ -147,45 +144,52 @@ public class RobotContainer {
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
         // This controlls the arm, however we decided this would be on the driver's side. Not the operator's. - Rudy (and josh & brain)
-        driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm safe zone
+        driver.leftTrigger().onTrue(new ArmToGoalCommand( // Stow
+            systems,
+            PresetPosition.fromGoal(new Translation2d(5.472, -33), 105.32),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+        driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
             systems,
             new Translation2d(14.34, -11.95),
-            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
             302,
             false
         ));
 
-        driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
+        operator.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
             .andThen(waitSeconds(5)));
-        driver.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
+        operator.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
             .andThen(waitSeconds(5)));
+        driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE));
+        driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).withTimeout(150));
 
         operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         operator.a().onTrue(systems.getIntake().intakeStow());
         operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
         operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        operator.start().whileTrue(systems.getIntake().runSameDirection(false));
+        // operator.start().whileTrue(systems.getIntake().runSameDirection(false));
 
-        operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
-            systems,
-            new Translation2d(4, -25), // 4.38, -29.34?
-            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
-            0, // 104?
-            false
-        ));
+        // operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
+        //     systems,
+        //     new Translation2d(4, -25), // 4.38, -29.34?
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
+        //     104, // 104?
+        //     false
+        // ));
 
         operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
             systems,
             new Translation2d(6.17, -34.24),
-            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
-            280,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
+            25,
             true
         ));
 
         operator.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
             new Translation2d(3.84, -25.69),
-            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
             280,
             true
         ));
@@ -195,15 +199,16 @@ public class RobotContainer {
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
-            new Translation2d(40.875, 21.69),
-            ArmToGoalCommand.USE_INCHES // | ArmToGoalCommand.FINISH_INSTANTLY,
+            PresetPosition.fromGoal(new Translation2d(40.875, 21.69), 288),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
         operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
             new Translation2d(32.03, 2.83),
-            ArmToGoalCommand.USE_INCHES // | ArmToGoalCommand.FINISH_INSTANTLY,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
+
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
@@ -293,6 +298,8 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void robotPeriodic() {

@@ -27,6 +27,7 @@ public class ArmToGoalCommand extends CommandBase {
     public ArmToGoalCommand(Systems systems, PresetPosition presetPosition, int flags) {
         this(systems, presetPosition.getWristPos(), flags);
         this.wristDegrees = presetPosition.getWrist();
+        setName(getName()+" wa "+this.wristDegrees);
     }
 
     public ArmToGoalCommand(Systems systems, Translation2d goalPosition, int flags) {
@@ -41,16 +42,13 @@ public class ArmToGoalCommand extends CommandBase {
         }
 
         addRequirements(arm);
+        setName("ArmMoveGoal "+goalPosition.toString());
     }
 
     @Override
     public void initialize() {
         xPidController.reset();
         yPidController.reset();
-
-        if (!Double.isNaN(wristDegrees)) {
-            arm.getWrist().setDegrees(wristDegrees);
-        }
     }
 
     @Override
@@ -65,6 +63,9 @@ public class ArmToGoalCommand extends CommandBase {
         }
         
         arm.setGoal(updatedPosition);
+        if (!Double.isNaN(wristDegrees)) {
+            arm.getWrist().setDegrees(wristDegrees);
+        }
     }
 
     @Override
@@ -74,7 +75,8 @@ public class ArmToGoalCommand extends CommandBase {
         
         Translation2d pos = arm.getWristRobotSpacePosition();
         double distanceFromGoal = pos.minus(goalPosition).getNorm();
-        boolean wristAtSetpoint = Double.isNaN(wristDegrees) || arm.getWrist().atSetpoint(); // shortcut setpoint check if we didn't even set wrist
+        // boolean wristAtSetpoint = Double.isNaN(wristDegrees) || arm.getWrist().atSetpoint(); // shortcut setpoint check if we didn't even set wrist
+        boolean wristAtSetpoint = true;
         return (Math.abs(distanceFromGoal) <= DISTANCE_TOLERANCE) && wristAtSetpoint; // distance should already be absolute, but doesn't hurt to check
     }
 }

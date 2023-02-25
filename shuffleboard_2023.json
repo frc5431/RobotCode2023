@@ -50,7 +50,7 @@
               "_showGlyph": false
             }
           },
-          "19,0": {
+          "18,0": {
             "size": [
               2,
               1
@@ -63,7 +63,7 @@
               "_showGlyph": false
             }
           },
-          "19,1": {
+          "18,1": {
             "size": [
               2,
               1
@@ -76,7 +76,7 @@
               "_showGlyph": false
             }
           },
-          "19,2": {
+          "18,2": {
             "size": [
               2,
               1
@@ -471,7 +471,7 @@
           "4,0": {
             "size": [
               2,
-              2
+              1
             ],
             "content": {
               "_type": "Boolean Box",
@@ -483,10 +483,10 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "6,0": {
+          "4,1": {
             "size": [
               2,
-              2
+              1
             ],
             "content": {
               "_type": "Boolean Box",
@@ -498,10 +498,10 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "17,0": {
+          "4,2": {
             "size": [
               2,
-              2
+              1
             ],
             "content": {
               "_type": "Boolean Box",
@@ -591,19 +591,123 @@
               "_showGlyph": false
             }
           },
-          "21,0": {
+          "6,7": {
             "size": [
-              5,
-              4
+              11,
+              3
             ],
             "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///SmartDashboard/Scheduler/Ids",
-              "_title": "Scheduler/Ids",
-              "_glyph": 149,
+              "_type": "Network Table Tree",
+              "_source0": "network_table:///SmartDashboard/Scheduler",
+              "_title": "SmartDashboard/Scheduler",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Heading",
+              "_title": "Heading",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shcom wo cone",
+              "_title": "shcom wo cone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shcom wt cone",
+              "_title": "shcom wt cone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elcom wo cone",
+              "_title": "elcom wo cone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elcom wt cone",
+              "_title": "elcom wt cone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "16,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/manip open",
+              "_title": "manip open",
+              "_glyph": 148,
               "_showGlyph": false,
-              "Layout/Label position": "BOTTOM",
-              "_children": []
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "24,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrcom wo cone",
+              "_title": "wrcom wo cone",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "24,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrcom wt cone",
+              "_title": "wrcom wt cone",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }
