@@ -27,9 +27,7 @@ public class AutoAligner extends CommandBase{
 
     @Override
     public void execute(){
-        cs.vxMetersPerSecond = pid.calculate(pigy.getPitch(), 0);
-        drivebase.drive(cs);  
-    }
+        cs.vxMetersPerSecond = pid.calculate(pigy.getPitch(), 0);/    =rivebase.drive(cs);    }8/* */
 
     @Override
     public boolean isFinished(){

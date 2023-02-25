@@ -22,12 +22,9 @@ import frc.robot.subsystems.Drivebase;
 public class AutonLoader {
 
     private static final String[] paths = {
-    "far", "mid", "near"
+    "far", "farBalance", "mid", "midBalance", "near", "nearBalance"
     };
 
-    private static final String[] balancePaths = {
-    "farBalance", "middleBalance", "nearBalance"
-    };
 
     private Drivebase drivebase;
 
@@ -46,12 +43,12 @@ public class AutonLoader {
         this.drivebase = systems.getDrivebase();
 
         HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().retract()));
-        eventMap.put("deadwheelRaise", new RunCommand(() -> systems.getDeadwheels().deploy()));
+        eventMap.put("deadwheelDrop", new RunCommand(() -> systems.getDeadwheels().deploy()));
+        eventMap.put("deadwheelRaise", new RunCommand(() -> systems.getDeadwheels().retract()));
         eventMap.put("intakeDrop", new RunCommand(() ->
             systems.getDeadwheels().toggle()));
         eventMap.put("intakeRun", new RunCommand(() ->
-        systems.getIntake().deploy()));
+            systems.getIntake().deploy()));
         eventMap.put("manipulatorOpen", new RunCommand(() -> systems.getManipulator().open()));
         eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().close()));
         eventMap.put("autoBalance", new RunCommand(() -> systems.getDeadwheels().retract()).andThen (new AutoAligner(drivebase)));
@@ -78,19 +75,11 @@ public class AutonLoader {
                 true,
                 drivebase);
         
-        for (String pathNames : getChosenPaths()) {
+        for (String pathNames : paths) {
                 chooser.addOption(pathNames, getAuto(pathNames));
         }
 
         Shuffleboard.getTab("Auton").add(chooser);
-    }
-
-    public String[] getChosenPaths(){
-        if(shouldBalance.getBoolean(true)){
-            return balancePaths;
-        } else {
-            return paths;
-        }
     }
 
     public Command getAuto(String pathName) {
