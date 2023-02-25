@@ -96,4 +96,15 @@ public class Intake extends SubsystemBase {
             this.retract();
         });
     }
+
+    // by special request of brian
+    public Command runSameDirection(boolean reverse) {
+        return new StartEndCommand(() -> {
+            this.intakeMotorFollow.follow(this.intakeMotor, false);
+            this.set(reverse ? -DEFAULT_SPEED : DEFAULT_SPEED);
+        }, () -> {
+            this.set(0);
+            this.intakeMotorFollow.follow(this.intakeMotor, true);
+        }, this);
+    }
 }
