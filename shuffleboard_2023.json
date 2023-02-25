@@ -128,19 +128,6 @@
               "_showGlyph": false
             }
           },
-          "16,4": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/wrist pid error",
-              "_title": "wrist pid error",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "8,0": {
             "size": [
               3,
@@ -589,6 +576,34 @@
               "_title": "Wrist Temp",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "14,6": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist error",
+              "_title": "wrist error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "21,0": {
+            "size": [
+              5,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///SmartDashboard/Scheduler/Ids",
+              "_title": "Scheduler/Ids",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Label position": "BOTTOM",
+              "_children": []
             }
           }
         }
@@ -1748,19 +1763,6 @@
             }
           }
         }
-      }
-    },
-    {
-      "title": "Subsystems",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 64.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {}
       }
     }
   ],
