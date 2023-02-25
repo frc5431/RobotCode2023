@@ -19,7 +19,11 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,8 +54,8 @@ public class Arm extends SubsystemBase {
     private static final double TORQUE_NM_NEO = 2.6;
 
     public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 100 * 2;
-    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5*4 * 84/20 * 2;
-    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 3*3;
+    public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5 * 4 * 84 / 20 * 2;
+    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 3 * 3;
 
     // measured
     private Rotation2d bicepAngle = new Rotation2d();
@@ -64,49 +68,53 @@ public class Arm extends SubsystemBase {
     private final double SETPOINT_POSITION_TOLERANCE = 2.5;
     private final double SETPOINT_VELOCITY_TOLERANCE = 5;
 
-    public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+    public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34),
+            Units.inchesToMeters(26));
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
-    // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
-    public static final double shoulderCosineMultiplierNoCOM =
-        8.15 * 9.81;
+    // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from
+    // pivot (m)) (Nm)
+    public static final double shoulderCosineMultiplierNoCOM = 8.15 * 9.81;
 
-    public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(18.624); // 0.473 meters
+    public static final double shoulderMinCOMMeters = Units.inchesToMeters(18.624); // 0.473 meters
 
-    public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(40.625);
+    public static final double shoulderMaxCOMMeters = Units.inchesToMeters(40.625);
 
-    public static final double elbowCosineMultiplierNoCOM =
-        3.0 * 9.81;
+    public static final double elbowCosineMultiplierNoCOM = 3.0 * 9.81;
 
-    public static final double elbowMinCOMMeters =
-        Units.inchesToMeters(20);
+    public static final double elbowMinCOMMeters = Units.inchesToMeters(20);
 
-    public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(22.93);
+    public static final double elbowMaxCOMMeters = Units.inchesToMeters(22.93);
 
-    public static final double wristCosineMultiplier = 
-        1.85 * 9.81 * Units.inchesToMeters(3.1);
+    public static final double wristCosineMultiplier = 1.85 * 9.81 * Units.inchesToMeters(3.1);
 
     private final List<CANSparkMax> sparks;
 
-    /* Arm encoder directions (robot facing right)
+    private MechanismLigament2d bicepEncViz;
+    private MechanismLigament2d forearmEncViz;
+    private MechanismLigament2d manipEncViz;
+
+    private MechanismLigament2d bicepSetpointViz;
+    private MechanismLigament2d forearmSetpointViz;
+    private MechanismLigament2d manipSetpointViz;
+    /*
+     * Arm encoder directions (robot facing right)
      * - shoulder
-     *   - encoder CCW+
-     *   - 0 facing down
+     * - encoder CCW+
+     * - 0 facing down
      * - elbow
-     *   - motor CW+
-     *   - encoder CW+
-     *   - 0 facing away from bicep
+     * - motor CW+
+     * - encoder CW+
+     * - 0 facing away from bicep
      * - wrist
-     *   - motor CCW+
-     *   - encoder CCW+
-     *   - 0 facing away from forearm
+     * - motor CCW+
+     * - encoder CCW+
+     * - 0 facing away from forearm
      */
 
-    public Arm(CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight, CANSparkMax wrist) {
+    public Arm(CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight,
+            CANSparkMax wrist) {
         outerArmLeft.setInverted(false);
         outerArmRight.follow(outerArmLeft, true);
         outerArmLeft.setIdleMode(IdleMode.kBrake);
@@ -134,32 +142,55 @@ public class Arm extends SubsystemBase {
             spark.burnFlash();
         });
 
-        outerComponent = new ArmComponent(outerArmLeft, outerArmRight, new MotionMagic(0.5, 0.0, 0.0, 0.0), MAX_SPEED_OUTER, (component) -> {
-            Rotation2d ba2g = calcBicepAngleToGround(fromRadians(component.getSetpointRadians()));
-            double arbFF = shoulderCosineMultiplierNoCOM * getCOMBicepMeters() * ba2g.getCos() / SHOULDER_TORQUE_TOTAL;
+        outerComponent = new ArmComponent(outerArmLeft, outerArmRight, new MotionMagic(0.5, 0.0, 0.0, 0.0),
+                MAX_SPEED_OUTER, (component) -> {
+                    Rotation2d ba2g = calcBicepAngleToGround(fromRadians(component.getSetpointRadians()));
+                    double arbFF = shoulderCosineMultiplierNoCOM * getCOMBicepMeters() * ba2g.getCos()
+                            / SHOULDER_TORQUE_TOTAL;
 
-            component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
-            SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
-            SmartDashboard.putNumber("shoulder arbff", arbFF);
-        });
+                    component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0,
+                            arbFF, ArbFFUnits.kPercentOut);
+                    SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
+                    SmartDashboard.putNumber("shoulder arbff", arbFF);
+                });
 
-        innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
-            Rotation2d fa2g = calcForearmAngleToGround(bicepAngle, fromRadians(component.getSetpointRadians()));
-            double arbFF = -elbowCosineMultiplierNoCOM * getCOMForearmMeters() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
+        innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0),
+                MAX_SPEED_INNER, (component) -> {
+                    Rotation2d fa2g = calcForearmAngleToGround(bicepAngle, fromRadians(component.getSetpointRadians()));
+                    double arbFF = -elbowCosineMultiplierNoCOM * getCOMForearmMeters() * fa2g.getCos()
+                            / FOREARM_TORQUE_TOTAL;
 
-            component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
-            SmartDashboard.putNumber("elbow set", component.getSetpointRadians());
-            SmartDashboard.putNumber("elbow arbff", arbFF);
-        });
+                    component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0,
+                            arbFF, ArbFFUnits.kPercentOut);
+                    SmartDashboard.putNumber("elbow set", component.getSetpointRadians());
+                    SmartDashboard.putNumber("elbow arbff", arbFF);
+                });
 
         wristComponent = new ArmComponent(wrist, new MotionMagic(0.15, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
-            Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(component.getSetpointRadians()));
+            Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle,
+                    fromRadians(component.getSetpointRadians()));
             double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
 
-            component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
+            component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF,
+                    ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         });
+
+        // EncViz
+        Mechanism2d mech = new Mechanism2d(4, 4);
+        var root = mech.getRoot("arm", 0, 1.3141);
+
+        bicepEncViz = root.append(new MechanismLigament2d("shoulder", solver.getSegment1Length(), 90.111));
+        forearmEncViz = bicepEncViz.append(new MechanismLigament2d("elbow", solver.getSegment2Length(), 22.222));
+        manipEncViz = forearmEncViz.append(new MechanismLigament2d("wrist", 0.12, -45.333));
+
+        var blue = new Color8Bit(Color.kBlue);
+        bicepSetpointViz = root.append(new MechanismLigament2d("shoulderSet", solver.getSegment1Length(), 90.111, 3, blue));
+        forearmSetpointViz = bicepSetpointViz.append(new MechanismLigament2d("elbowSet", solver.getSegment2Length(), 22.222, 3, blue));
+        manipSetpointViz = forearmSetpointViz.append(new MechanismLigament2d("wristSet", 0.12, -45.333, 3, blue));
+
+        SmartDashboard.putData("ArmViz", mech);
     }
 
     public ArmComponent getOuter() {
@@ -218,15 +249,19 @@ public class Arm extends SubsystemBase {
         forearmAngleToGround = calcForearmAngleToGround(bicepAngle, forearmAngle);
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
 
-        // double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), wristComponent.getSetpointRadians());
-        // Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(wristComponent.getSetpointRadians()));
+        // double wristPow =
+        // wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(),
+        // wristComponent.getSetpointRadians());
+        // Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle,
+        // fromRadians(wristComponent.getSetpointRadians()));
         // double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
         // SmartDashboard.putNumber("wrist arbff", arbFF);
         // wristPow += arbFF;
         // wristPow = MathUtil.clamp(wristPow, -MAX_SPEED_WRIST, MAX_SPEED_WRIST);
         // wristComponent.setSpeed(wristPow);
 
-        // SmartDashboard.putNumber("wrist pid error", wristComponent.getPIDController().getPositionError());
+        // SmartDashboard.putNumber("wrist pid error",
+        // wristComponent.getPIDController().getPositionError());
 
         SmartDashboard.putNumber("bicep angle", bicepAngle.getDegrees());
         SmartDashboard.putNumber("bicep angle to ground", bicepAngleToGround.getDegrees());
@@ -241,6 +276,16 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putBoolean("shoulder atSetpoint", outerComponent.atSetpoint());
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
+
+        bicepEncViz.setAngle(bicepAngle);
+        forearmEncViz.setAngle(forearmAngle);
+        manipEncViz.setAngle(handAngle);
+
+        var setpoints = solver.posToAngles(goalPose);
+
+        bicepSetpointViz.setAngle(Rotation2d.fromRadians(setpoints.getFirst()));
+        forearmSetpointViz.setAngle(Rotation2d.fromRadians(setpoints.getSecond()));
+        manipSetpointViz.setAngle(Rotation2d.fromRadians(getWrist().setpoint));
 
         SmartDashboard.putNumber("wrist error", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
 
@@ -280,7 +325,8 @@ public class Arm extends SubsystemBase {
     }
 
     public void setGoalToCurrentPosition() {
-        Translation2d newGoal = solver.anglesToPos(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+        Translation2d newGoal = solver.anglesToPos(outerComponent.getPositionRadians(),
+                innerComponent.getPositionRadians());
         setGoal(newGoal);
     }
 
@@ -294,7 +340,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Goal X", Units.metersToInches(goal.getX()));
         SmartDashboard.putNumber("Goal Y", Units.metersToInches(goal.getY()));
         SmartDashboard.putNumber("InvKin Out", ik.getFirst());
-        SmartDashboard.putNumber("InvKin In",  ik.getSecond());
+        SmartDashboard.putNumber("InvKin In", ik.getSecond());
     }
 
     public Translation2d getWristRobotSpacePosition() {
@@ -312,7 +358,8 @@ public class Arm extends SubsystemBase {
 
         private double setpoint;
 
-        public ArmComponent(CANSparkMax motor, CANSparkMax follow, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
+        public ArmComponent(CANSparkMax motor, CANSparkMax follow, MotionMagic pidConstants, double maxSpeed,
+                Consumer<ArmComponent> setter) {
             this.motor = motor;
             this.follow = Optional.ofNullable(follow);
 
@@ -328,10 +375,10 @@ public class Arm extends SubsystemBase {
             controller.setOutputRange(-MAX_SPEED, MAX_SPEED);
             controller.setPositionPIDWrappingEnabled(true);
             controller.setPositionPIDWrappingMinInput(0);
-            controller.setPositionPIDWrappingMaxInput(2*Math.PI);
+            controller.setPositionPIDWrappingMaxInput(2 * Math.PI);
 
-            absoluteEncoder.setPositionConversionFactor(2*Math.PI);
-            absoluteEncoder.setVelocityConversionFactor(2*Math.PI);
+            absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+            absoluteEncoder.setVelocityConversionFactor(2 * Math.PI);
 
             controller.setFeedbackDevice(absoluteEncoder);
 
@@ -350,7 +397,9 @@ public class Arm extends SubsystemBase {
             }
         }
 
-        public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
+
+        public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed,
+                Consumer<ArmComponent> setter) {
             this(motor, null, pidConstants, maxSpeed, setter);
         }
 
@@ -369,7 +418,6 @@ public class Arm extends SubsystemBase {
         public double getPositionDegrees() {
             return radiansToDegrees(getPositionRadians());
         }
-
 
         public void setDegrees(double value) {
             setpoint = degreesToRadians(value);
@@ -392,8 +440,7 @@ public class Arm extends SubsystemBase {
 
         public boolean atSetpoint() {
             return Math.abs(absoluteEncoder.getPosition() - setpoint) < SETPOINT_POSITION_TOLERANCE 
-                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE
-                ;
+                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE;
         }
 
         public CANSparkMax getMotor() {

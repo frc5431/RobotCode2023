@@ -1,0 +1,23 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/ArmViz": "Mechanism2d"
+    },
+    "windows": {
+      "/SmartDashboard/ArmViz": {
+        "image": "C:\\Users\\joshu\\OneDrive\\Pictures\\baller_cat.png",
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  }
+}

@@ -8,6 +8,15 @@ public class KinematicsSolver {
     private double l2; // Length of second arm segment
     public boolean preferTopByDefault = false;
 
+    public double getSegment1Length() {
+        return l1;
+    }
+
+    public double getSegment2Length() {
+        return l2;
+    }
+
+
     public KinematicsSolver(double armSegment1Length, double armSegment2Length) {
         this.l1 = armSegment1Length;
         this.l2 = armSegment2Length;
