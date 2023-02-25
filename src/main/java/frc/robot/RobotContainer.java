@@ -206,7 +206,7 @@ public class RobotContainer {
             new Translation2d(40.875, 21.69),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ).alongWith(new RunCommand(() -> {
-                Arm.solver.collapsePreferingBottom = false;
+                Arm.solver.preferTopByDefault = false;
         }))));
 
         operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
@@ -223,7 +223,7 @@ public class RobotContainer {
         operator.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
         if(Math.abs(operator.getLeftY()) < 0.2) {
-            Arm.solver.collapsePreferingBottom = operator.getLeftY() < 0;
+            Arm.solver.preferTopByDefault = operator.getLeftY() < 0;
         }
     }
 
