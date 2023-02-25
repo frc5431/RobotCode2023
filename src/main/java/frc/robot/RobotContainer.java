@@ -6,30 +6,34 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.ArmMoveCommandGroup;
+import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.util.CircularLimit;
+import frc.team5431.titan.core.joysticks.CommandXboxController;
+import frc.team5431.titan.core.leds.BlinkinPattern;
 
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
-
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.ArmMoveCommandGroup;
-import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.Drivebase;
-import frc.robot.util.CircularLimit;
-import frc.team5431.titan.core.joysticks.CommandXboxController;
 
 public class RobotContainer {
     private final Systems systems = new Systems();
     public final Drivebase drivebase = systems.getDrivebase();
+
 
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
@@ -46,6 +50,12 @@ public class RobotContainer {
                 () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
                 () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
                 () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+
+        systems.getLeds().setDefaultCommand(new InstantCommand(
+            () -> systems.getLeds().ledCommand(getPatternFromAlliance()), 
+            systems.getLeds()) {
+                public boolean isFinished() { return false; }
+        });
 
         // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
         // () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
@@ -68,6 +78,8 @@ public class RobotContainer {
             SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
             SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         }, 0.3));
+
+        SmartDashboard.putData(CommandScheduler.getInstance());
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = systems.getArm().getSparks();
@@ -99,9 +111,16 @@ public class RobotContainer {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.1));
-
         autonLoader = new AutonLoader(systems);
-        //systems.getArm().setDefaultCommand(autonCommand);
+
+    }
+
+    public static BlinkinPattern getPatternFromAlliance() {
+        return switch (DriverStation.getAlliance()) {
+            case Blue -> BlinkinPattern.BLUE;
+            case Red -> BlinkinPattern.RED;
+            default -> BlinkinPattern.GREEN;
+        };
     }
 
     private void configureBindings() {
@@ -122,68 +141,45 @@ public class RobotContainer {
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
         // This controlls the arm, however we decided this would be on the driver's side. Not the operator's. - Rudy (and josh & brain)
-        driver.rightTrigger().onTrue(new ArmMoveCommandGroup(
+        driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm safe zone
             systems,
             new Translation2d(14.34, -11.95),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
             302,
             false
         ));
 
+        driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
+            .andThen(waitSeconds(5)));
+        driver.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
+            .andThen(waitSeconds(5)));
 
-        // operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        // operator.a().onTrue(systems.getIntake().intakeStow());
-        // operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        // operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+        operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        operator.a().onTrue(systems.getIntake().intakeStow());
+        operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+        operator.start().whileTrue(systems.getIntake().runSameDirection(false));
 
-        // operator.rightBumper().onTrue(new JumpToGoalPositionCommand( // Start
-        //     systems.getArm(),
-        //     new Translation2d(4.38, -29.34),
-        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
-        // ).alongWith(
-        //     new WristAngleCommand(systems.getArm().getWrist(), 104)
-        // ).alongWith(
-        //     new WristOpenCommand(systems.getManipulator(), true)
-        // ));
-        operator.rightBumper().onTrue(new ArmMoveCommandGroup(
+        operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
             systems,
-            new Translation2d(4, -25),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
-            0,
+            new Translation2d(4, -25), // 4.38, -29.34?
+            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
+            0, // 104?
             false
         ));
 
-        systems.getArm().getCurrentCommand();
-
-        // operator.leftTrigger().onTrue(new JumpToGoalPositionCommand( // Normal Grab
-        //     systems.getArm(),
-        //     new Translation2d(6.17, -34.24),
-        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
-        // ).alongWith(
-        //     new WristAngleCommand(systems.getArm().getWrist(), 0)
-        // ).alongWith(
-        //     new WristOpenCommand(systems.getManipulator(), true)
-        // ));
-        operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // arm ground/start
+        operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
             systems,
-            new Translation2d(Constants.armGroundX, Constants.armGroundY),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            new Translation2d(6.17, -34.24),
+            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
             280,
             true
         ));
 
-        // operator.rightTrigger().onTrue(new JumpToGoalPositionCommand( // Inverted Grab
-        //     systems.getArm(),
-        //     new Translation2d(3.84, -25.69),
-        //     JumpToGoalPositionCommand.FINISH_INSTANTLY | JumpToGoalPositionCommand.USE_INCHES
-        // ).alongWith(
-        //     new WristAngleCommand(systems.getArm().getWrist(), 280)
-        // ));
-
-        operator.rightTrigger().onTrue(new ArmMoveCommandGroup(
+        operator.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES,
+            ArmToGoalCommand.USE_INCHES, // | ArmToGoalCommand.FINISH_INSTANTLY,
             280,
             true
         ));
@@ -194,13 +190,13 @@ public class RobotContainer {
         .andThen(new ArmToGoalCommand(
             systems,
             new Translation2d(Constants.armHighX, Constants.armHighY),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+            ArmToGoalCommand.USE_INCHES // | ArmToGoalCommand.FINISH_INSTANTLY,
         )));
 
         operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
             new Translation2d(32.03, 2.83),
-            ArmToGoalCommand.FINISH_INSTANTLY | ArmToGoalCommand.USE_INCHES
+            ArmToGoalCommand.USE_INCHES // | ArmToGoalCommand.FINISH_INSTANTLY,
         ));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
@@ -266,8 +262,6 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
-
-        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void robotPeriodic() {

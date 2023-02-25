@@ -218,16 +218,6 @@ public class Arm extends SubsystemBase {
         forearmAngleToGround = calcForearmAngleToGround(bicepAngle, forearmAngle);
         handAngleToGround = calcHandAngleToGround(bicepAngle, forearmAngle, handAngle);
 
-        // double wristPow = wristComponent.getPIDController().calculate(wristComponent.getEncoder().getPosition(), wristComponent.getSetpointRadians());
-        // Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(wristComponent.getSetpointRadians()));
-        // double arbFF = wristCosineMultiplier * wa2g.getCos() / WRIST_TORQUE_TOTAL;
-        // SmartDashboard.putNumber("wrist arbff", arbFF);
-        // wristPow += arbFF;
-        // wristPow = MathUtil.clamp(wristPow, -MAX_SPEED_WRIST, MAX_SPEED_WRIST);
-        // wristComponent.setSpeed(wristPow);
-
-        // SmartDashboard.putNumber("wrist pid error", wristComponent.getPIDController().getPositionError());
-
         SmartDashboard.putNumber("bicep angle", bicepAngle.getDegrees());
         SmartDashboard.putNumber("bicep angle to ground", bicepAngleToGround.getDegrees());
         SmartDashboard.putNumber("forearm angle", forearmAngle.getDegrees());

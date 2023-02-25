@@ -7,11 +7,14 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.subsystems.*;
+import frc.team5431.titan.core.leds.Blinkin;
+import frc.team5431.titan.core.leds.BlinkinPattern;
 import frc.team5431.titan.core.solenoid.DoubleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
     private Vision vision;
+    private Blinkin leds;
 
     private Arm arm;
     private Manipulator manipulator;
@@ -23,12 +26,12 @@ public class Systems {
     private CANSparkMax armInnerLeft;
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
-    // private CANSparkMax intakeLeft;
-    // private CANSparkMax intakeRight;
+    private CANSparkMax intakeLeft;
+    private CANSparkMax intakeRight;
 
     private DoubleSolenoid paddles;
     private DoubleSolenoid deadwheels_piston;
-    // private DoubleSolenoid intake_piston;
+    private DoubleSolenoid intake_piston;
 
     private Compressor compressor;
     private PneumaticHub phub;
@@ -36,6 +39,7 @@ public class Systems {
     public Systems() {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
+        leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
         armOuterLeft = new CANSparkMax(17, MotorType.kBrushless);
         armOuterRight = new CANSparkMax(18, MotorType.kBrushless);
@@ -46,18 +50,17 @@ public class Systems {
 
         paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
         manipulator = new Manipulator(paddles);
+        paddles.set(DoubleSolenoid.Value.kForward);
 
         deadwheels_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 8);
         deadwheels = new Deadwheels(deadwheels_piston);
-
-        // intakeLeft = new CANSparkMax(21, MotorType.kBrushless);
-        // intakeRight = new CANSparkMax(20, MotorType.kBrushless);
-        // intake_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 12, 13);
-        // intake = new Intake(intakeLeft, intakeRight, intake_piston);
-        // intake_piston.set(DoubleSolenoid.Value.kForward);
-
-        paddles.set(DoubleSolenoid.Value.kForward);
         deadwheels_piston.set(DoubleSolenoid.Value.kForward);
+
+        intakeLeft = new CANSparkMax(21, MotorType.kBrushless);
+        intakeRight = new CANSparkMax(20, MotorType.kBrushless);
+        intake_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 12, 13);
+        intake = new Intake(intakeLeft, intakeRight, intake_piston);
+        intake_piston.set(DoubleSolenoid.Value.kForward);
 
         compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
         phub = new PneumaticHub(Constants.ID_PHUB);
@@ -74,6 +77,10 @@ public class Systems {
 
     public Vision getVision() {
         return vision;
+    }
+
+    public Blinkin getLeds() {
+        return leds;
     }
 
     public Arm getArm() {
