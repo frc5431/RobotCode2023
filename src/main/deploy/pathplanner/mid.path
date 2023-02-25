@@ -45,18 +45,8 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 0.13818181818180825,
-      "names": [
-        "deadwheelDrop"
-      ]
-    },
-    {
-      "position": 0.46545454545452547,
-      "names": [
-        "deadwheelRaise"
-      ]
-    }
-  ]
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
+  "markers": []
 }

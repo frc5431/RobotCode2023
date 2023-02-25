@@ -91,7 +91,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "deadwheelRaise",
           "autoBalance"
         ],
         "executionBehavior": "sequential",
@@ -100,17 +99,14 @@
       }
     }
   ],
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
   "markers": [
     {
       "position": 1.8109090909090626,
       "names": [
         "deadwheelDrop"
-      ]
-    },
-    {
-      "position": 0.0,
-      "names": [
-        "placeHigh"
       ]
     }
   ]
