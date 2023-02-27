@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -13,7 +13,7 @@ public class Manipulator extends SubsystemBase {
 
     public static final DoubleSolenoid.Value OPEN_STATE = kReverse;
     public static final DoubleSolenoid.Value CLOSED_STATE = kForward;
-    private boolean isOpen;
+    public static boolean isOpen;
 
     public Manipulator(DoubleSolenoid piston) {
         this.piston = piston;
@@ -37,6 +37,11 @@ public class Manipulator extends SubsystemBase {
     public void toggle() {
         piston.toggle();
         isOpen = piston.get() == OPEN_STATE;
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("manip open", isOpen);
     }
 
     public boolean isOpen() {

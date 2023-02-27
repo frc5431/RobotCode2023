@@ -10,6 +10,7 @@ import frc.robot.subsystems.*;
 import frc.team5431.titan.core.leds.Blinkin;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 import frc.team5431.titan.core.solenoid.DoubleSolenoid;
+import frc.team5431.titan.core.solenoid.SingleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
@@ -30,7 +31,7 @@ public class Systems {
     private CANSparkMax intakeRight;
 
     private DoubleSolenoid paddles;
-    private DoubleSolenoid deadwheels_piston;
+    private SingleSolenoid deadwheels_piston;
     private DoubleSolenoid intake_piston;
 
     private Compressor compressor;
@@ -52,9 +53,8 @@ public class Systems {
         manipulator = new Manipulator(paddles);
         paddles.set(DoubleSolenoid.Value.kForward);
 
-        deadwheels_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9, 8);
+        deadwheels_piston = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9);
         deadwheels = new Deadwheels(deadwheels_piston);
-        deadwheels_piston.set(DoubleSolenoid.Value.kForward);
 
         intakeLeft = new CANSparkMax(21, MotorType.kBrushless);
         intakeRight = new CANSparkMax(20, MotorType.kBrushless);

@@ -25,6 +25,7 @@ public class DefaultDriveCommand extends CommandBase {
         this.m_rotationSupplier = rotationSupplier;
 
         addRequirements(m_drivetrainSubsystem);
+        setName("DefaultDriveCommand");
     }
 
     @Override
