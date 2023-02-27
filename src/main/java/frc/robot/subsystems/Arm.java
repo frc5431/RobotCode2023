@@ -252,6 +252,10 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
             SmartDashboard.putNumber("shoulder arbff", arbFF);
         });
+
+        outerComponent.setNames("shoulder", "bicep");
+        innerComponent.setNames("elbow", "forearm");
+        wristComponent.setNames("wrist", "hand");
     }
 
     public ArmComponent getOuter() {
@@ -392,8 +396,8 @@ public class Arm extends SubsystemBase {
         public final double MAX_SPEED;
         public final ComponentCalculationConstants ccc;
 
-        public String jointName;
-        public String segmentName;
+        public String jointName = "";
+        public String segmentName = "";
 
         private double setpoint;
 
@@ -472,8 +476,8 @@ public class Arm extends SubsystemBase {
                 double totalMass = ccc.massKG + coneMassKG;
                 double newCOM = (ccc.massKG * getCOMMeters() + coneMassKG * coneDistance) / totalMass;
                 if (!jointName.isEmpty()) {
-                    SmartDashboard.putNumber(jointName.substring(0, 2)+"com wo cone", ccc.massKG * getCOMMeters());
-                    SmartDashboard.putNumber(jointName.substring(0, 2)+"com wt cone", totalMass * newCOM);
+                    SmartDashboard.putNumber(jointName.substring(0, 2)+"com wo conen", ccc.massKG * getCOMMeters());
+                    SmartDashboard.putNumber(jointName.substring(0, 2)+"com wt conen", totalMass * newCOM);
                 }
                 return totalMass * newCOM * GRAV_CONST;
             }
