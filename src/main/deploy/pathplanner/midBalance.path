@@ -95,23 +95,14 @@
       }
     }
   ],
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
   "markers": [
     {
       "position": 2.2690909090909166,
       "names": [
-        "deadwheelDrop"
-      ]
-    },
-    {
-      "position": 0.0,
-      "names": [
-        "placeHigh"
-      ]
-    },
-    {
-      "position": 0.14,
-      "names": [
-        "deadwheelDrop"
+        "event"
       ]
     }
   ]
