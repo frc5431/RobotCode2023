@@ -417,8 +417,8 @@ public class Arm extends SubsystemBase {
 
             controller = motor.getPIDController();
             absoluteEncoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-            // this.setter = setter;
-            this.setter = this::newSetter;
+            this.setter = setter;
+            // this.setter = this::newSetter;
             this.ccc = ccc;
             this.MAX_SPEED = ccc.maxSpeed();
 
@@ -479,14 +479,14 @@ public class Arm extends SubsystemBase {
             }
         }
 
-        private void newSetter(ArmComponent unused) {
+        private void newSetter() {
             Rotation2d a2g = ccc.angleToGroundOfSetpoint.apply(fromRadians(getSetpointRadians()));
             double arbFF = getCosMult() * a2g.getCos() / ccc.totalTorqueNM;
 
             getController().setReference(getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             if (!jointName.isEmpty()) {
-                SmartDashboard.putNumber(jointName+" set", getSetpointRadians());
-                SmartDashboard.putNumber(jointName+" arbff", arbFF);
+                SmartDashboard.putNumber(jointName+" nset", getSetpointRadians());
+                SmartDashboard.putNumber(jointName+" narbff", arbFF);
             }
         }
 
@@ -511,13 +511,13 @@ public class Arm extends SubsystemBase {
 
 
         public void setDegrees(double value) {
-            setpoint = degreesToRadians(value);
-            setter.accept(this);
+            this.setRadians(degreesToRadians(value));
         }
 
         public void setRadians(double value) {
             setpoint = value;
             setter.accept(this);
+            newSetter();
         }
 
         public void add(double degrees) {
