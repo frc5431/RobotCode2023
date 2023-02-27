@@ -58,9 +58,8 @@ public class RobotContainer {
             () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
         ));
 
-        systems.getLeds().setDefaultCommand(runEnd(
-            () -> systems.getLeds().ledCommand(getPatternFromAlliance()), 
-            () -> {}, 
+        systems.getLeds().setDefaultCommand(run(
+            () -> systems.getLeds().set(getPatternFromAlliance()), 
             systems.getLeds()));
 
         // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
@@ -298,11 +297,10 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
-
-        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void robotPeriodic() {
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void teleopInit() {
