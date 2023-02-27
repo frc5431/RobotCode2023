@@ -481,7 +481,7 @@ public class Arm extends SubsystemBase {
 
         private void newSetter() {
             Rotation2d a2g = ccc.angleToGroundOfSetpoint.apply(fromRadians(getSetpointRadians()));
-            double arbFF = getCosMult() * a2g.getCos() / ccc.totalTorqueNM;
+            double arbFF = ccc.directionMultiplier * getCosMult() * a2g.getCos() / ccc.totalTorqueNM;
 
             getController().setReference(getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             if (!jointName.isEmpty()) {
