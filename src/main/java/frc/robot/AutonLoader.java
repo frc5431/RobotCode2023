@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutoAligner;
-import frc.robot.subsystems.Drivebase; 
+import frc.robot.subsystems.Drivebase;
+import frc.robot.subsystems.Vision; 
 
 // TODO: Custom widget!!! That complains if you don't choose...
 
@@ -97,4 +98,7 @@ public class AutonLoader {
         }
     }
 
+    public void aprilTagAlign(Vision Vision){
+     Vision.detect();
+    }
 }
