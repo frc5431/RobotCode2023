@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutoAligner;
 import frc.robot.subsystems.Drivebase;
-import frc.robot.subsystems.Vision;
 import frc.robot.util.PresetPosition; 
 
 public class AutonLoader {
@@ -49,14 +49,22 @@ public class AutonLoader {
         eventMap.put("apriltagAlign", new RunCommand(() -> systems.getVision().detect()));
         eventMap.put("manipulatorGrab", new RunCommand(() -> systems.getManipulator().close()));
         eventMap.put("autoBalance", new RunCommand(() -> systems.getDeadwheels().retract()).andThen (new AutoAligner(drivebase)));        
-            eventMap.put("placeHigh", new SequentialCommandGroup(systems.getArm().getWrist().setDegreesCommand(0)
-            .andThen(new ArmToGoalCommand(systems,
-                PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
-                    ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY)))
-                        .andThen(new RunCommand(() -> systems.getManipulator().open()))
-                            .andThen((PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
-                                ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-                                    ))); 
+        eventMap.put("placeHigh", new SequentialCommandGroup(systems.getArm().getWrist().setDegreesCommand(0))
+            .andThen(new ArmToGoalCommand(systems, PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), 
+                Constants.wristHighAngle), ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY)).andThen(new InstantCommand(() ->systems.getManipulator().open()))
+                    .andThen(new ArmToGoalCommand(systems,
+                    PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
+                        ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY)));
+            
+        // eventMap.put("placeHigh", new SequentialCommandGroup(systems.getArm().getWrist().setDegreesCommand(0)
+        //     .andThen(new ArmToGoalCommand(systems,
+        //         PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
+        //             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY)))
+        //                 .andThen(new RunCommand(() -> systems.getManipulator().open()))
+        //                     .andThen(new InstantCommand(() -> PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
+        //                     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        //                 )));
+                                
                         
         autoBuilder = new SwerveAutoBuilder(
                 drivebase::getPosition,
