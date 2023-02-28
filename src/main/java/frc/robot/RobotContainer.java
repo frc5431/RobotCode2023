@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
 import frc.robot.util.PresetPosition;
+import frc.robot.util.Buttonboard.Alphabet;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
@@ -38,14 +40,15 @@ public class RobotContainer {
 
 
     private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
+    private final Buttonboard operator = new Buttonboard(2, 7, 3);
     private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
 
     public RobotContainer() {
 
         driver.setDeadzone(0.15);
-        operator.setDeadzone(0.15);
+        operatorJoystick.setDeadzone(0.15);
 
         drivebase.setDefaultCommand(new DefaultDriveCommand(
                 systems,
@@ -153,18 +156,18 @@ public class RobotContainer {
             false
         ));
 
-        operator.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
+        operatorJoystick.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
             .andThen(waitSeconds(5)));
-        operator.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
+        operatorJoystick.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
             .andThen(waitSeconds(5)));
         driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE));
         driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).withTimeout(150));
 
-        operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        operator.a().onTrue(systems.getIntake().intakeStow());
-        operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        operator.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
+        operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
+        operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+        operatorJoystick.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
 /* 
         // stufff for when button board works
         operator.A1().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
@@ -188,7 +191,7 @@ public class RobotContainer {
         //     false
         // ));
 
-        operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
+        operatorJoystick.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
             systems,
             new Translation2d(Constants.armGroundX, Constants.armGroundY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
@@ -196,7 +199,7 @@ public class RobotContainer {
             true
         ));
 
-        operator.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
+        operatorJoystick.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
 
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
@@ -206,7 +209,7 @@ public class RobotContainer {
         ));
 
         // In  theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operator.povRight().onTrue( // High node
+        operatorJoystick.povRight().onTrue( // High node
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
@@ -214,7 +217,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+        operatorJoystick.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
             new Translation2d(Constants.armMidX, Constants.armMidY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -225,8 +228,8 @@ public class RobotContainer {
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
         // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
         // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
-        operator.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
-        operator.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
+        operatorJoystick.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
+        operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
     }
 
@@ -262,8 +265,8 @@ public class RobotContainer {
     public void teleopPeriodic() {
         // TODO extract into default command for arm
         var gp = systems.getArm().getGoal();
-        double leftx = operator.getLeftX();
-        double lefty = -operator.getLeftY();
+        double leftx = operatorJoystick.getLeftX();
+        double lefty = -operatorJoystick.getLeftY();
         if (Math.abs(leftx) < 0.15) leftx = 0;
         if (Math.abs(lefty) < 0.15) lefty = 0;
         leftx *= 0.01;
@@ -289,6 +292,9 @@ public class RobotContainer {
     }
 
     public void robotPeriodic() {
+        operator.Iterate().ThenForEach(t -> {
+            SmartDashboard.putBoolean(t.row().getLetter() + t.column(), t.trigger().getAsBoolean());
+        });
     }
 
     public void teleopInit() {
