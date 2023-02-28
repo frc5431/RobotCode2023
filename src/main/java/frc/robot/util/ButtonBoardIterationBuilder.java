@@ -2,7 +2,6 @@ package frc.robot.util;
 
 import java.util.function.Consumer;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.Buttonboard.Alphabet;
 
@@ -13,13 +12,14 @@ public class ButtonBoardIterationBuilder {
     // ArrayList<Buttonboard.Alphabet> excluding = new ArrayList<>();
     
 
-    int fromCol = 0;
-    int toCol = buttonBoard.width;
+    int fromCol = 1;
+    int toCol;
 
 
     public ButtonBoardIterationBuilder(Buttonboard bb) {
         this.buttonBoard = bb;
-        to = Buttonboard.getAlphabetFromIndex(bb.width);
+        to = Buttonboard.getAlphabetFromIndex(bb.height);
+        toCol = bb.width;
     }
 
     public ButtonBoardIterationBuilder FromRow(Buttonboard.Alphabet from) {
@@ -43,8 +43,8 @@ public class ButtonBoardIterationBuilder {
     }
 
     public ButtonBoardIterationBuilder ThenForEach(Consumer<IterationInfo> foreach) {
-        for(int i = from.getIndex(); i < to.getIndex(); i++) {
-            for(int j = fromCol; j < toCol; j++) {
+        for(int i = from.getIndex(); i <= to.getIndex(); i++) {
+            for(int j = fromCol; j <= toCol; j++) {
                 Alphabet letter = Buttonboard.getAlphabetFromIndex(i);
                 foreach.accept(new IterationInfo(letter, j, buttonBoard.buttonAt(letter, j)));
             }

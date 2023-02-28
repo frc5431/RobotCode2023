@@ -15,7 +15,6 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
 import frc.robot.util.PresetPosition;
-import frc.robot.util.Buttonboard.Alphabet;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
@@ -170,23 +169,39 @@ public class RobotContainer {
         operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
         // operatorJoystick.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
 
-// merge
+// Quick merge, may be the same...
 
         // operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         // operator.a().onTrue(systems.getIntake().intakeStow());
         // operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
         // operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
         // operator.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
-/* 
+ 
         // stufff for when button board works
-        operator.A1().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
-        operator.B1().whileTrue(runOnce(() -> systems.getArm().getWrist().add(-1)));
-        operator.A5().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW).withTimeout(5))
-        .onTrue(systems.getLeds().ledCommand(getPatternFromAlliance()));
-        operator.A6().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(5))
-        .onTrue(systems.getLeds().ledCommand(getPatternFromAlliance()));
-        operator.A7().onTrue().ledCommand(getPatternFromAlliance());
-*/ 
+        operator.A1().whileTrue(
+            runOnce(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() + 1))
+        );
+        
+        operator.B1().whileTrue(
+            runOnce(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() - 1))
+        );
+
+        operator.A5().onTrue(
+            systems.getLeds().ledCommand(BlinkinPattern.YELLOW).withTimeout(5)
+        ).onTrue(
+            systems.getLeds().ledCommand(getPatternFromAlliance())
+        );
+        
+        operator.A6().onTrue(
+            systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(5)
+        ).onTrue(
+            systems.getLeds().ledCommand(getPatternFromAlliance())
+        );
+        
+        operator.A7().onTrue(
+            systems.getLeds().ledCommand(getPatternFromAlliance())
+        );
+
 
 
 

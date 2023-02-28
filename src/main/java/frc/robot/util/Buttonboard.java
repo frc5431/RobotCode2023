@@ -3,8 +3,6 @@ package frc.robot.util;
 import java.util.HashMap;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -16,6 +14,7 @@ public class Buttonboard extends CommandGenericHID {
     public Buttonboard(int port, int width, int height) {
         super(port);
         this.width = width;
+        this.height = height;
     }
 
     public Trigger buttonAt(Alphabet vertical, int horizontal) {
@@ -34,7 +33,7 @@ public class Buttonboard extends CommandGenericHID {
             throw new IndexOutOfBoundsException("Number, " + x + " is larger than your button board width, " + width);
         }
         if(y > height) {
-            throw new IndexOutOfBoundsException("Letter at index " + y + " is larger than your button board width, " + height);
+            throw new IndexOutOfBoundsException("Letter at index " + y + " is larger than your button board hieght, " + height);
         }
 
         Trigger foundTrigger = button(y * width + x);
