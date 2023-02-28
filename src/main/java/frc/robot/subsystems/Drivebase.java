@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -92,6 +93,8 @@ public class Drivebase extends SubsystemBase {
     private final SlewRateLimiter filter_vy;
     private final SlewRateLimiter filter_or;
 
+    private final Field2d field2d;
+
     public Drivebase() {
         m_pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
         
@@ -153,6 +156,8 @@ public class Drivebase extends SubsystemBase {
         // chassisSpeedsLayout.addNumber("vX", () -> m_chassisSpeeds.vxMetersPerSecond);
         // chassisSpeedsLayout.addNumber("vY", () -> m_chassisSpeeds.vyMetersPerSecond);
         // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
+
+        field2d = new Field2d();
     }
 
 
@@ -224,6 +229,7 @@ public class Drivebase extends SubsystemBase {
     @Override
     public void periodic() {
         m_poseEstimator.update(getGyroscopeRotation(), getPositions());
+        field2d.setRobotPose(getPosition());
         
         final double zeroDeadzone = 0.001;
 
@@ -246,6 +252,7 @@ public class Drivebase extends SubsystemBase {
         SmartDashboard.putNumber("DT Y spd", m_chassisSpeeds.vyMetersPerSecond);
         SmartDashboard.putNumber("DT O rot", m_chassisSpeeds.omegaRadiansPerSecond);
         SmartDashboard.putNumber("Heading", getGyroscopeRotation().getDegrees());
+        SmartDashboard.putData("Field", field2d);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 

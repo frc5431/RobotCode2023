@@ -121,6 +121,11 @@ public class Arm extends SubsystemBase {
         outerArmLeft.setIdleMode(IdleMode.kBrake);
         outerArmRight.setIdleMode(IdleMode.kBrake);
 
+        outerArmLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
+        outerArmLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        // outerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // outerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+
         innerArmLeft.setInverted(true);
         innerArmRight.follow(innerArmLeft, true);
         innerArmLeft.setIdleMode(IdleMode.kBrake);
@@ -128,17 +133,21 @@ public class Arm extends SubsystemBase {
 
         innerArmLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
         innerArmLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
-
-        // innerArm.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
-        // innerArm.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+        // innerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // innerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
 
         wrist.setInverted(true);
         wrist.setIdleMode(IdleMode.kBrake);
+        
+        wrist.enableSoftLimit(SoftLimitDirection.kForward, false);
+        wrist.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        // wrist.setSoftLimit(SoftLimitDirection.kForward, (float) ( Math.PI/2 + 0.1));
+        // wrist.setSoftLimit(SoftLimitDirection.kReverse, (float) ((-Math.PI/2 - 0.1)));
 
         sparks = List.of(outerArmLeft, outerArmRight, innerArmLeft, innerArmRight, wrist);
 
         sparks.forEach((spark) -> {
-            spark.enableVoltageCompensation(12.0);
+            // spark.enableVoltageCompensation(12.0);
             spark.setSmartCurrentLimit(40, 30);
             spark.burnFlash();
         });
@@ -153,7 +162,7 @@ public class Arm extends SubsystemBase {
         });
 
         innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
-            Rotation2d fa2g = calcForearmAngleToGround(bicepAngle, fromRadians(component.getSetpointRadians()));
+            Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = -getElbowCosMult() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
@@ -162,7 +171,7 @@ public class Arm extends SubsystemBase {
         });
 
         wristComponent = new ArmComponent(wrist, new MotionMagic(0.15, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
-            Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(component.getSetpointRadians()));
+            Rotation2d wa2g = calcHandAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(innerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = getWristCosMult() * wa2g.getCos() / WRIST_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
@@ -218,7 +227,7 @@ public class Arm extends SubsystemBase {
 
     public double getElbowCosMult() {
         if (Manipulator.isOpen) {
-            return elbowCosineMultiplierNoCOM * getCOMBicepMeters();
+            return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         } else {
             double coneDistance = Units.inchesToMeters(26+11);
             double totalMass = elbowMassKG + coneMassKG;
@@ -454,13 +463,13 @@ public class Arm extends SubsystemBase {
         // be scheduled in parallel
         // TODO make ArmComponent into its own SubsystemBase
         public Command setDegreesCommand(double degrees) {
-            return runOnce(() -> this.setDegrees(degrees))
-                    .andThen(Commands.waitUntil(this::atSetpoint));
+            return runOnce(() -> this.setDegrees(degrees));
+                    // .andThen(Commands.waitUntil(this::atSetpoint));
         }
 
         public Command setRadiansCommand(double radians) {
-            return runOnce(() -> this.setRadians(radians))
-                    .andThen(Commands.waitUntil(this::atSetpoint));
+            return runOnce(() -> this.setRadians(radians));
+                    // .andThen(Commands.waitUntil(this::atSetpoint));
         }
     }
 }

@@ -9,7 +9,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -38,7 +37,6 @@ public class RobotContainer {
     private final Systems systems = new Systems();
     public final Drivebase drivebase = systems.getDrivebase();
 
-
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
     private final Buttonboard operator = new Buttonboard(2, 7, 3);
@@ -56,9 +54,8 @@ public class RobotContainer {
                 () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
                 () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
-        systems.getLeds().setDefaultCommand(runEnd(
-            () -> systems.getLeds().ledCommand(getPatternFromAlliance()), 
-            () -> {}, 
+        systems.getLeds().setDefaultCommand(run(
+            () -> systems.getLeds().set(getPatternFromAlliance()), 
             systems.getLeds()));
 
         // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
@@ -82,6 +79,10 @@ public class RobotContainer {
             SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
             SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         }, 0.3));
+
+        Robot.periodics.add(Pair.of(() -> {
+            systems.getVision().detect();
+        }, 0.2));
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = systems.getArm().getSparks();
@@ -167,7 +168,15 @@ public class RobotContainer {
         operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
         operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
         operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        operatorJoystick.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
+        // operatorJoystick.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
+
+// merge
+
+        // operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        // operator.a().onTrue(systems.getIntake().intakeStow());
+        // operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        // operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+        // operator.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
 /* 
         // stufff for when button board works
         operator.A1().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
@@ -287,14 +296,14 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
-
-        SmartDashboard.putData(CommandScheduler.getInstance());
     }
 
     public void robotPeriodic() {
         operator.Iterate().ThenForEach(t -> {
             SmartDashboard.putBoolean(t.row().getLetter() + t.column(), t.trigger().getAsBoolean());
         });
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        systems.getVision().detect();
     }
 
     public void teleopInit() {

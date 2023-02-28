@@ -7,12 +7,18 @@ import com.pathplanner.lib.auto.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final Transform3d CAMERA_OFFSET = new Transform3d();
+    public static final Transform3d CAMERA_OFFSET = new Transform3d(
+        new Translation3d(Units.inchesToMeters(10.5), Units.inchesToMeters(11), Units.inchesToMeters(39.5)),
+        new Rotation3d()
+    );
 
-    public static final double CAMERA_HEIGHT_METERS = 0;
+    // public static final double CAMERA_HEIGHT_METERS = 0;
 
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
@@ -77,10 +83,10 @@ public class Constants {
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
     public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(111.533); // 330.645
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(123.047); // 115.664
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(53.701); // 115.664
 
     //#region Auto Constants
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);

@@ -312,7 +312,7 @@
               "_showGlyph": false
             }
           },
-          "2,5": {
+          "1,5": {
             "size": [
               1,
               1
@@ -325,7 +325,7 @@
               "_showGlyph": false
             }
           },
-          "1,6": {
+          "0,6": {
             "size": [
               1,
               1
@@ -338,7 +338,7 @@
               "_showGlyph": false
             }
           },
-          "5,6": {
+          "3,6": {
             "size": [
               1,
               1
@@ -351,7 +351,7 @@
               "_showGlyph": false
             }
           },
-          "4,5": {
+          "2,5": {
             "size": [
               1,
               1
@@ -364,7 +364,7 @@
               "_showGlyph": false
             }
           },
-          "1,8": {
+          "0,7": {
             "size": [
               1,
               1
@@ -377,7 +377,7 @@
               "_showGlyph": false
             }
           },
-          "2,9": {
+          "1,8": {
             "size": [
               1,
               1
@@ -390,7 +390,7 @@
               "_showGlyph": false
             }
           },
-          "4,9": {
+          "2,8": {
             "size": [
               1,
               1
@@ -403,7 +403,7 @@
               "_showGlyph": false
             }
           },
-          "5,8": {
+          "3,7": {
             "size": [
               1,
               1
@@ -513,9 +513,9 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "20,4": {
+          "23,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -526,9 +526,9 @@
               "_showGlyph": false
             }
           },
-          "23,4": {
+          "24,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -539,9 +539,9 @@
               "_showGlyph": false
             }
           },
-          "20,5": {
+          "23,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -552,9 +552,9 @@
               "_showGlyph": false
             }
           },
-          "23,5": {
+          "24,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -565,7 +565,7 @@
               "_showGlyph": false
             }
           },
-          "21,6": {
+          "23,4": {
             "size": [
               2,
               1
@@ -591,10 +591,10 @@
               "_showGlyph": false
             }
           },
-          "6,7": {
+          "4,6": {
             "size": [
-              11,
-              3
+              5,
+              2
             ],
             "content": {
               "_type": "Network Table Tree",
@@ -643,7 +643,7 @@
               "_showGlyph": false
             }
           },
-          "22,0": {
+          "23,0": {
             "size": [
               2,
               1
@@ -656,7 +656,7 @@
               "_showGlyph": false
             }
           },
-          "22,1": {
+          "23,1": {
             "size": [
               2,
               1
@@ -684,7 +684,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "24,0": {
+          "23,6": {
             "size": [
               2,
               1
@@ -697,7 +697,7 @@
               "_showGlyph": false
             }
           },
-          "24,1": {
+          "23,7": {
             "size": [
               2,
               1
@@ -708,6 +708,199 @@
               "_title": "wrcom wt cone",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "16,3": {
+            "size": [
+              7,
+              7
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://photonvision_Port_1182_MJPEG_Server",
+              "_title": "photonvision_Port_1182_MJPEG_Server",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "6,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shoulder nset",
+              "_title": "shoulder nset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "6,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shoulder narbff",
+              "_title": "shoulder narbff",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elbow nset",
+              "_title": "elbow nset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elbow narbff",
+              "_title": "elbow narbff",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "13,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist nset",
+              "_title": "wrist nset",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "13,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist narbff",
+              "_title": "wrist narbff",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shcom wo conen",
+              "_title": "shcom wo conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shcom wt conen",
+              "_title": "shcom wt conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elcom wo conen",
+              "_title": "elcom wo conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elcom wt conen",
+              "_title": "elcom wt conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,6": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrcom wo conen",
+              "_title": "wrcom wo conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "25,7": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrcom wt conen",
+              "_title": "wrcom wt conen",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "9,6": {
+            "size": [
+              5,
+              4
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///SmartDashboard/Field",
+              "_title": "Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "A2023_Charged_Up",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
             }
           }
         }
