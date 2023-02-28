@@ -121,6 +121,11 @@ public class Arm extends SubsystemBase {
         outerArmLeft.setIdleMode(IdleMode.kBrake);
         outerArmRight.setIdleMode(IdleMode.kBrake);
 
+        outerArmLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
+        outerArmLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        // outerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // outerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+
         innerArmLeft.setInverted(true);
         innerArmRight.follow(innerArmLeft, true);
         innerArmLeft.setIdleMode(IdleMode.kBrake);
@@ -128,17 +133,21 @@ public class Arm extends SubsystemBase {
 
         innerArmLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
         innerArmLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
-
-        // innerArm.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
-        // innerArm.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+        // innerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // innerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
 
         wrist.setInverted(true);
         wrist.setIdleMode(IdleMode.kBrake);
+        
+        wrist.enableSoftLimit(SoftLimitDirection.kForward, false);
+        wrist.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        // wrist.setSoftLimit(SoftLimitDirection.kForward, (float) ( Math.PI/2 + 0.1));
+        // wrist.setSoftLimit(SoftLimitDirection.kReverse, (float) ((-Math.PI/2 - 0.1)));
 
         sparks = List.of(outerArmLeft, outerArmRight, innerArmLeft, innerArmRight, wrist);
 
         sparks.forEach((spark) -> {
-            spark.enableVoltageCompensation(12.0);
+            // spark.enableVoltageCompensation(12.0);
             spark.setSmartCurrentLimit(40, 30);
             spark.burnFlash();
         });
@@ -454,13 +463,13 @@ public class Arm extends SubsystemBase {
         // be scheduled in parallel
         // TODO make ArmComponent into its own SubsystemBase
         public Command setDegreesCommand(double degrees) {
-            return runOnce(() -> this.setDegrees(degrees))
-                    .andThen(Commands.waitUntil(this::atSetpoint));
+            return runOnce(() -> this.setDegrees(degrees));
+                    // .andThen(Commands.waitUntil(this::atSetpoint));
         }
 
         public Command setRadiansCommand(double radians) {
-            return runOnce(() -> this.setRadians(radians))
-                    .andThen(Commands.waitUntil(this::atSetpoint));
+            return runOnce(() -> this.setRadians(radians));
+                    // .andThen(Commands.waitUntil(this::atSetpoint));
         }
     }
 }
