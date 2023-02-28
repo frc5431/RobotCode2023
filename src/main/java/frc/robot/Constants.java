@@ -38,6 +38,8 @@ public class Constants {
     public static final double armStowX = 5.472;
     public static final double armStowY = -33;
     public static final double wristStowAngle = 105.32;
+    public static final double armManipUnstuckX = -7;
+    public static final double armManipUnstuckY = -30;
 
 
     static AprilTagFieldLayout getLayout() {

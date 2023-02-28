@@ -202,9 +202,6 @@ public class RobotContainer {
             systems.getLeds().ledCommand(getPatternFromAlliance())
         );
 
-
-
-
         // operator.start().whileTrue(systems.getIntake().runSameDirection(false));
 
         // operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
@@ -214,6 +211,12 @@ public class RobotContainer {
         //     104, // 104?
         //     false
         // ));
+
+        operatorJoystick.rightBumper().onTrue(new ArmToGoalCommand( // Manip Unstuck
+            systems,
+            new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
 
         operatorJoystick.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
             systems,
