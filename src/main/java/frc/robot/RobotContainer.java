@@ -186,7 +186,7 @@ public class RobotContainer {
         operator.A6().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(5))
         .onTrue(systems.getLeds().ledCommand(getPatternFromAlliance()));
         operator.A7().onTrue().ledCommand(getPatternFromAlliance());
-*/
+*/ 
 
 
 
