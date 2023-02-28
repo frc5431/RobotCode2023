@@ -438,7 +438,9 @@ public class Arm extends SubsystemBase {
         }
 
         public boolean atSetpoint() {
-            return Math.abs(absoluteEncoder.getPosition() - MathUtil.inputModulus(setpoint, 0, 2*Math.PI)) < SETPOINT_POSITION_TOLERANCE 
+            Rotation2d currentPosition = fromRadians(absoluteEncoder.getPosition());
+            Rotation2d setpointRot2d = fromRadians(setpoint);
+            return Math.abs(setpointRot2d.minus(currentPosition).getRadians()) < SETPOINT_POSITION_TOLERANCE 
                 && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE
                 ;
         }
