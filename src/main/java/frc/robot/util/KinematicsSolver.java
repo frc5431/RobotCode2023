@@ -29,21 +29,16 @@ public class KinematicsSolver {
         return Math.acos(p1/p2);
     }
 
-    private double solveSegment1Angle(double q2, Translation2d goal, boolean chooseTop) {
+    private double solveSegment1Angle(double q2, Translation2d goal) {
         double p1 = Math.atan2(goal.getY(), goal.getX());
         double p2 = Math.atan2(l2 * Math.sin(q2), l1 + l2 * Math.cos(q2));
 
-        // I could p1 + (cpb ? -p2 : p2) but this resembles the ik equation better
-        return (chooseTop ? p1 + p2 : p1 - p2); 
+        return p1 - p2;
     }
 
     public Pair<Double, Double> posToAngles(Translation2d goal) {
-        return posToAngles(goal, !preferTopByDefault);
-    }
-
-    public Pair<Double, Double> posToAngles(Translation2d goal, boolean chooseTop) {
-        double q2 = (chooseTop ? 1 : -1) * solveSegment2Angle(goal);
-        double q1 = solveSegment1Angle(q2, goal, chooseTop);
+        double q2 = (preferTopByDefault ? -1 : 1) * solveSegment2Angle(goal); //Replace once implemented
+        double q1 = solveSegment1Angle(q2, goal);
 
         return Pair.of(q1 + Math.PI/2, -q2);
     }

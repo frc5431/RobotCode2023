@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.ArmMoveCommandGroup;
@@ -34,6 +35,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotContainer {
@@ -222,9 +224,7 @@ public class RobotContainer {
         operator.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
         operator.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
-        if(Math.abs(operator.getLeftY()) < 0.2) {
-            Arm.solver.preferTopByDefault = operator.getLeftY() < 0;
-        }
+        operator.rightStick().onTrue(new InstantCommand(() -> {Arm.solver.preferTopByDefault = !Arm.solver.preferTopByDefault;}));
     }
 
     private void initAutoPaths() {
@@ -286,6 +286,10 @@ public class RobotContainer {
         var gp = systems.getArm().getGoal();
         double leftx = operator.getLeftX();
         double lefty = -operator.getLeftY();
+        if (RobotBase.isSimulation()) {
+            lefty = -lefty;
+            leftx = -leftx;
+        }
         if (Math.abs(leftx) < 0.15) leftx = 0;
         if (Math.abs(lefty) < 0.15) lefty = 0;
         leftx *= 0.01;

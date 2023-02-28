@@ -179,15 +179,15 @@ public class Arm extends SubsystemBase {
 
         // EncViz
         Mechanism2d mech = new Mechanism2d(4, 4);
-        var root = mech.getRoot("arm", 0, 1.3141);
+        var root = mech.getRoot("arm", 2, 1.3141);
 
-        bicepEncViz = root.append(new MechanismLigament2d("shoulder", solver.getSegment1Length(), 90.111));
-        forearmEncViz = bicepEncViz.append(new MechanismLigament2d("elbow", solver.getSegment2Length(), 22.222));
-        manipEncViz = forearmEncViz.append(new MechanismLigament2d("wrist", 0.12, -45.333));
+        // bicepEncViz = root.append(new MechanismLigament2d("shoulder", solver.getSegment1Length(), Units.radiansToDegrees(Math.PI*2)));
+        // forearmEncViz = bicepEncViz.append(new MechanismLigament2d("elbow", solver.getSegment2Length(), 180));
+        // manipEncViz = forearmEncViz.append(new MechanismLigament2d("wrist", 0.12, -45.333));
 
         var blue = new Color8Bit(Color.kBlue);
-        bicepSetpointViz = root.append(new MechanismLigament2d("shoulderSet", solver.getSegment1Length(), 90.111, 3, blue));
-        forearmSetpointViz = bicepSetpointViz.append(new MechanismLigament2d("elbowSet", solver.getSegment2Length(), 22.222, 3, blue));
+        bicepSetpointViz = root.append(new MechanismLigament2d("shoulderSet", solver.getSegment1Length(), 0, 3, blue));
+        forearmSetpointViz = bicepSetpointViz.append(new MechanismLigament2d("elbowSet", solver.getSegment2Length(), 0, 3, blue));
         manipSetpointViz = forearmSetpointViz.append(new MechanismLigament2d("wristSet", 0.12, -45.333, 3, blue));
 
         SmartDashboard.putData("ArmViz", mech);

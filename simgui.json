@@ -2,11 +2,12 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/ArmViz": "Mechanism2d"
+      "/SmartDashboard/ArmViz": "Mechanism2d",
+      "/SmartDashboard/Scheduler": "Scheduler"
     },
     "windows": {
       "/SmartDashboard/ArmViz": {
-        "image": "C:\\Users\\joshu\\OneDrive\\Pictures\\baller_cat.png",
+        "image": "C:\\Users\\rudy\\OneDrive\\Pictures\\clown.png",
         "window": {
           "visible": true
         }
@@ -15,6 +16,9 @@
   },
   "NetworkTables": {
     "transitory": {
+      "Shuffleboard": {
+        "open": true
+      },
       "SmartDashboard": {
         "open": true
       }
