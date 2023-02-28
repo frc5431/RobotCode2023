@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
   public Drivebase drivebase;
-  public PhotonCamera camera = new PhotonCamera("photonvision");
+  public PhotonCamera camera = new PhotonCamera("OV5647");
 
   public Vision(Drivebase drivebase) {
     this.drivebase = drivebase;
@@ -27,6 +27,7 @@ public class Vision extends SubsystemBase {
 
     return apriltagPosition.orElse(null);
   }
+
   public void detect() {
     var res = camera.getLatestResult();
 
@@ -36,7 +37,10 @@ public class Vision extends SubsystemBase {
 
       var camToTargetTrans = res.getBestTarget().getBestCameraToTarget();
 
-      var camPose = getAprilTagPosition(res.getBestTarget()).transformBy(camToTargetTrans.inverse());
+      Pose3d atpos = getAprilTagPosition(res.getBestTarget());
+      if (atpos == null) return;
+
+      var camPose = atpos.transformBy(camToTargetTrans.inverse());
 
       drivebase.addVisionMeasurement(
             camPose.transformBy(Constants.CAMERA_OFFSET).toPose2d(), imageCaptureTime
