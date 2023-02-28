@@ -24,7 +24,7 @@ public class Buttonboard extends CommandGenericHID {
         }
 
         // This starts it off as 0
-        int y = vertical.index;
+        int y = vertical.getIndex();
         int x = horizontal;
         if (x <= 0) {
             throw new IndexOutOfBoundsException("Number starts at 1, not 0");
@@ -42,7 +42,7 @@ public class Buttonboard extends CommandGenericHID {
         return foundTrigger;
     }
 
-    public ButtonBoardIterationBuilder Iterate() {
+    public ButtonBoardIterationBuilder iterate() {
         return new ButtonBoardIterationBuilder(this);
     }
 
@@ -131,32 +131,24 @@ public class Buttonboard extends CommandGenericHID {
     }
 
     public enum Alphabet {
-        A(1, "A"), B(2, "B"), C(3, "C"), D(4, "D"), E(5, "E"), F(6, "F"), G(7, "G"), H(8, "H"), I(9, "I"), J(10, "J"), K(11, "K"), L(12, "L"), M(13, "M"), N(14, "N"), O(15, "O"), P(16, "P"), Q(17, "Q"), R(18, "R"), S(19, "S"), T(20, "T"), U(21, "U"), V(22, "V"), W(23, "W"), X(24, "X"), Y(25, "Y"), Z(26, "Z");
-        
-        private final int index;
-        private final String letter;
-        
-        private Alphabet(int index, String letter) {
-            this.index = index;
-            this.letter = letter;
-        }
-        
-        public int getIndex() {
-            return index;
-        }
-        
-        public String getLetter() {
-            return letter;
-        }
-    }
-    
+        A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z;
 
-    public static Alphabet getAlphabetFromIndex(int index) {
-        for (Alphabet alphabet : Alphabet.values()) {
-            if (alphabet.getIndex() == index) {
-                return alphabet;
+        private Alphabet() { }
+
+        public int getIndex() {
+            return this.ordinal()+1;
+        }
+
+        public String getLetter() {
+            return this.name();
+        }
+
+        public static Alphabet fromIndex(int index) {
+            try {
+                return Alphabet.values()[index-1];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                throw new IllegalArgumentException("Invalid index: " + index);
             }
         }
-        throw new IllegalArgumentException("Invalid index: " + index);
     }
 }

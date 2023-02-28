@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team5431.titan.core.misc.Logger;
 
 import java.util.ArrayList;
 
@@ -22,7 +25,14 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     DriverStation.silenceJoystickConnectionWarning(false);
     m_robotContainer = new RobotContainer();
-    // Initialization Should Have Finished
+
+    try {
+      CameraServer.startAutomaticCapture();
+    } catch (VideoException e) {
+      Logger.l("Unable to start automatic capture for CameraServer!");
+    }
+
+    // initialization should have finished, so register periodics
     for(var period : periodics) {
       addPeriodic(period.getFirst(), period.getSecond());
     }

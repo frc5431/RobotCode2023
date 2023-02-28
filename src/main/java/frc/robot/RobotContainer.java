@@ -29,6 +29,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivebase;
 
@@ -38,7 +40,7 @@ public class RobotContainer {
 
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
-    private final Buttonboard operator = new Buttonboard(2, 7, 3);
+    private final Buttonboard operator = new Buttonboard(3, 7, 3);
     private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
 
@@ -115,6 +117,12 @@ public class RobotContainer {
         }, 0.1));
         autonLoader = new AutonLoader(systems);
 
+        ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
+        operator.iterate().forEach(t -> {
+            tabBB.addBoolean(t.row().getLetter() + t.column(), t.trigger()::getAsBoolean)
+            .withSize(1,1)
+            .withPosition(t.column(), t.row().getIndex());
+        });
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
@@ -167,37 +175,24 @@ public class RobotContainer {
         operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
         operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
         operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        // operatorJoystick.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
-
-// Quick merge, may be the same...
-
-        // operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        // operator.a().onTrue(systems.getIntake().intakeStow());
-        // operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        // operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        // operator.y().whileTrue(runOnce(() -> systems.getArm().getWrist().add(1)));
  
         // stufff for when button board works
         operator.A1().whileTrue(
-            runOnce(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() + 1))
+            run(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() + 1))
         );
         
         operator.B1().whileTrue(
-            runOnce(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() - 1))
+            run(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() - 1))
         );
 
         operator.A5().onTrue(
-            systems.getLeds().ledCommand(BlinkinPattern.YELLOW).withTimeout(5)
-        ).onTrue(
-            systems.getLeds().ledCommand(getPatternFromAlliance())
+            systems.getLeds().ledCommand(BlinkinPattern.YELLOW).withTimeout(8)
         );
         
         operator.A6().onTrue(
-            systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(5)
-        ).onTrue(
-            systems.getLeds().ledCommand(getPatternFromAlliance())
+            systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(8)
         );
-        
+
         operator.A7().onTrue(
             systems.getLeds().ledCommand(getPatternFromAlliance())
         );
@@ -212,21 +207,19 @@ public class RobotContainer {
         //     false
         // ));
 
-        operatorJoystick.rightBumper().onTrue(new ArmToGoalCommand( // Manip Unstuck
+        operator.B4().onTrue(new ArmToGoalCommand( // Manip Unstuck
             systems,
             new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
+        operator.C2().onTrue(new ArmToGoalCommand( // Normal Grab
             systems,
-            new Translation2d(Constants.armGroundX, Constants.armGroundY),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            Constants.wristGroundAngle,
-            true
+            PresetPosition.fromGoal(new Translation2d(Constants.armGroundX, Constants.armGroundY), Constants.wristGroundAngle),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
+        operator.C1().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
 
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
@@ -235,8 +228,8 @@ public class RobotContainer {
             true
         ));
 
-        // In  theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operatorJoystick.povRight().onTrue( // High node
+        // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
+        operator.A2().onTrue( // High node
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
@@ -244,7 +237,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operatorJoystick.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+        operator.B2().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
             new Translation2d(Constants.armMidX, Constants.armMidY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -317,11 +310,7 @@ public class RobotContainer {
     }
 
     public void robotPeriodic() {
-        operator.Iterate().ThenForEach(t -> {
-            SmartDashboard.putBoolean(t.row().getLetter() + t.column(), t.trigger().getAsBoolean());
-        });
         SmartDashboard.putData(CommandScheduler.getInstance());
-        systems.getVision().detect();
     }
 
     public void teleopInit() {
