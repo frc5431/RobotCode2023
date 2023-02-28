@@ -45,10 +45,21 @@ public class ArmToGoalCommand extends CommandBase {
         setName("ArmMoveGoal "+goalPosition.toString());
     }
 
+    private void set(Translation2d pos) {
+        arm.setGoal(pos);
+        if (!Double.isNaN(wristDegrees)) {
+            arm.getWrist().setDegrees(wristDegrees);
+        }
+    }
+
     @Override
     public void initialize() {
         xPidController.reset();
         yPidController.reset();
+
+        if((flags & FINISH_INSTANTLY) == FINISH_INSTANTLY) {
+            set(goalPosition);
+        }
     }
 
     @Override
@@ -62,10 +73,7 @@ public class ArmToGoalCommand extends CommandBase {
             );
         }
         
-        arm.setGoal(updatedPosition);
-        if (!Double.isNaN(wristDegrees)) {
-            arm.getWrist().setDegrees(wristDegrees);
-        }
+        set(updatedPosition);
     }
 
     @Override

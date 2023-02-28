@@ -153,7 +153,7 @@ public class Arm extends SubsystemBase {
         });
 
         innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
-            Rotation2d fa2g = calcForearmAngleToGround(bicepAngle, fromRadians(component.getSetpointRadians()));
+            Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = -getElbowCosMult() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
@@ -162,7 +162,7 @@ public class Arm extends SubsystemBase {
         });
 
         wristComponent = new ArmComponent(wrist, new MotionMagic(0.15, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
-            Rotation2d wa2g = calcHandAngleToGround(bicepAngle, forearmAngle, fromRadians(component.getSetpointRadians()));
+            Rotation2d wa2g = calcHandAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(innerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = getWristCosMult() * wa2g.getCos() / WRIST_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
@@ -218,7 +218,7 @@ public class Arm extends SubsystemBase {
 
     public double getElbowCosMult() {
         if (Manipulator.isOpen) {
-            return elbowCosineMultiplierNoCOM * getCOMBicepMeters();
+            return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         } else {
             double coneDistance = Units.inchesToMeters(26+11);
             double totalMass = elbowMassKG + coneMassKG;

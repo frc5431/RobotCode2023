@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
@@ -34,6 +36,15 @@ public class Intake extends SubsystemBase {
 
         intakeMotor.setInverted(false);
         intakeMotorFollow.follow(intakeMotor, true); // oppose parent
+
+        intakeMotor.setIdleMode(IdleMode.kCoast);
+        intakeMotorFollow.setIdleMode(IdleMode.kCoast);
+
+        intakeMotor.setSmartCurrentLimit(20);
+        intakeMotorFollow.setSmartCurrentLimit(20);
+
+        intakeMotor.burnFlash();
+        intakeMotorFollow.burnFlash();
 
         piston = deployPiston;
 
