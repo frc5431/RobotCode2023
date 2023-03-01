@@ -17,7 +17,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "apriltagAlign",
           "placeHigh"
         ],
         "executionBehavior": "sequential",

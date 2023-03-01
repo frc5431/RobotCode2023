@@ -19,12 +19,6 @@ public class AutoAligner extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        boolean robotIsBackwards = Math.abs(180 - pigy.getYaw()) <= 1;
-        double direction = robotIsBackwards ? 1 : -1; // TODO direction is not used? // yeah i forgot why
-    }
-
-    @Override
     public void execute() {
         cs.vxMetersPerSecond = pid.calculate(pigy.getPitch(), 0);
         drivebase.drive(cs);
