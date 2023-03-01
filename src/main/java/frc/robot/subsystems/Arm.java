@@ -68,10 +68,10 @@ public class Arm extends SubsystemBase {
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
-    public static final double shoulderMassKG = 9.1;
+    public static final double shoulderMassKG = 9.0;
     public static final double elbowMassKG = 3.0;
     public static final double wristMassKG = 1.85;
-    public static final double coneMassKG = 1.0;
+    public static final double coneMassKG = 0.9;
     public static final double GRAV_CONST = 9.81;
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
@@ -148,6 +148,7 @@ public class Arm extends SubsystemBase {
 
         sparks.forEach((spark) -> {
             // spark.enableVoltageCompensation(12.0);
+            spark.disableVoltageCompensation();
             spark.setSmartCurrentLimit(40, 30);
             spark.burnFlash();
         });
@@ -159,7 +160,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
             SmartDashboard.putNumber("shoulder arbff", arbFF);
-        });
+        }, Pair.of(-Math.PI/2, Math.PI));
 
         innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
             Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
@@ -168,7 +169,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("elbow set", component.getSetpointRadians());
             SmartDashboard.putNumber("elbow arbff", arbFF);
-        });
+        }, Pair.of(-Math.PI+0.3, Math.PI-0.3));
 
         wristComponent = new ArmComponent(wrist, new MotionMagic(0.15, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
             Rotation2d wa2g = calcHandAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(innerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
@@ -177,7 +178,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        });
+        }, Pair.of(-Math.PI/2, Math.PI/2+0.2));
     }
 
     public ArmComponent getOuter() {
@@ -242,7 +243,7 @@ public class Arm extends SubsystemBase {
         if (Manipulator.isOpen) {
             return wristCosineMultiplierNoCOM * wristCOMMeters;
         } else {
-            double coneDistance = Units.inchesToMeters(13);
+            double coneDistance = Units.inchesToMeters(11);
             double totalMass = wristMassKG + coneMassKG;
             double newCOM = (wristMassKG * wristCOMMeters + coneMassKG * coneDistance) / totalMass;
             SmartDashboard.putNumber("wrcom wo cone", wristMassKG * wristCOMMeters);
@@ -357,9 +358,11 @@ public class Arm extends SubsystemBase {
         public final double MAX_SPEED;
         public String name;
 
+        private final Pair<Double, Double> setpointClamp;
+
         private double setpoint;
 
-        public ArmComponent(CANSparkMax motor, CANSparkMax follow, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
+        public ArmComponent(CANSparkMax motor, CANSparkMax follow, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter, Pair<Double, Double> clamp) {
             this.motor = motor;
             this.follow = Optional.ofNullable(follow);
 
@@ -367,6 +370,7 @@ public class Arm extends SubsystemBase {
             absoluteEncoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
             this.setter = setter;
             this.MAX_SPEED = maxSpeed;
+            this.setpointClamp = clamp;
 
             controller.setP(pidConstants.p());
             controller.setI(pidConstants.i());
@@ -397,8 +401,8 @@ public class Arm extends SubsystemBase {
             }
         }
 
-        public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter) {
-            this(motor, null, pidConstants, maxSpeed, setter);
+        public ArmComponent(CANSparkMax motor, MotionMagic pidConstants, double maxSpeed, Consumer<ArmComponent> setter, Pair<Double, Double> clamp) {
+            this(motor, null, pidConstants, maxSpeed, setter, clamp);
         }
 
         public double getSetpointRadians() {
@@ -419,12 +423,11 @@ public class Arm extends SubsystemBase {
 
 
         public void setDegrees(double value) {
-            setpoint = degreesToRadians(value);
-            setter.accept(this);
+            setRadians(degreesToRadians(value));
         }
 
         public void setRadians(double value) {
-            setpoint = value;
+            setpoint = MathUtil.clamp(MathUtil.inputModulus(value, -Math.PI, Math.PI), setpointClamp.getFirst(), setpointClamp.getSecond());
             setter.accept(this);
         }
 
