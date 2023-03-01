@@ -47,7 +47,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         driver.setDeadzone(0.15);
-        operatorJoystick.setDeadzone(0.15);
+        // operatorJoystick.setDeadzone(0.15);
 
         drivebase.setDefaultCommand(new DefaultDriveCommand(
                 systems,
@@ -126,11 +126,24 @@ public class RobotContainer {
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
-        return switch (DriverStation.getAlliance()) {
-            case Blue -> BlinkinPattern.BLUE;
-            case Red -> BlinkinPattern.RED;
-            default -> BlinkinPattern.GREEN;
-        };
+        return getPatternFromAlliance(false);
+    }
+
+    public static BlinkinPattern getPatternFromAlliance(boolean charging) {
+        if (!charging) {
+            return BlinkinPattern.BLACK;
+            // return switch (DriverStation.getAlliance()) {
+            //     case Blue -> BlinkinPattern.BLUE;
+            //     case Red -> BlinkinPattern.RED;
+            //     default -> BlinkinPattern.GREEN;
+            // };
+        } else {
+            return switch (DriverStation.getAlliance()) {
+                case Blue -> BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE;
+                case Red -> BlinkinPattern.COLOR_WAVES_LAVA_PALETTE;
+                default -> BlinkinPattern.COLOR_WAVES_FOREST_PALETTE;
+            };
+        }
     }
 
     private void configureBindings() {
@@ -150,12 +163,32 @@ public class RobotContainer {
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
-        // This controlls the arm, however we decided this would be on the driver's side. Not the operator's. - Rudy (and josh & brain)
+
+        operator.A5().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
+            .andThen(waitSeconds(8)));
+            // .withTimeout(8));
+        operator.A6().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
+            .andThen(waitSeconds(8)));
+            // .withTimeout(8));
+        operator.A7().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance()));
+        operator.B7().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance(true)));
+        operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+
+        driver.back().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance(true)));
+        driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+
+        // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
+        // operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        // operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+
+        // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmToGoalCommand( // Stow
             systems,
             PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
+
         driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
             systems,
             new Translation2d(14.34, -11.95),
@@ -163,41 +196,14 @@ public class RobotContainer {
             302,
             false
         ));
-
-        operatorJoystick.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
-            .andThen(waitSeconds(5)));
-        operatorJoystick.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
-            .andThen(waitSeconds(5)));
-        driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE));
-        driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).withTimeout(150));
-
-        operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
-        operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
  
-        // stufff for when button board works
         operator.A1().whileTrue(
-            run(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() + 1))
+            run(() -> systems.getArm().getWrist().add(2))
         );
         
         operator.B1().whileTrue(
-            run(() -> systems.getArm().getWrist().setDegrees(systems.getArm().getWrist().getSetpointDegrees() - 1))
+            run(() -> systems.getArm().getWrist().add(-2))
         );
-
-        operator.A5().onTrue(
-            systems.getLeds().ledCommand(BlinkinPattern.YELLOW).withTimeout(8)
-        );
-        
-        operator.A6().onTrue(
-            systems.getLeds().ledCommand(BlinkinPattern.VIOLET).withTimeout(8)
-        );
-
-        operator.A7().onTrue(
-            systems.getLeds().ledCommand(getPatternFromAlliance())
-        );
-
-        // operator.start().whileTrue(systems.getIntake().runSameDirection(false));
 
         // operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
         //     systems,
@@ -221,7 +227,6 @@ public class RobotContainer {
 
         operator.C1().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
-
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
             Constants.wristInvertAngle,
@@ -248,8 +253,8 @@ public class RobotContainer {
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
         // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
         // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
-        operatorJoystick.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
-        operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
+        // operatorJoystick.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
+        // operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
     }
 

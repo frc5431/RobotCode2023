@@ -68,10 +68,10 @@ public class Arm extends SubsystemBase {
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
-    public static final double shoulderMassKG = 8.15;
+    public static final double shoulderMassKG = 9.1;
     public static final double elbowMassKG = 3.0;
     public static final double wristMassKG = 1.85;
-    public static final double coneMassKG = 0.66;
+    public static final double coneMassKG = 1.0;
     public static final double GRAV_CONST = 9.81;
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
@@ -216,7 +216,7 @@ public class Arm extends SubsystemBase {
         if (Manipulator.isOpen) {
             return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
         } else {
-            double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(11);
+            double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(13);
             double totalMass = shoulderMassKG + coneMassKG;
             double newCOM = (shoulderMassKG * getCOMBicepMeters() + coneMassKG * coneDistance) / totalMass;
             SmartDashboard.putNumber("shcom wo cone", shoulderMassKG * getCOMBicepMeters());
@@ -229,7 +229,7 @@ public class Arm extends SubsystemBase {
         if (Manipulator.isOpen) {
             return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         } else {
-            double coneDistance = Units.inchesToMeters(26+11);
+            double coneDistance = Units.inchesToMeters(26+13);
             double totalMass = elbowMassKG + coneMassKG;
             double newCOM = (elbowMassKG * getCOMForearmMeters() + coneMassKG * coneDistance) / totalMass;
             SmartDashboard.putNumber("elcom wo cone", elbowMassKG * getCOMForearmMeters());
@@ -242,7 +242,7 @@ public class Arm extends SubsystemBase {
         if (Manipulator.isOpen) {
             return wristCosineMultiplierNoCOM * wristCOMMeters;
         } else {
-            double coneDistance = Units.inchesToMeters(11);
+            double coneDistance = Units.inchesToMeters(13);
             double totalMass = wristMassKG + coneMassKG;
             double newCOM = (wristMassKG * wristCOMMeters + coneMassKG * coneDistance) / totalMass;
             SmartDashboard.putNumber("wrcom wo cone", wristMassKG * wristCOMMeters);

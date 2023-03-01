@@ -24,7 +24,7 @@ public class Buttonboard extends CommandGenericHID {
         }
 
         // This starts it off as 0
-        int y = vertical.getIndex();
+        int y = vertical.ordinal();
         int x = horizontal;
         if (x <= 0) {
             throw new IndexOutOfBoundsException("Number starts at 1, not 0");
