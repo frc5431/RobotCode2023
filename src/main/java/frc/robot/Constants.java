@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final Transform3d CAMERA_OFFSET = new Transform3d(
-        new Translation3d(Units.inchesToMeters(10.5), Units.inchesToMeters(11), Units.inchesToMeters(39.5)),
+        new Translation3d(Units.inchesToMeters(10.5), Units.inchesToMeters(-11), Units.inchesToMeters(39.5)),
         new Rotation3d()
     );
 
