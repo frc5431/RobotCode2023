@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
 
   public Vision(Drivebase drivebase) {
     this.drivebase = drivebase;
-    Robot.periodics.add(new Pair<>(this::detect, 0.2)); // 5 times per sec
+    // Robot.periodics.add(new Pair<>(this::detect, 0.2)); // 5 times per sec
   }
 
   public Pose3d getAprilTagPosition(PhotonTrackedTarget targetA1) {

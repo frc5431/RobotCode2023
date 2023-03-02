@@ -15,6 +15,8 @@ import frc.team5431.titan.core.misc.Logger;
 
 import java.util.ArrayList;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 public class Robot extends TimedRobot {
   public static final ArrayList<Pair<Runnable, Double>> periodics = new ArrayList<>();
   private Command m_autonomousCommand;
@@ -24,6 +26,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     DriverStation.silenceJoystickConnectionWarning(false);
+    PathPlannerServer.startServer(5811);
     m_robotContainer = new RobotContainer();
 
     try {

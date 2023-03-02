@@ -82,7 +82,7 @@ public class Arm extends SubsystemBase {
         Units.inchesToMeters(18.624); // 0.473 meters
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(40.625);
+        Units.inchesToMeters(45); // TODO
 
     public static final double elbowCosineMultiplierNoCOM =
         elbowMassKG * GRAV_CONST;

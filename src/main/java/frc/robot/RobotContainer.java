@@ -81,10 +81,6 @@ public class RobotContainer {
             SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         }, 0.3));
 
-        Robot.periodics.add(Pair.of(() -> {
-            systems.getVision().detect();
-        }, 0.2));
-
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = systems.getArm().getSparks();
 
