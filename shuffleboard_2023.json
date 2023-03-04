@@ -593,26 +593,13 @@
           },
           "0,8": {
             "size": [
-              5,
+              2,
               2
             ],
             "content": {
               "_type": "Network Table Tree",
               "_source0": "network_table:///SmartDashboard/Scheduler",
               "_title": "SmartDashboard/Scheduler",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "2,3": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Heading",
-              "_title": "Heading",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -724,7 +711,7 @@
           "4,2": {
             "size": [
               6,
-              6
+              4
             ],
             "content": {
               "_type": "Camera Stream",
@@ -781,7 +768,7 @@
               "_showGlyph": false
             }
           },
-          "7,8": {
+          "7,6": {
             "size": [
               3,
               1
@@ -794,7 +781,7 @@
               "_showGlyph": false
             }
           },
-          "7,9": {
+          "7,7": {
             "size": [
               3,
               1
@@ -807,7 +794,7 @@
               "_showGlyph": false
             }
           },
-          "10,8": {
+          "7,8": {
             "size": [
               3,
               1
@@ -818,6 +805,23 @@
               "_title": "PPSwerveControllerCommand/rotationErrorDegrees",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "4,6": {
+            "size": [
+              3,
+              4
+            ],
+            "content": {
+              "_type": "Gyro",
+              "_source0": "network_table:///SmartDashboard/Gyro",
+              "_title": "Gyro",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Visuals/Major tick spacing": 45.0,
+              "Visuals/Starting angle": 180.0,
+              "Visuals/Show tick mark ring": true,
+              "Visuals/Counter clockwise": false
             }
           }
         }

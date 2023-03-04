@@ -5,15 +5,11 @@ import java.util.HashMap;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutoAligner;
 import frc.robot.subsystems.Drivebase;
-import frc.robot.util.PresetPosition; 
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -43,9 +39,7 @@ public class AutonLoader {
         eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
-        eventMap.put("autoBalance", systems.getDeadwheels().deadwheelsCommand(true)
-                                        .andThen(new AutoAligner(drivebase))
-                                        .andThen(systems.getDeadwheels().deadwheelsCommand(false)));        
+        eventMap.put("autoBalance", new AutoAligner(drivebase));        
         // eventMap.put("placeHigh", new SequentialCommandGroup(
         //     systems.getArm().getWrist().setDegreesCommand(0),
         //     new ArmToGoalCommand(

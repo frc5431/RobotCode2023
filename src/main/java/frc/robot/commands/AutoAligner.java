@@ -9,13 +9,13 @@ import frc.robot.subsystems.Drivebase;
 public class AutoAligner extends CommandBase {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;
-    public PIDController pid = new PIDController(0, 0, 0);
+    public PIDController pid = new PIDController(0.05, 0, 0.0001);
     public ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);
 
     public AutoAligner(Drivebase drivebase) {
         this.drivebase = drivebase;
         this.pigy = drivebase.getGyro();
-        pid.setTolerance(2.5);
+        pid.setTolerance(2.5, 0.1);
     }
 
     @Override

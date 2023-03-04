@@ -93,7 +93,7 @@ public class Constants {
     //#region Auto Constants
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0);
-    public static final PIDConstants ROTATION_PID = new PIDConstants(0.5, 0, 0);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(1.0, 0, 0);
     //#endregion Auto Constants
 
 }

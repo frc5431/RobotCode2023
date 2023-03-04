@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
@@ -97,7 +98,10 @@ public class Drivebase extends SubsystemBase {
 
     public Drivebase() {
         m_pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
-        
+        // m_pigeon2.configFactoryDefault();
+        m_pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
+        // m_pigeon2.zeroGyroBiasNow(200);
+
         MkModuleConfiguration moduleConfig = MkModuleConfiguration.getDefaultSteerFalcon500();
         moduleConfig.setDriveCurrentLimit(40.0);
         moduleConfig.setSteerCurrentLimit(30.0);
@@ -158,6 +162,9 @@ public class Drivebase extends SubsystemBase {
         // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
 
         field2d = new Field2d();
+        
+        SmartDashboard.putData("Gyro", m_pigeon2);
+        SmartDashboard.putData("Field", field2d);
     }
 
 
@@ -176,6 +183,7 @@ public class Drivebase extends SubsystemBase {
 
     public void zeroGyroscope() {
         m_pigeon2.reset();
+        resetOdometry(getPosition());
     }
 
     public void resetGyroAt(double yaw) {
@@ -251,8 +259,6 @@ public class Drivebase extends SubsystemBase {
         SmartDashboard.putNumber("DT X spd", m_chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("DT Y spd", m_chassisSpeeds.vyMetersPerSecond);
         SmartDashboard.putNumber("DT O rot", m_chassisSpeeds.omegaRadiansPerSecond);
-        SmartDashboard.putNumber("Heading", getGyroscopeRotation().getDegrees());
-        SmartDashboard.putData("Field", field2d);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 

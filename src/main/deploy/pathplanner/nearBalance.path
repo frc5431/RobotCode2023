@@ -90,8 +90,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "autoBalance"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -104,13 +106,13 @@
     {
       "position": 2.0945454545453734,
       "names": [
-        "dropDeadWheels"
+        "deadwheelDrop"
       ]
     },
     {
       "position": 2.945454545454564,
       "names": [
-        "raiseDeadWheels"
+        "deadwheelRaise"
       ]
     }
   ]
