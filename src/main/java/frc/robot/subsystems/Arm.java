@@ -68,10 +68,10 @@ public class Arm extends SubsystemBase {
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
-    public static final double shoulderMassKG = 9.0;
-    public static final double elbowMassKG = 3.0;
-    public static final double wristMassKG = 1.85;
-    public static final double coneMassKG = 0.9;
+    public static final double shoulderMassKG = 9.88; // 9.1
+    public static final double elbowMassKG = 4.26; // 3.0
+    public static final double wristMassKG = 2.26; // 1.85
+    public static final double coneMassKG = 0.67; // 0.9
     public static final double GRAV_CONST = 9.81;
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
@@ -79,25 +79,25 @@ public class Arm extends SubsystemBase {
         shoulderMassKG * GRAV_CONST;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(18.624); // 0.473 meters
+        Units.inchesToMeters(19.624); // 0.473 meters
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(45); // TODO
+        Units.inchesToMeters(41.625);
 
     public static final double elbowCosineMultiplierNoCOM =
         elbowMassKG * GRAV_CONST;
 
     public static final double elbowMinCOMMeters =
-        Units.inchesToMeters(20);
+        Units.inchesToMeters(19); // 20
 
     public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(22.93);
+        Units.inchesToMeters(23.93);
 
     public static final double wristCosineMultiplierNoCOM = 
         wristMassKG * GRAV_CONST;
 
     public static final double wristCOMMeters =
-        Units.inchesToMeters(3.1);
+        Units.inchesToMeters(4.1);
 
     private final List<CANSparkMax> sparks;
 

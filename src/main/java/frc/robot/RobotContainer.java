@@ -201,14 +201,6 @@ public class RobotContainer {
             run(() -> systems.getArm().getWrist().add(-2))
         );
 
-        // operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
-        //     systems,
-        //     new Translation2d(4, -25), // 4.38, -29.34?
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-        //     104, // 104?
-        //     false
-        // ));
-
         operator.B4().onTrue(new ArmToGoalCommand( // Manip Unstuck
             systems,
             new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
@@ -243,7 +235,6 @@ public class RobotContainer {
             new Translation2d(Constants.armMidX, Constants.armMidY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
-
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
