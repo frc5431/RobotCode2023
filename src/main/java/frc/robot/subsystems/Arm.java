@@ -79,10 +79,10 @@ public class Arm extends SubsystemBase {
         shoulderMassKG * GRAV_CONST;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(19.624); // 0.473 meters
+        Units.inchesToMeters(18.624); // 0.473 meters
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(41.625);
+        Units.inchesToMeters(40.625);
 
     public static final double elbowCosineMultiplierNoCOM =
         elbowMassKG * GRAV_CONST;
@@ -91,13 +91,13 @@ public class Arm extends SubsystemBase {
         Units.inchesToMeters(19); // 20
 
     public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(23.93);
+        Units.inchesToMeters(22.93);
 
     public static final double wristCosineMultiplierNoCOM = 
         wristMassKG * GRAV_CONST;
 
     public static final double wristCOMMeters =
-        Units.inchesToMeters(4.1);
+        Units.inchesToMeters(3.5);
 
     private final List<CANSparkMax> sparks;
 
@@ -178,7 +178,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        }, Pair.of(-Math.PI/2, Math.PI/2+0.2));
+        }, Pair.of(-Math.PI*3/4, Math.PI*3/4+0.2));
     }
 
     public ArmComponent getOuter() {

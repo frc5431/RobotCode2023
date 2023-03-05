@@ -18,7 +18,8 @@
       "stopEvent": {
         "names": [
           "apriltagAlign",
-          "placeHigh"
+          "placeHigh",
+          "stow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

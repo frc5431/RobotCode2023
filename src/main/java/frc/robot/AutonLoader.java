@@ -5,11 +5,14 @@ import java.util.HashMap;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.AutoAligner;
+import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.Autobalancer;
 import frc.robot.subsystems.Drivebase;
+import frc.robot.util.PresetPosition;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -39,7 +42,7 @@ public class AutonLoader {
         eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
-        eventMap.put("autoBalance", new AutoAligner(drivebase));        
+        eventMap.put("autoBalance", new Autobalancer(systems));        
         // eventMap.put("placeHigh", new SequentialCommandGroup(
         //     systems.getArm().getWrist().setDegreesCommand(0),
         //     new ArmToGoalCommand(
@@ -52,6 +55,11 @@ public class AutonLoader {
         //         PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
         //         ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY)
         // ));
+        eventMap.put("stow", new ArmToGoalCommand(
+            systems,
+            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
         eventMap.put("placeHigh", none());
 
         autoBuilder = new SwerveAutoBuilder(

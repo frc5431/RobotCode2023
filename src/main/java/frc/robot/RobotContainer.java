@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -160,18 +160,22 @@ public class RobotContainer {
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
 
-        operator.A5().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
-            .andThen(waitSeconds(8)));
-            // .withTimeout(8));
-        operator.A6().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
-            .andThen(waitSeconds(8)));
-            // .withTimeout(8));
-        operator.A7().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance()));
-        operator.B7().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance(true)));
-        operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+        operator.A5().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
+            .withTimeout(8));
+        operator.A6().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
+            // .andThen(waitSeconds(8)));
+            .withTimeout(8));
+        operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
+            .withTimeout(5));
+        operator.B7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+            .withTimeout(5));
+        // operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        driver.back().onTrue(systems.getLeds().ledCommand(getPatternFromAlliance(true)));
-        driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+        driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+            .withTimeout(5));
+        // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+
+        operator.C5().onTrue(new Autobalancer(systems));
 
         // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
@@ -213,7 +217,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.C1().onTrue(new ArmMoveCommandGroup( // Inverted Grab
+        operator.B3().onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
@@ -294,7 +298,7 @@ public class RobotContainer {
         }
 
         gp = new Translation2d(
-            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.125), Units.inchesToMeters(6 + 48  - 13.125)), 
+            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.5), Units.inchesToMeters(6 + 48  - 13.5)), 
             MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78))
         );
         

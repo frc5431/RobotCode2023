@@ -17,7 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "placeHigh"
+          "placeHigh",
+          "stow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

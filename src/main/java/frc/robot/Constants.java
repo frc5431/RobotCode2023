@@ -24,8 +24,8 @@ public class Constants {
     public static final double APRILTAG_HEIGHT = 0.59;
     public static final AprilTagFieldLayout layout = getLayout();
 
-    public static final double armHighX = 40.875;
-    public static final double armHighY = 27.66;
+    public static final double armHighX = 37.875; // 40.875
+    public static final double armHighY = 14.66;
     public static final double wristHighAngle = 288;
     public static final double armMidX = 32.03;
     public static final double armMidY = 2.83;

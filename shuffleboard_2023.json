@@ -711,7 +711,7 @@
           "4,2": {
             "size": [
               6,
-              4
+              5
             ],
             "content": {
               "_type": "Camera Stream",
@@ -768,7 +768,7 @@
               "_showGlyph": false
             }
           },
-          "7,6": {
+          "7,7": {
             "size": [
               3,
               1
@@ -781,7 +781,7 @@
               "_showGlyph": false
             }
           },
-          "7,7": {
+          "7,8": {
             "size": [
               3,
               1
@@ -794,7 +794,7 @@
               "_showGlyph": false
             }
           },
-          "7,8": {
+          "7,9": {
             "size": [
               3,
               1
@@ -807,10 +807,10 @@
               "_showGlyph": false
             }
           },
-          "4,6": {
+          "4,7": {
             "size": [
               3,
-              4
+              3
             ],
             "content": {
               "_type": "Gyro",
