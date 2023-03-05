@@ -38,8 +38,10 @@ public class AutonLoader {
         this.drivebase = systems.getDrivebase();
 
         HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("deadwheelDrop", systems.getDeadwheels().deadwheelsCommand(true));
-        eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
+        // eventMap.put("deadwheelDrop", systems.getDeadwheels().deadwheelsCommand(true));
+        // eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
+        eventMap.put("deadwheelDrop", none());
+        eventMap.put("deadwheelRaise", none());
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
         eventMap.put("autoBalance", new Autobalancer(systems));        

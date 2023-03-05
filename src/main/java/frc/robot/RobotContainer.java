@@ -158,7 +158,7 @@ public class RobotContainer {
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
-        driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
+        // driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
 
         operator.A5().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
             .withTimeout(8));
