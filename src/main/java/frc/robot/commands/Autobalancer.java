@@ -42,7 +42,7 @@ public class Autobalancer extends CommandBase {
             pid = new PIDController(PID_NORMAL.p(), PID_NORMAL.i(), PID_NORMAL.d());
         }
 
-        pid.setTolerance(2.5, 0.1);
+        pid.setTolerance(2.5, 0.08);
     }
 
     @Override

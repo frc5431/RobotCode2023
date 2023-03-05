@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
@@ -29,8 +28,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivebase;
 
@@ -113,12 +110,12 @@ public class RobotContainer {
         }, 0.1));
         autonLoader = new AutonLoader(systems);
 
-        ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
-        operator.iterate().forEach(t -> {
-            tabBB.addBoolean(t.row().getLetter() + t.column(), t.trigger()::getAsBoolean)
-            .withSize(1,1)
-            .withPosition(t.column(), t.row().getIndex());
-        });
+        // ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
+        // operator.iterate().forEach(t -> {
+        //     tabBB.addBoolean(t.row().getLetter() + t.column(), t.trigger()::getAsBoolean)
+        //     .withSize(1,1)
+        //     .withPosition(t.column(), t.row().getIndex());
+        // });
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
@@ -148,34 +145,34 @@ public class RobotContainer {
 
         // D-Pad cardinal directions
         driver.povUp().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
         driver.povDown().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
         driver.povLeft().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
         driver.povRight().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         // driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
 
-        operator.A5().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
+        operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
             .withTimeout(8));
-        operator.A6().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
+        operator.A6().or(operatorJoystick.start()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
             // .andThen(waitSeconds(8)));
             .withTimeout(8));
-        operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
-            .withTimeout(5));
-        operator.B7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
-            .withTimeout(5));
+        // operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
+        //     .withTimeout(5));
+        // operator.B7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+        //     .withTimeout(5));
         // operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
         driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
             .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operator.C5().onTrue(new Autobalancer(systems));
+        // operator.C5().onTrue(new Autobalancer(systems));
 
         // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
@@ -197,27 +194,27 @@ public class RobotContainer {
             false
         ));
  
-        operator.A1().whileTrue(
+        operator.A1().or(operatorJoystick.povUp()).whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
         );
         
-        operator.B1().whileTrue(
+        operator.B1().or(operatorJoystick.povDown()).whileTrue(
             run(() -> systems.getArm().getWrist().add(-2))
         );
 
-        operator.B4().onTrue(new ArmToGoalCommand( // Manip Unstuck
+        operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmToGoalCommand( // Manip Unstuck
             systems,
             new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.C2().onTrue(new ArmToGoalCommand( // Normal Grab
+        operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmToGoalCommand( // Normal Grab
             systems,
             PresetPosition.fromGoal(new Translation2d(Constants.armGroundX, Constants.armGroundY), Constants.wristGroundAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.B3().onTrue(new ArmMoveCommandGroup( // Inverted Grab
+        operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
             new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
@@ -226,7 +223,7 @@ public class RobotContainer {
         ));
 
         // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operator.A2().onTrue( // High node
+        operator.A2().or(operatorJoystick.povRight()).onTrue( // High node
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
@@ -234,7 +231,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operator.B2().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
             new Translation2d(Constants.armMidX, Constants.armMidY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY

@@ -29,9 +29,9 @@ public class Constants {
     public static final double wristHighAngle = 288;
     public static final double armMidX = 32.03;
     public static final double armMidY = 2.83;
-    public static final double armInnerGrabX = 3.84;
-    public static final double armInnerGrabY = -25.69;
-    public static final double wristInvertAngle = 280;
+    public static final double armInnerGrabX = 6.28;
+    public static final double armInnerGrabY = -25.52;
+    public static final double wristInvertAngle = 260;
     public static final double armGroundX = 6.17;
     public static final double armGroundY = -34.24;
     public static final double wristGroundAngle = 25;
