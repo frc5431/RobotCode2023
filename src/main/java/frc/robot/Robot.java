@@ -4,13 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.VideoException;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team5431.titan.core.misc.Logger;
 
 import java.util.ArrayList;
+
+import com.pathplanner.lib.server.PathPlannerServer;
 
 public class Robot extends TimedRobot {
   public static final ArrayList<Pair<Runnable, Double>> periodics = new ArrayList<>();
@@ -21,9 +27,18 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     DriverStation.silenceJoystickConnectionWarning(false);
+    PathPlannerServer.startServer(5811);
+    DataLogManager.start();
     m_robotContainer = new RobotContainer();
-    // Initialization Should Have Finished
-    for(var period : periodics) {
+
+    try {
+      CameraServer.startAutomaticCapture();
+    } catch (VideoException e) {
+      Logger.l("Unable to start automatic capture for CameraServer!");
+    }
+
+    // initialization should have finished, so register periodics
+    for (var period : periodics) {
       addPeriodic(period.getFirst(), period.getSecond());
     }
   }

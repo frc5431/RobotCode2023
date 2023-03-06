@@ -1,0 +1,120 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 2.301008744874633,
+        "y": 4.394626074966436
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.273022671784085,
+        "y": 4.634770692202888
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "placeHigh",
+          "stow"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.648626582967452,
+        "y": 4.85269784825284
+      },
+      "prevControl": {
+        "x": 3.648830581337602,
+        "y": 4.832499949230014
+      },
+      "nextControl": {
+        "x": 5.780736921367872,
+        "y": 4.875568764180121
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.180304074893864,
+        "y": 3.1778729271744264
+      },
+      "prevControl": {
+        "x": 6.717425564108069,
+        "y": 3.8045146645909855
+      },
+      "nextControl": {
+        "x": 6.11169132711202,
+        "y": 3.097824721428943
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 3.9328894372074457,
+        "y": 2.8200043542944235
+      },
+      "prevControl": {
+        "x": 5.2594025609897574,
+        "y": 2.8428752702217053
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "autoBalance"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 2.0945454545453734,
+      "names": [
+        "deadwheelDrop"
+      ]
+    },
+    {
+      "position": 2.945454545454564,
+      "names": [
+        "deadwheelRaise"
+      ]
+    }
+  ]
+}

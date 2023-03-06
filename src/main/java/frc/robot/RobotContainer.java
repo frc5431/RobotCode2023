@@ -4,31 +4,24 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.subsystems.*;
+import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
 import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
-import static edu.wpi.first.wpilibj2.command.Commands.*;
-
-import java.util.HashMap;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -36,49 +29,49 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Drivebase;
 
 public class RobotContainer {
     private final Systems systems = new Systems();
-    private final Drivebase drivebase = systems.getDrivebase();
+    public final Drivebase drivebase = systems.getDrivebase();
 
     private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
+    private final Buttonboard operator = new Buttonboard(3, 7, 3);
+    private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
 
-    private Command autonCommand;
-
     public RobotContainer() {
+
         driver.setDeadzone(0.15);
-        operator.setDeadzone(0.15);
+        // operatorJoystick.setDeadzone(0.15);
 
         drivebase.setDefaultCommand(new DefaultDriveCommand(
-            systems,
-            () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-        ));
+                systems,
+                () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+                () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+                () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         systems.getLeds().setDefaultCommand(run(
             () -> systems.getLeds().set(getPatternFromAlliance()), 
             systems.getLeds()));
 
         // systems.getArm().setDefaultCommand(systems.getArm().defaultCommand(
-        //     () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
-        //     () -> modifyAxis(driver.getRightY())
-        //     // () -> {
-        //     //     double power = 0.0;
-        //     //     if (driver.rightBumper().getAsBoolean())
-        //     //         power += 1;
-        //     //     if (driver.leftBumper().getAsBoolean())
-        //     //         power -= 1;
-        //     //     return power;
-        //     // }
+        // () -> modifyAxis(driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()),
+        // () -> modifyAxis(driver.getRightY())
+        // // () -> {
+        // // double power = 0.0;
+        // // if (driver.rightBumper().getAsBoolean())
+        // // power += 1;
+        // // if (driver.leftBumper().getAsBoolean())
+        // // power -= 1;
+        // // return power;
+        // // }
         // ));
 
         // CommandScheduler.getInstance().removeDefaultCommand(systems.getArm());
 
         configureBindings();
-        initAutoPaths();
 
         Robot.periodics.add(Pair.of(() -> {
             SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
@@ -88,15 +81,15 @@ public class RobotContainer {
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = systems.getArm().getSparks();
 
-        String[] falconNames = new String[]{
-            "FLSteer",
-            "FLDrive",
-            "FRSteer",
-            "FRDrive",
-            "BLSteer",
-            "BLDrive",
-            "BRSteer",
-            "BRDrive"
+        String[] falconNames = new String[] {
+                "FLSteer",
+                "FLDrive",
+                "FRSteer",
+                "FRDrive",
+                "BLSteer",
+                "BLDrive",
+                "BRSteer",
+                "BRDrive"
         };
 
         String[] sparkNames = new String[]{
@@ -115,39 +108,84 @@ public class RobotContainer {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.1));
+        autonLoader = new AutonLoader(systems);
+
+        // ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
+        // operator.iterate().forEach(t -> {
+        //     tabBB.addBoolean(t.row().getLetter() + t.column(), t.trigger()::getAsBoolean)
+        //     .withSize(1,1)
+        //     .withPosition(t.column(), t.row().getIndex());
+        // });
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
-        return switch (DriverStation.getAlliance()) {
-            case Blue -> BlinkinPattern.BLUE;
-            case Red -> BlinkinPattern.RED;
-            default -> BlinkinPattern.GREEN;
-        };
+        return getPatternFromAlliance(false);
+    }
+
+    public static BlinkinPattern getPatternFromAlliance(boolean charging) {
+        if (!charging) {
+            return BlinkinPattern.BLACK;
+            // return switch (DriverStation.getAlliance()) {
+            //     case Blue -> BlinkinPattern.BLUE;
+            //     case Red -> BlinkinPattern.RED;
+            //     default -> BlinkinPattern.GREEN;
+            // };
+        } else {
+            return switch (DriverStation.getAlliance()) {
+                case Blue -> BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE;
+                case Red -> BlinkinPattern.COLOR_WAVES_LAVA_PALETTE;
+                default -> BlinkinPattern.COLOR_WAVES_FOREST_PALETTE;
+            };
+        }
     }
 
     private void configureBindings() {
         // Y button zeros the gyroscope
         driver.y().onTrue(runOnce(drivebase::zeroGyroscope));
-        
+
         // D-Pad cardinal directions
         driver.povUp().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
         driver.povDown().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
         driver.povLeft().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
         driver.povRight().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND, 0)), drivebase));
+                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
-        driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
-        // This controlls the arm, however we decided this would be on the driver's side. Not the operator's. - Rudy (and josh & brain)
+        // driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
+
+        operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
+            .withTimeout(8));
+        operator.A6().or(operatorJoystick.start()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
+            // .andThen(waitSeconds(8)));
+            .withTimeout(8));
+        // operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
+        //     .withTimeout(5));
+        // operator.B7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+        //     .withTimeout(5));
+        // operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+
+        driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+            .withTimeout(5));
+        // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
+
+        // operator.C5().onTrue(new Autobalancer(systems));
+
+        // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
+        // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
+        // operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
+        // operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
+
+        // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmToGoalCommand( // Stow
             systems,
-            PresetPosition.fromGoal(new Translation2d(5.472, -33), 105.32),
+            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
+
         driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
             systems,
             new Translation2d(14.34, -11.95),
@@ -155,97 +193,62 @@ public class RobotContainer {
             302,
             false
         ));
+ 
+        operator.A1().or(operatorJoystick.povUp()).whileTrue(
+            run(() -> systems.getArm().getWrist().add(2))
+        );
+        
+        operator.B1().or(operatorJoystick.povDown()).whileTrue(
+            run(() -> systems.getArm().getWrist().add(-2))
+        );
 
-        operator.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.YELLOW)
-            .andThen(waitSeconds(5)));
-        operator.start().onTrue(systems.getLeds().ledCommand(BlinkinPattern.VIOLET)
-            .andThen(waitSeconds(5)));
-        driver.back().onTrue(systems.getLeds().ledCommand(BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE));
-        driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).withTimeout(150));
-
-        operator.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        operator.a().onTrue(systems.getIntake().intakeStow());
-        operator.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        operator.x().whileTrue(systems.getIntake().runIntakeCommand(false));
-        // operator.start().whileTrue(systems.getIntake().runSameDirection(false));
-
-        // operator.rightBumper().onTrue(new ArmMoveCommandGroup( // Start?
-        //     systems,
-        //     new Translation2d(4, -25), // 4.38, -29.34?
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-        //     104, // 104?
-        //     false
-        // ));
-
-        operator.leftTrigger().onTrue(new ArmMoveCommandGroup( // Normal Grab
+        operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmToGoalCommand( // Manip Unstuck
             systems,
-            new Translation2d(6.17, -34.24),
+            new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmToGoalCommand( // Normal Grab
+            systems,
+            PresetPosition.fromGoal(new Translation2d(Constants.armGroundX, Constants.armGroundY), Constants.wristGroundAngle),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmMoveCommandGroup( // Inverted Grab
+            systems,
+            new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            25,
+            Constants.wristInvertAngle,
             true
         ));
 
-        operator.rightTrigger().onTrue(new ArmMoveCommandGroup( // Inverted Grab
-            systems,
-            new Translation2d(3.84, -25.69),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            280,
-            true
-        ));
-
-        // In  theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operator.povRight().onTrue( // High node
+        // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
+        operator.A2().or(operatorJoystick.povRight()).onTrue( // High node
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
-            PresetPosition.fromGoal(new Translation2d(40.875, 21.69), 288),
+            PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operator.povLeft().onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
-            new Translation2d(32.03, 2.83),
+            new Translation2d(Constants.armMidX, Constants.armMidY),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
-
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));
         // operator.back().onTrue(runOnce(() -> systems.getArm().incrIn(-10))); // elbow runs opposite dir
         // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
-        operator.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
-        operator.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
+        // operatorJoystick.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
+        // operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
 
-    }
-
-    private void initAutoPaths() {
-        // This will load the file "FullAuto.path" and generate it with a max velocity of 4 m/s and a max acceleration of 3 m/s^2
-        // for every path in the group
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("Test", new PathConstraints(4, 3));
-
-        // This is just an example event map. It would be better to have a constant, global event map
-        // in your code that will be used by all path following commands.
-        HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-
-        // Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
-        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-            drivebase::getPosition, // Pose2d supplier
-            drivebase::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
-            drivebase.m_kinematics, // SwerveDriveKinematics
-            new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-            (states) -> drivebase.driveRaw(drivebase.m_kinematics.toChassisSpeeds(states)), // Module states consumer used to output to the drive subsystem
-            eventMap,
-            true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-            drivebase // The drive subsystem. Used to properly set the requirements of path following commands
-        );
-
-        autonCommand = autoBuilder.fullAuto(pathGroup);
     }
 
     public Command getAutonomousCommand() {
-        return autonCommand;
+        // jolly good
+        return autonLoader.procureAuton();
     }
 
     private static double deadband(double value, double deadband) {
@@ -275,8 +278,8 @@ public class RobotContainer {
     public void teleopPeriodic() {
         // TODO extract into default command for arm
         var gp = systems.getArm().getGoal();
-        double leftx = operator.getLeftX();
-        double lefty = -operator.getLeftY();
+        double leftx = operatorJoystick.getLeftX();
+        double lefty = -operatorJoystick.getLeftY();
         if (Math.abs(leftx) < 0.15) leftx = 0;
         if (Math.abs(lefty) < 0.15) lefty = 0;
         leftx *= 0.01;
@@ -292,7 +295,7 @@ public class RobotContainer {
         }
 
         gp = new Translation2d(
-            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.125), Units.inchesToMeters(6 + 48  - 13.125)), 
+            MathUtil.clamp(gp.getX(), -Units.inchesToMeters(26 + 48 - 13.5), Units.inchesToMeters(6 + 48  - 13.5)), 
             MathUtil.clamp(gp.getY(), -Units.inchesToMeters(39 + 1.5), -Units.inchesToMeters(39 + 1.5 - 78))
         );
         

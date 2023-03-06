@@ -39,7 +39,7 @@ public class Systems {
 
     public Systems() {
         drivebase = new Drivebase();
-        // vision = new Vision(drivebase);
+        vision = new Vision(drivebase);
         leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
         armOuterLeft = new CANSparkMax(17, MotorType.kBrushless);
@@ -66,7 +66,7 @@ public class Systems {
         phub = new PneumaticHub(Constants.ID_PHUB);
 
         // compressor.enableDigital();
-        compressor.enableAnalog(60, 120);
+        compressor.enableAnalog(60, 105);
         // compressor.enableHybrid(60, 120);
         // compressor.disable();
     }

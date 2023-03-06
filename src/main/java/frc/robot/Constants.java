@@ -2,18 +2,45 @@ package frc.robot;
 
 import java.io.IOException;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.auto.PIDConstants;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 public class Constants {
-    public static final Transform3d CAMERA_OFFSET = new Transform3d();
+    public static final Transform3d CAMERA_OFFSET = new Transform3d(
+        new Translation3d(Units.inchesToMeters(10.5), Units.inchesToMeters(-11), Units.inchesToMeters(39.5)),
+        new Rotation3d()
+    );
 
-    public static final double CAMERA_HEIGHT_METERS = 0;
+    // public static final double CAMERA_HEIGHT_METERS = 0;
 
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
     public static final AprilTagFieldLayout layout = getLayout();
+
+    public static final double armHighX = 37.875; // 40.875
+    public static final double armHighY = 14.66;
+    public static final double wristHighAngle = 288;
+    public static final double armMidX = 32.03;
+    public static final double armMidY = 2.83;
+    public static final double armInnerGrabX = 6.28;
+    public static final double armInnerGrabY = -25.52;
+    public static final double wristInvertAngle = 260;
+    public static final double armGroundX = 6.17;
+    public static final double armGroundY = -34.24;
+    public static final double wristGroundAngle = 25;
+    public static final double armStowX = 5.472;
+    public static final double armStowY = -33;
+    public static final double wristStowAngle = 105.32;
+    public static final double armManipUnstuckX = -7;
+    public static final double armManipUnstuckY = -30;
+
 
     static AprilTagFieldLayout getLayout() {
         try {
@@ -62,4 +89,11 @@ public class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(53.701); // 115.664
+
+    //#region Auto Constants
+    public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0);
+    public static final PIDConstants ROTATION_PID = new PIDConstants(1.0, 0, 0);
+    //#endregion Auto Constants
+
 }
