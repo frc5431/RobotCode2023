@@ -38,7 +38,7 @@ public class Arm extends SubsystemBase {
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
 
-    public static final double MAX_SPEED_OUTER = 0.2; // 0.073 to hold at horz
+    public static final double MAX_SPEED_OUTER = 0.3; // 0.073 to hold at horz
     public static final double MAX_SPEED_INNER = 0.21;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.2;  // 0.064 to hold at horz
 
@@ -68,7 +68,7 @@ public class Arm extends SubsystemBase {
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
 
-    public static final double shoulderMassKG = 9.88; // 9.1
+    public static final double shoulderMassKG = 9.98; // 9.88 // 9.1
     public static final double elbowMassKG = 4.26; // 3.0
     public static final double wristMassKG = 2.26; // 1.85
     public static final double coneMassKG = 0.67; // 0.9
@@ -160,7 +160,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("shoulder set", component.getSetpointRadians());
             SmartDashboard.putNumber("shoulder arbff", arbFF);
-        }, Pair.of(-Math.PI/2, Math.PI));
+        }, Pair.of(-Math.PI, Math.PI));
 
         innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
             Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
@@ -178,7 +178,7 @@ public class Arm extends SubsystemBase {
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        }, Pair.of(-Math.PI*3/4, Math.PI*3/4+0.2));
+        }, Pair.of(-1.6, 1.86));
     }
 
     public ArmComponent getOuter() {
@@ -285,7 +285,7 @@ public class Arm extends SubsystemBase {
 
         SmartDashboard.putNumber("shoulder cur", bicepAngle.getRadians());
         SmartDashboard.putNumber("elbow cur", forearmAngle.getRadians());
-        SmartDashboard.putNumber("wrist cur", handAngle.getDegrees());
+        SmartDashboard.putNumber("wrist cur", handAngle.getRadians());
         SmartDashboard.putBoolean("shoulder atSetpoint", outerComponent.atSetpoint());
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());

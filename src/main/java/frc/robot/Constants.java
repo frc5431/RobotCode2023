@@ -9,8 +9,10 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.util.PresetPosition;
 
 public class Constants {
     public static final Transform3d CAMERA_OFFSET = new Transform3d(
@@ -27,19 +29,27 @@ public class Constants {
     public static final double armHighX = 37.875; // 40.875
     public static final double armHighY = 14.66;
     public static final double wristHighAngle = 288;
+    public static final PresetPosition armHigh = PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle);
     public static final double armMidX = 32.03;
     public static final double armMidY = 2.83;
+    public static final Translation2d armMid = new Translation2d(Constants.armMidX, Constants.armMidY);
     public static final double armInnerGrabX = 6.28;
     public static final double armInnerGrabY = -25.52;
     public static final double wristInvertAngle = 260;
+    public static final PresetPosition armInvertedGrab = PresetPosition.fromGoal(new Translation2d(armInnerGrabX, armInnerGrabY), wristInvertAngle);
     public static final double armGroundX = 6.17;
     public static final double armGroundY = -34.24;
     public static final double wristGroundAngle = 25;
+    public static final PresetPosition armNormalGrab = PresetPosition.fromGoal(new Translation2d(armGroundX, armGroundY), wristGroundAngle);
     public static final double armStowX = 5.472;
     public static final double armStowY = -33;
     public static final double wristStowAngle = 105.32;
-    public static final double armManipUnstuckX = -7;
-    public static final double armManipUnstuckY = -30;
+    public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(armStowX, armStowY), wristStowAngle);
+    public static final double armBackwardsHighX = -59.7;
+    public static final double armBackwardsHighY = 3.7;
+    public static final double wristBackwardsHighAngle = 308;
+    public static final PresetPosition armBackwardsHigh = PresetPosition.fromGoal(new Translation2d(armBackwardsHighX, armBackwardsHighY), wristBackwardsHighAngle);
+    public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-17.37, -8.35), 37.257);
 
 
     static AprilTagFieldLayout getLayout() {

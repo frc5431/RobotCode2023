@@ -194,37 +194,41 @@ public class RobotContainer {
             false
         ));
  
-        operator.A1().or(operatorJoystick.povUp()).whileTrue(
+        operator.A1().or(operatorJoystick.povUp()).or(operatorJoystick.a()).whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
+        );
+
+        operator.B1().or(operatorJoystick.povDown()).or(operatorJoystick.y()).whileTrue(
+            run(() -> systems.getArm().getWrist().add(-2))
         );
 
         operator.A3().or(operatorJoystick.b()).onTrue(new ArmToGoalCommand(
             systems,
-            new Translation2d(Constants.armGroundX, Constants.armGroundY),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
-
-        operator.B1().or(operatorJoystick.povDown()).whileTrue(
-            run(() -> systems.getArm().getWrist().add(-2))
-        );
-
-        operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmToGoalCommand( // Manip Unstuck
+            Constants.armBackwardsIntermediate,
+            ArmToGoalCommand.USE_INCHES
+        ).andThen(new ArmToGoalCommand( // Backwards high - requires intermediate pos!
             systems,
-            new Translation2d(Constants.armManipUnstuckX, Constants.armManipUnstuckY),
+            Constants.armBackwardsHigh,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        )));
+
+        operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmToGoalCommand( // Intermediate
+            systems,
+            Constants.armBackwardsIntermediate,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmToGoalCommand( // Normal Grab
             systems,
-            PresetPosition.fromGoal(new Translation2d(Constants.armGroundX, Constants.armGroundY), Constants.wristGroundAngle),
+            Constants.armNormalGrab,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmMoveCommandGroup( // Inverted Grab
             systems,
-            new Translation2d(Constants.armInnerGrabX, Constants.armInnerGrabY),
+            Constants.armInvertedGrab.getWristPos(),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            Constants.wristInvertAngle,
+            Constants.armInvertedGrab.getWrist(),
             true
         ));
 
@@ -233,15 +237,13 @@ public class RobotContainer {
             systems.getArm().getWrist().setDegreesCommand(0)
         .andThen(new ArmToGoalCommand(
             systems,
-            PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
+            Constants.armHigh,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        
-
         operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,
-            new Translation2d(Constants.armMidX, Constants.armMidY),
+            Constants.armMid,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
