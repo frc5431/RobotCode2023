@@ -197,7 +197,13 @@ public class RobotContainer {
         operator.A1().or(operatorJoystick.povUp()).whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
         );
-        
+
+        operator.A3().or(operatorJoystick.b()).onTrue(new ArmToGoalCommand(
+            systems,
+            new Translation2d(Constants.armGroundX, Constants.armGroundY),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
         operator.B1().or(operatorJoystick.povDown()).whileTrue(
             run(() -> systems.getArm().getWrist().add(-2))
         );
@@ -230,6 +236,8 @@ public class RobotContainer {
             PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
+
+        
 
         operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
             systems,

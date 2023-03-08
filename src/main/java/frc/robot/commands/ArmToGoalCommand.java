@@ -14,7 +14,7 @@ public class ArmToGoalCommand extends CommandBase {
     public static final int FINISH_INSTANTLY = 2;
     public static final int USE_INCHES = 4;
 
-    public static final double DISTANCE_TOLERANCE = 0.5;
+    public static final double DISTANCE_TOLERANCE = Units.inchesToMeters(3);
 
     private final Arm arm;
     private final PIDController xPidController;
