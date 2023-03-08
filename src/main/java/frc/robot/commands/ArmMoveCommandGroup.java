@@ -9,7 +9,7 @@ public class ArmMoveCommandGroup extends SequentialCommandGroup {
     public ArmMoveCommandGroup(Systems systems, Translation2d position, int jumpFlags, double wristAngle, boolean open) {
         addCommands(
             systems.getManipulator().manipCommand(open),
-            new ArmToGoalCommand(systems, PresetPosition.fromGoal(position, wristAngle), jumpFlags)
+            new ArmGoalGroup(systems, PresetPosition.fromGoal(position, wristAngle), jumpFlags)
         );
         setName("ArmMoveGroup to "+position.toString()+" wa "+wristAngle);
     }

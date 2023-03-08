@@ -58,4 +58,12 @@ public class PresetPosition {
     public static PresetPosition fromGoal(Translation2d wristPos, double wristDegrees) {
         return new PresetPosition(wristPos, wristDegrees);
     }
+
+    public static boolean isGoalBackwards(Translation2d t) {
+        return t.getX() < Arm.IS_BACKWARDS_X;
+    }
+
+    public boolean isGoalBackwards() {
+        return isGoalBackwards(wristPos);
+    }
 }

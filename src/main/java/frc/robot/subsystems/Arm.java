@@ -67,6 +67,7 @@ public class Arm extends SubsystemBase {
     public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
+    public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
     public static final double shoulderMassKG = 9.98; // 9.88 // 9.1
     public static final double elbowMassKG = 4.26; // 3.0
@@ -347,6 +348,10 @@ public class Arm extends SubsystemBase {
 
     public Translation2d getWristRobotSpacePosition() {
         return solver.anglesToPos(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+    }
+
+    public boolean isGoalBackwards() {
+        return goalPose.getX() < IS_BACKWARDS_X;
     }
 
     public class ArmComponent {

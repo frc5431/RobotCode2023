@@ -18,8 +18,8 @@ public class Autobalancer extends CommandBase {
     public final Drivebase drivebase;
     public final Blinkin leds;
 
-    public final MotionMagic PID_NORMAL = new MotionMagic(0.025, 0, 0.01, 0.0);
-    public final MotionMagic PID_BLUE   = new MotionMagic(0.025, 0, 0.01, 0.0);
+    public final MotionMagic PID_NORMAL = new MotionMagic(0.035, 0, 0.01, 0.0);
+    public final MotionMagic PID_BLUE   = new MotionMagic(0.040, 0, 0.01, 0.0); // 0.025
 
     private PIDController pid = new PIDController(PID_NORMAL.p(), PID_NORMAL.i(), PID_NORMAL.d());
     public ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);

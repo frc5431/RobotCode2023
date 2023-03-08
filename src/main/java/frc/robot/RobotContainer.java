@@ -8,7 +8,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -180,7 +180,7 @@ public class RobotContainer {
         // operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
 
         // Arm controls, but for driver by request of Phillip
-        driver.leftTrigger().onTrue(new ArmToGoalCommand( // Stow
+        driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
             systems,
             PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -202,23 +202,25 @@ public class RobotContainer {
             run(() -> systems.getArm().getWrist().add(-2))
         );
 
-        operator.A3().or(operatorJoystick.b()).onTrue(new ArmToGoalCommand(
-            systems,
-            Constants.armBackwardsIntermediate,
-            ArmToGoalCommand.USE_INCHES
-        ).andThen(new ArmToGoalCommand( // Backwards high - requires intermediate pos!
+        operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
             systems,
             Constants.armBackwardsHigh,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        )));
+        ));
 
-        operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmToGoalCommand( // Intermediate
+        operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmGoalGroup( // Backwards mid
+            systems,
+            Constants.armBackwardsMid,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmGoalGroup( // Intermediate
             systems,
             Constants.armBackwardsIntermediate,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmToGoalCommand( // Normal Grab
+        operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmGoalGroup( // Normal Grab
             systems,
             Constants.armNormalGrab,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -235,13 +237,13 @@ public class RobotContainer {
         // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
         operator.A2().or(operatorJoystick.povRight()).onTrue( // High node
             systems.getArm().getWrist().setDegreesCommand(0)
-        .andThen(new ArmToGoalCommand(
+        .andThen(new ArmGoalGroup(
             systems,
             Constants.armHigh,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmToGoalCommand( // Middle node & grab from slidy boi
+        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmGoalGroup( // Middle node & grab from slidy boi
             systems,
             Constants.armMid,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
