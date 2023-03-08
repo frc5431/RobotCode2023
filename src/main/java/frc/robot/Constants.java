@@ -44,9 +44,9 @@ public class Constants {
 
     static AprilTagFieldLayout getLayout() {
         try {
-            return AprilTagFieldLayout.loadFromResource(AprilTagFields.kDefaultField.m_resourceFile);
+            return AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
         } catch (IOException e) {
-            System.out.println("Apriltag Fields somehow did not intialize, if you are getting this error, you have bigger things to worry about though.");
+            System.err.println("Apriltag Fields somehow did not intialize, if you are getting this error, you have bigger things to worry about though.");
             return null;
         }
     }
