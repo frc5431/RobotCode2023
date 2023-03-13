@@ -31,7 +31,7 @@ public class AutonLoader {
         "far", "farBalance",
         "mid", "midBalance",
         "near", "nearBalance",
-        "special",
+        "special", "placeHigh",
         "none"
     };
 
@@ -46,11 +46,11 @@ public class AutonLoader {
     private SwerveAutoBuilder autoBuilder;
 
     private final SendableChooser<Command> chooser = new SendableChooser<>();
+    private final HashMap<String, Command> eventMap = new HashMap<>();
 
     public AutonLoader(Systems systems) {
         this.drivebase = systems.getDrivebase();
 
-        HashMap<String, Command> eventMap = new HashMap<>();
         // eventMap.put("deadwheelDrop", systems.getDeadwheels().deadwheelsCommand(true));
         // eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
         eventMap.put("deadwheelDrop", none());
@@ -77,12 +77,12 @@ public class AutonLoader {
             new ArmToGoalCommand(
                 systems,
                 PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
-                ArmToGoalCommand.USE_INCHES).withTimeout(2),
-            waitSeconds(0.2),
-            new DriveCommand(systems, new ChassisSpeeds(-0.75, 0, 0)).withTimeout(1),
+                ArmToGoalCommand.USE_INCHES).withTimeout(1),
+            waitSeconds(0.1),
+            new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.6),
             systems.getManipulator().manipCommand(true),
-            waitSeconds(1.5),
-            new DriveCommand(systems, new ChassisSpeeds(0.75, 0, 0)).withTimeout(1.05),
+            waitSeconds(0.6),
+            new DriveCommand(systems, new ChassisSpeeds(1.0, 0, 0)).withTimeout(0.5),
             new ArmToGoalCommand(
                 systems,
                 PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
@@ -115,6 +115,7 @@ public class AutonLoader {
 
     public Command getAuto(String pathName) {
         if (pathName.equals("none")) return runOnce(() -> drivebase.resetGyroAt(180));
+        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180)).andThen(eventMap.get("placeHigh"));
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
 

@@ -38,8 +38,8 @@ public class Arm extends SubsystemBase {
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
 
-    public static final double MAX_SPEED_OUTER = 0.3; // 0.073 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.21;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.2;  // 0.064 to hold at horz
 
     // private double setpointOut = 0;
@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase {
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
     public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
-    public static final double shoulderMassKG = 9.98; // 9.88 // 9.1
+    public static final double shoulderMassKG = 10.3; // 9.98 // 9.88 // 9.1
     public static final double elbowMassKG = 4.26; // 3.0
     public static final double wristMassKG = 2.26; // 1.85
     public static final double coneMassKG = 0.67; // 0.9

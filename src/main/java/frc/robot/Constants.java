@@ -33,13 +33,13 @@ public class Constants {
     public static final double armMidX = 32.03;
     public static final double armMidY = 2.83;
     public static final Translation2d armMid = new Translation2d(Constants.armMidX, Constants.armMidY);
-    public static final double armInnerGrabX = 6.28;
-    public static final double armInnerGrabY = -25.52;
-    public static final double wristInvertAngle = 260;
-    public static final PresetPosition armInvertedGrab = PresetPosition.fromGoal(new Translation2d(armInnerGrabX, armInnerGrabY), wristInvertAngle);
+    public static final double armInvertedGrabX = 1.574;
+    public static final double armInvertedGrabY = -25.52;
+    public static final double wristInvertedAngle = 298;
+    public static final PresetPosition armInvertedGrab = PresetPosition.fromGoal(new Translation2d(armInvertedGrabX, armInvertedGrabY), wristInvertedAngle);
     public static final double armGroundX = 6.17;
     public static final double armGroundY = -34.24;
-    public static final double wristGroundAngle = 25;
+    public static final double wristGroundAngle = 15;
     public static final PresetPosition armNormalGrab = PresetPosition.fromGoal(new Translation2d(armGroundX, armGroundY), wristGroundAngle);
     public static final double armStowX = 5.472;
     public static final double armStowY = -33;
@@ -53,8 +53,7 @@ public class Constants {
     public static final double armBackwardsMidY = -0.427;
     public static final double wristBackwardsMidAngle = 296.78;
     public static final PresetPosition armBackwardsMid = PresetPosition.fromGoal(new Translation2d(armBackwardsMidX, armBackwardsMidY), wristBackwardsMidAngle);
-    public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-17.37, -8.35), 37.257);
-
+    public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-13.89, -1.7), 260.0);
 
     static AprilTagFieldLayout getLayout() {
         try {
