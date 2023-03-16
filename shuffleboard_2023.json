@@ -193,9 +193,9 @@
               "_showGlyph": false
             }
           },
-          "14,1": {
+          "17,5": {
             "size": [
-              3,
+              2,
               1
             ],
             "content": {
@@ -528,7 +528,7 @@
           },
           "24,0": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -578,9 +578,9 @@
               "_showGlyph": false
             }
           },
-          "16,3": {
+          "16,5": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -822,6 +822,45 @@
               "Visuals/Starting angle": 180.0,
               "Visuals/Show tick mark ring": true,
               "Visuals/Counter clockwise": false
+            }
+          },
+          "17,4": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wa2g",
+              "_title": "wa2g",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "16,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist setdeg",
+              "_title": "wrist setdeg",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "16,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist amps",
+              "_title": "wrist amps",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }

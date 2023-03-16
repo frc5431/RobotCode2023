@@ -190,7 +190,7 @@ public class RobotContainer {
             systems,
             new Translation2d(14.34, -11.95),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            302,
+            336,
             false
         ));
  

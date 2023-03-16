@@ -34,7 +34,7 @@ public class Constants {
     public static final double armMidY = 2.83;
     public static final Translation2d armMid = new Translation2d(Constants.armMidX, Constants.armMidY);
     public static final double armInvertedGrabX = 1.574;
-    public static final double armInvertedGrabY = -25.52;
+    public static final double armInvertedGrabY = -26.0;
     public static final double wristInvertedAngle = 298;
     public static final PresetPosition armInvertedGrab = PresetPosition.fromGoal(new Translation2d(armInvertedGrabX, armInvertedGrabY), wristInvertedAngle);
     public static final double armGroundX = 6.17;

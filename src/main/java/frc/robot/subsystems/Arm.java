@@ -40,7 +40,7 @@ public class Arm extends SubsystemBase {
 
     public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
     public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
-    public static final double MAX_SPEED_WRIST = 0.2;  // 0.064 to hold at horz
+    public static final double MAX_SPEED_WRIST = 0.3;  // 0.064 to hold at horz
 
     // private double setpointOut = 0;
     // private double setpointIn = 0;
@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase {
 
     public static final double SHOULDER_TORQUE_TOTAL = TORQUE_NM_NEO * 100 * 2;
     public static final double FOREARM_TORQUE_TOTAL = TORQUE_NM_NEO * 5*4 * 84/20 * 2;
-    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 3*3;
+    public static final double WRIST_TORQUE_TOTAL = TORQUE_NM_NEO * 5*3;
 
     // measured
     private Rotation2d bicepAngle = new Rotation2d();
@@ -69,10 +69,10 @@ public class Arm extends SubsystemBase {
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
     public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
-    public static final double shoulderMassKG = 10.3; // 9.98 // 9.88 // 9.1
-    public static final double elbowMassKG = 4.26; // 3.0
-    public static final double wristMassKG = 2.26; // 1.85
-    public static final double coneMassKG = 0.67; // 0.9
+    public static final double shoulderMassKG = 11.473; // 10.3 // 9.98 // 9.88 // 9.1
+    public static final double elbowMassKG = 5.433; // 4.26 // 3.0
+    public static final double wristMassKG = 3.433; // 2.26 // 1.85
+    public static final double coneMassKG = 0.8; // 0.67 // 0.9
     public static final double GRAV_CONST = 9.81;
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
@@ -98,7 +98,7 @@ public class Arm extends SubsystemBase {
         wristMassKG * GRAV_CONST;
 
     public static final double wristCOMMeters =
-        Units.inchesToMeters(3.5);
+        Units.inchesToMeters(3); // 3.5
 
     private final List<CANSparkMax> sparks;
 
@@ -164,7 +164,7 @@ public class Arm extends SubsystemBase {
         }, Pair.of(-Math.PI, Math.PI));
 
         innerComponent = new ArmComponent(innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
-            Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
+            Rotation2d fa2g = calcForearmAngleToGround(fromRadians(outerComponent.getPositionRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = -getElbowCosMult() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
@@ -172,14 +172,16 @@ public class Arm extends SubsystemBase {
             SmartDashboard.putNumber("elbow arbff", arbFF);
         }, Pair.of(-Math.PI+0.3, Math.PI-0.3));
 
-        wristComponent = new ArmComponent(wrist, new MotionMagic(0.15, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
-            Rotation2d wa2g = calcHandAngleToGround(fromRadians(outerComponent.getSetpointRadians()), fromRadians(innerComponent.getSetpointRadians()), fromRadians(component.getSetpointRadians()));
+        wristComponent = new ArmComponent(wrist, new MotionMagic(0.3, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
+            Rotation2d wa2g = calcHandAngleToGround(fromRadians(outerComponent.getPositionRadians()), fromRadians(innerComponent.getPositionRadians()), fromRadians(component.getSetpointRadians()));
             double arbFF = getWristCosMult() * wa2g.getCos() / WRIST_TORQUE_TOTAL;
 
             component.getController().setReference(component.getSetpointRadians(), ControlType.kPosition, 0, arbFF, ArbFFUnits.kPercentOut);
+            SmartDashboard.putNumber("wa2g", wa2g.getDegrees());
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
+            SmartDashboard.putNumber("wrist setdeg", component.getSetpointDegrees());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        }, Pair.of(-1.6, 1.86));
+        }, Pair.of(-Math.PI/2, Math.PI/2));
     }
 
     public ArmComponent getOuter() {
@@ -244,7 +246,7 @@ public class Arm extends SubsystemBase {
         if (Manipulator.isOpen) {
             return wristCosineMultiplierNoCOM * wristCOMMeters;
         } else {
-            double coneDistance = Units.inchesToMeters(11);
+            double coneDistance = Units.inchesToMeters(12); // 12
             double totalMass = wristMassKG + coneMassKG;
             double newCOM = (wristMassKG * wristCOMMeters + coneMassKG * coneDistance) / totalMass;
             SmartDashboard.putNumber("wrcom wo cone", wristMassKG * wristCOMMeters);
@@ -291,9 +293,15 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putBoolean("elbow atSetpoint", innerComponent.atSetpoint());
         SmartDashboard.putBoolean("wrist atSetpoint", wristComponent.atSetpoint());
 
-        SmartDashboard.putNumber("wrist error", Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
+        SmartDashboard.putNumber("wrist error", 
+            Math.abs(fromRadians(wristComponent.setpoint).minus(fromRadians(wristComponent.getPositionRadians())).getRadians()));
+            // Math.abs(wristComponent.absoluteEncoder.getPosition() - wristComponent.setpoint));
+        SmartDashboard.putNumber("wrist amps", wristComponent.getMotor().getOutputCurrent());
 
         solveKinematics(goalPose);
+        outerComponent.runSetter();
+        innerComponent.runSetter();
+        wristComponent.runSetter();
     }
 
     public List<CANSparkMax> getSparks() {
@@ -359,7 +367,7 @@ public class Arm extends SubsystemBase {
         private final Optional<CANSparkMax> follow;
         private final SparkMaxPIDController controller;
         private final AbsoluteEncoder absoluteEncoder;
-        private final Consumer<ArmComponent> setter;
+        public final Consumer<ArmComponent> setter;
         public final double MAX_SPEED;
         public String name;
 
@@ -433,7 +441,7 @@ public class Arm extends SubsystemBase {
 
         public void setRadians(double value) {
             setpoint = MathUtil.clamp(MathUtil.inputModulus(value, -Math.PI, Math.PI), setpointClamp.getFirst(), setpointClamp.getSecond());
-            setter.accept(this);
+            runSetter();
         }
 
         public void add(double degrees) {
@@ -467,6 +475,10 @@ public class Arm extends SubsystemBase {
 
         public AbsoluteEncoder getEncoder() {
             return absoluteEncoder;
+        }
+
+        public void runSetter() {
+            setter.accept(this);
         }
 
         // Will currently require all of the arm, so no other command can

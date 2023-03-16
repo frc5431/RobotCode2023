@@ -49,7 +49,7 @@ public class Systems {
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 11, 10);
         manipulator = new Manipulator(paddles);
         paddles.set(DoubleSolenoid.Value.kForward);
 
