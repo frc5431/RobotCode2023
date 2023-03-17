@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    DriverStation.silenceJoystickConnectionWarning(false);
+    DriverStation.silenceJoystickConnectionWarning(true); // false
     PathPlannerServer.startServer(5811);
     DataLogManager.start();
     m_robotContainer = new RobotContainer();

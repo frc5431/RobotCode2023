@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
@@ -157,8 +158,8 @@ public class RobotContainer {
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
         // driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
 
-        operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
-            .withTimeout(8));
+        // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
+        //     .withTimeout(8));
         operator.A6().or(operatorJoystick.start()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
             // .andThen(waitSeconds(8)));
             .withTimeout(8));
@@ -172,7 +173,7 @@ public class RobotContainer {
             .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        // operator.C5().onTrue(new Autobalancer(systems));
+        operatorJoystick.back().onTrue(new Autobalancer(systems));
 
         // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
@@ -190,10 +191,10 @@ public class RobotContainer {
             systems,
             new Translation2d(14.34, -11.95),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            336,
+            294,
             false
         ));
- 
+
         operator.A1().or(operatorJoystick.povUp()).or(operatorJoystick.a()).whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
         );
@@ -205,6 +206,12 @@ public class RobotContainer {
         operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
             systems,
             Constants.armBackwardsHigh,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        (operatorJoystick.leftBumper()).onTrue(new ArmGoalGroup( // Backwards double substation
+            systems,
+            PresetPosition.fromGoal(Constants.armBackwardsHigh.getWristPos(), 30),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 

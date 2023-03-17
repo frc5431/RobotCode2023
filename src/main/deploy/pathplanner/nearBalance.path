@@ -77,12 +77,12 @@
     },
     {
       "anchorPoint": {
-        "x": 3.9328894372074457,
-        "y": 2.8200043542944235
+        "x": 4.37664646757865,
+        "y": 2.934522297616024
       },
       "prevControl": {
-        "x": 5.2594025609897574,
-        "y": 2.8428752702217053
+        "x": 5.703159591360961,
+        "y": 2.957393213543306
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -103,18 +103,5 @@
   "maxVelocity": 3.0,
   "maxAcceleration": 2.0,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 2.0945454545453734,
-      "names": [
-        "deadwheelDrop"
-      ]
-    },
-    {
-      "position": 2.945454545454564,
-      "names": [
-        "deadwheelRaise"
-      ]
-    }
-  ]
+  "markers": []
 }
