@@ -32,6 +32,8 @@ public class AutonLoader {
         "mid", "midBalance",
         "near", "nearBalance",
         "special", "placeHigh",
+        "timedMobility",
+        "timedBalance",
         "none"
     };
 
@@ -48,8 +50,11 @@ public class AutonLoader {
     private final SendableChooser<Command> chooser = new SendableChooser<>();
     private final HashMap<String, Command> eventMap = new HashMap<>();
 
+    private final Systems systems;
+
     public AutonLoader(Systems systems) {
         this.drivebase = systems.getDrivebase();
+        this.systems = systems;
 
         // eventMap.put("deadwheelDrop", systems.getDeadwheels().deadwheelsCommand(true));
         // eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
@@ -58,7 +63,34 @@ public class AutonLoader {
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
         eventMap.put("autoBalance", new Autobalancer(systems));        
-        eventMap.put("placeHigh", new SequentialCommandGroup(
+        eventMap.put("placeHigh", placeHigh());
+        // eventMap.put("placeHigh", none());
+        eventMap.put("stow", new ArmToGoalCommand(
+            systems,
+            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        autoBuilder = new SwerveAutoBuilder(
+                drivebase::getPosition,
+                drivebase::resetOdometry,
+                drivebase.m_kinematics,
+                Constants.TRANSLATION_PID,
+                Constants.ROTATION_PID,
+                (states) -> drivebase.driveRaw(drivebase.m_kinematics.toChassisSpeeds(states)),
+                eventMap,
+                true,
+                drivebase);
+
+        for (String pathNames : paths) {
+                chooser.addOption(pathNames, getAuto(pathNames));
+        }
+
+        SmartDashboard.putData("Auton", chooser);
+    }
+
+    public Command placeHigh() {
+        return new SequentialCommandGroup(
             systems.getArm().getWrist().setDegreesCommand(0),
             new ArmMoveCommandGroup( // Arm while traveling
                 systems,
@@ -87,35 +119,19 @@ public class AutonLoader {
                 systems,
                 PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
                 ArmToGoalCommand.USE_INCHES)
-        ));
-        eventMap.put("stow", new ArmToGoalCommand(
-            systems,
-            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
-        // eventMap.put("placeHigh", none());
-
-        autoBuilder = new SwerveAutoBuilder(
-                drivebase::getPosition,
-                drivebase::resetOdometry,
-                drivebase.m_kinematics,
-                Constants.TRANSLATION_PID,
-                Constants.ROTATION_PID,
-                (states) -> drivebase.driveRaw(drivebase.m_kinematics.toChassisSpeeds(states)),
-                eventMap,
-                true,
-                drivebase);
-
-        for (String pathNames : paths) {
-                chooser.addOption(pathNames, getAuto(pathNames));
-        }
-
-        SmartDashboard.putData("Auton", chooser);
+        );
     }
 
     public Command getAuto(String pathName) {
         if (pathName.equals("none")) return runOnce(() -> drivebase.resetGyroAt(180));
-        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180)).andThen(eventMap.get("placeHigh"));
+        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180)).andThen(placeHigh());
+        if (pathName.equals("timedMobility")) return runOnce(() -> drivebase.resetGyroAt(180))
+            .andThen(placeHigh())
+            .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(3));
+        if (pathName.equals("timedBalance")) return runOnce(() -> drivebase.resetGyroAt(180))
+            .andThen(placeHigh())
+            .andThen(new DriveCommand(systems, new ChassisSpeeds(3.0, 0, 0)).withTimeout(0.35))
+            .andThen(new Autobalancer(systems));
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
 

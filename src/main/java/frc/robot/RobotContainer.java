@@ -189,9 +189,9 @@ public class RobotContainer {
 
         driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
             systems,
-            new Translation2d(14.34, -11.95),
+            new Translation2d(4.02, -8.69),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            294,
+            312,
             false
         ));
 
