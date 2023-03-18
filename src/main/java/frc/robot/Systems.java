@@ -65,8 +65,8 @@ public class Systems {
         compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
         phub = new PneumaticHub(Constants.ID_PHUB);
 
-        // compressor.enableDigital();
-        compressor.enableAnalog(60, 105);
+        compressor.enableDigital();
+        // compressor.enableAnalog(60, 105);
         // compressor.enableHybrid(60, 120);
         // compressor.disable();
     }
