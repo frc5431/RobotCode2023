@@ -130,7 +130,7 @@ public class AutonLoader {
             .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(3));
         if (pathName.equals("timedBalance")) return runOnce(() -> drivebase.resetGyroAt(180))
             .andThen(placeHigh())
-            .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(0.6))
+            .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(0.5))
             .andThen(new Autobalancer(systems));
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
