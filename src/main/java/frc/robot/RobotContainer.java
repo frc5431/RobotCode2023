@@ -150,9 +150,9 @@ public class RobotContainer {
         driver.povDown().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
         driver.povLeft().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
-        driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
+        driver.povRight().whileTrue(run(
+                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));

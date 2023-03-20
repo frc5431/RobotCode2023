@@ -45,9 +45,9 @@ public class Constants {
     public static final double armStowY = -33;
     public static final double wristStowAngle = 105.32;
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(armStowX, armStowY), wristStowAngle);
-    public static final double armBackwardsHighX = -59.7;
-    public static final double armBackwardsHighY = 3.7;
-    public static final double wristBackwardsHighAngle = 340;
+    public static final double armBackwardsHighX = -58.35; // -59.7
+    public static final double armBackwardsHighY = 12.1; // 3.7
+    public static final double wristBackwardsHighAngle = 12; // 340
     public static final PresetPosition armBackwardsHigh = PresetPosition.fromGoal(new Translation2d(armBackwardsHighX, armBackwardsHighY), wristBackwardsHighAngle);
     public static final double armBackwardsMidX = -30;
     public static final double armBackwardsMidY = -0.427;

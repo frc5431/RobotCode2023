@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-
 import java.util.Optional;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -46,7 +44,5 @@ public class Vision extends SubsystemBase {
 
     }
   }
-
-  
 
 }
