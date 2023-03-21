@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,7 +39,7 @@ public class Vision extends SubsystemBase {
       layout = null;
     }
     this.LAYOUT = layout;
-    // Robot.periodics.add(new Pair<>(this::detect, 0.2)); // 5 times per sec
+    Robot.periodics.add(new Pair<>(this::detect, 0.2)); // 5 times per sec
   }
 
   public void detect() {

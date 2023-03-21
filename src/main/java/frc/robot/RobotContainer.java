@@ -108,7 +108,7 @@ public class RobotContainer {
             for (int i = 0; i < sparks.size(); i++) {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
-        }, 0.1));
+        }, 0.2));
         autonLoader = new AutonLoader(systems);
 
         // ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
