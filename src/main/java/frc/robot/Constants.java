@@ -1,12 +1,8 @@
 package frc.robot;
 
-import java.io.IOException;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,16 +11,21 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.PresetPosition;
 
 public class Constants {
-    public static final Transform3d CAMERA_OFFSET = new Transform3d(
-        new Translation3d(Units.inchesToMeters(10.5), Units.inchesToMeters(-11), Units.inchesToMeters(39.5)),
+    // Location of camera on the robot, relative to the center of the robot.
+    // (X forward, Y left, Z up)
+    public static final Transform3d ROBOT_TO_CAMERA = new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(10.5),
+            Units.inchesToMeters(-11),
+            Units.inchesToMeters(39.5)),
         new Rotation3d()
     );
+    public static final Transform3d CAMERA_TO_ROBOT = ROBOT_TO_CAMERA.inverse();
 
     // public static final double CAMERA_HEIGHT_METERS = 0;
 
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
-    public static final AprilTagFieldLayout layout = getLayout();
 
     public static final double armHighX = 37.875; // 40.875
     public static final double armHighY = 14.66;
@@ -54,15 +55,6 @@ public class Constants {
     public static final double wristBackwardsMidAngle = 296.78;
     public static final PresetPosition armBackwardsMid = PresetPosition.fromGoal(new Translation2d(armBackwardsMidX, armBackwardsMidY), wristBackwardsMidAngle);
     public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-13.89, -1.7), 260.0);
-
-    static AprilTagFieldLayout getLayout() {
-        try {
-            return AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
-        } catch (IOException e) {
-            System.err.println("Apriltag Fields somehow did not intialize, if you are getting this error, you have bigger things to worry about though.");
-            return null;
-        }
-    }
 
     public static final int ID_PIGEON2 = 13;
     public static final int ID_PHUB = 1;

@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -161,10 +163,26 @@ public class Drivebase extends SubsystemBase {
         // chassisSpeedsLayout.addNumber("vY", () -> m_chassisSpeeds.vyMetersPerSecond);
         // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
 
+        SmartDashboard.putData("Gyro", m_pigeon2);
+
+        ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
+
         field2d = new Field2d();
         
-        SmartDashboard.putData("Gyro", m_pigeon2);
-        SmartDashboard.putData("Field", field2d);
+        visionTab.addString("Pose", this::getFormattedPose)
+            .withPosition(0, 0)
+            .withSize(2, 0);
+        visionTab.add("Field", field2d)
+            .withPosition(2, 0)
+            .withSize(6,4);
+    }
+
+    private String getFormattedPose() {
+        Pose2d pose = getPosition();
+        return String.format("(%.2f, %.2f) %.2f degrees",
+            pose.getX(),
+            pose.getY(),
+            pose.getRotation().getDegrees());
     }
 
 
