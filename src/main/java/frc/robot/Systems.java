@@ -17,7 +17,7 @@ public class Systems {
     private Vision vision;
     private Blinkin leds;
 
-    private Arm arm;
+    private ArmContainer arm;
     private Manipulator manipulator;
     private Deadwheels deadwheels;
     private Intake intake;
@@ -47,7 +47,7 @@ public class Systems {
         armInnerLeft = new CANSparkMax(16, MotorType.kBrushless);
         armInnerRight = new CANSparkMax(15, MotorType.kBrushless);
         wrist = new CANSparkMax(19, MotorType.kBrushless);
-        arm = new Arm(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
+        arm = new ArmContainer(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
         paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 11, 10);
         manipulator = new Manipulator(paddles);
@@ -83,7 +83,7 @@ public class Systems {
         return leds;
     }
 
-    public Arm getArm() {
+    public ArmContainer getArm() {
         return arm;
     }
 

@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Systems;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmContainer;
 import frc.robot.util.PresetPosition;
 
 public class ArmToGoalCommand extends CommandBase {
@@ -16,7 +16,7 @@ public class ArmToGoalCommand extends CommandBase {
 
     public static final double DISTANCE_TOLERANCE = Units.inchesToMeters(1.5);
 
-    private final Arm arm;
+    private final ArmContainer arm;
     private final PIDController xPidController;
     private final PIDController yPidController;
     private final int flags;
@@ -41,7 +41,7 @@ public class ArmToGoalCommand extends CommandBase {
             this.goalPosition = new Translation2d(Units.inchesToMeters(this.goalPosition.getX()), Units.inchesToMeters(this.goalPosition.getY()));
         }
 
-        addRequirements(arm);
+        addRequirements(arm.getAllComponentsForRequirements());
         setName("ArmMoveGoal "+goalPosition.toString());
     }
 

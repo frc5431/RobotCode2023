@@ -6,7 +6,7 @@ import static edu.wpi.first.math.util.Units.radiansToDegrees;
 import static edu.wpi.first.math.util.Units.degreesToRadians;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmContainer;
 public class PresetPosition {
     private final double outer;
     private final double inner;
@@ -31,7 +31,7 @@ public class PresetPosition {
     private PresetPosition(double outer, double inner, double wrist) {
         this.outer = outer;
         this.inner = inner;
-        this.wristPos = Arm.solver.anglesToPos(degreesToRadians(outer), degreesToRadians(inner));
+        this.wristPos = ArmContainer.solver.anglesToPos(degreesToRadians(outer), degreesToRadians(inner));
 
         this.wrist = wrist;
     }
@@ -40,7 +40,7 @@ public class PresetPosition {
     private PresetPosition(Translation2d wristPos, double wrist) {
         this.wristPos = wristPos;
 
-        Pair<Double, Double> result = Arm.solver.posToAngles(wristPos);
+        Pair<Double, Double> result = ArmContainer.solver.posToAngles(wristPos);
         this.outer = result.getFirst();
         this.inner = result.getSecond();
 
@@ -60,7 +60,7 @@ public class PresetPosition {
     }
 
     public static boolean isGoalBackwards(Translation2d t) {
-        return t.getX() < Arm.IS_BACKWARDS_X;
+        return t.getX() < ArmContainer.IS_BACKWARDS_X;
     }
 
     public boolean isGoalBackwards() {
