@@ -58,9 +58,9 @@ public class ArmContainer {
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
     public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
-    public static final double shoulderMassKG = 11.473; // 10.3 // 9.98 // 9.88 // 9.1
-    public static final double elbowMassKG = 5.433; // 4.26 // 3.0
-    public static final double wristMassKG = 3.433; // 2.26 // 1.85
+    public static final double shoulderMassKG = 10.259; // measured w/elec // 3.1+1.877+5.096 w/o elec
+    public static final double elbowMassKG = 3.1 + 1.877; // w/o elec
+    public static final double wristMassKG = 3.1; // w/o elec
     public static final double coneMassKG = 0.8; // 0.67 // 0.9
     public static final double GRAV_CONST = 9.81;
 
