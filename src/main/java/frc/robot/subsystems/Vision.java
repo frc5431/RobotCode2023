@@ -19,14 +19,12 @@ public class Vision extends SubsystemBase {
   }
 
   public Pose3d getAprilTagPosition(PhotonTrackedTarget targetA1) {
-    int id = targetA1.getFiducialId();
-    assert Constants.layout != null;
-    Optional<Pose3d> apriltagPosition = Constants.layout.getTagPose(id);
+    Optional<Pose3d> apriltagPosition = Constants.layout.getTagPose(targetA1.getFiducialId());
 
     return apriltagPosition.orElse(null);
   }
 
-  public void detect() {
+  public void travel() {
     var res = camera.getLatestResult();
 
     if (res.hasTargets()) {

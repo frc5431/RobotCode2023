@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
 
     /**
      * Initializes the Intake
+     * @deprecated
      * @param intakeLeft The left intake motor
      * @param intakeRight The right intake motor
      * @param deployPiston The left double solenoid

@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.PresetPosition;
+import frc.team5431.titan.core.leds.BlinkinPattern;
 
 public class Constants {
     public static final Transform3d CAMERA_OFFSET = new Transform3d(
@@ -20,7 +21,8 @@ public class Constants {
         new Rotation3d()
     );
 
-    // public static final double CAMERA_HEIGHT_METERS = 0;
+    public static final double CAMERA_HEIGHT_METERS = 0;
+    public static final double CAMERA_PITCH_RADIANS =0;
 
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
@@ -55,6 +57,7 @@ public class Constants {
     public static final PresetPosition armBackwardsMid = PresetPosition.fromGoal(new Translation2d(armBackwardsMidX, armBackwardsMidY), wristBackwardsMidAngle);
     public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-13.89, -1.7), 260.0);
 
+   
     static AprilTagFieldLayout getLayout() {
         try {
             return AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
@@ -102,6 +105,8 @@ public class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(53.701); // 115.664
+
+    public static final BlinkinPattern LEDAUTOALIGN = BlinkinPattern.RAINBOW_LAVA_PALETTE;
 
     //#region Auto Constants
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);

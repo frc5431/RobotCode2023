@@ -7,16 +7,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
+import com.revrobotics.CANSparkMax;
+
 public class Manipulator extends SubsystemBase {
 
     private final DoubleSolenoid piston;
+    private final CANSparkMax manipulatorMotor;
 
     public static final DoubleSolenoid.Value OPEN_STATE = kReverse;
     public static final DoubleSolenoid.Value CLOSED_STATE = kForward;
     public static boolean isOpen;
 
-    public Manipulator(DoubleSolenoid piston) {
+    public Manipulator(DoubleSolenoid piston, CANSparkMax manipulatorMotor) {
         this.piston = piston;
+        this.manipulatorMotor = manipulatorMotor;
         isOpen = false;
     }
 
@@ -37,6 +41,14 @@ public class Manipulator extends SubsystemBase {
     public void toggle() {
         piston.toggle();
         isOpen = piston.get() == OPEN_STATE;
+    }
+
+    public void intakeMotorRun(){
+        manipulatorMotor.set(5);
+    }
+
+    public void intakeMotorReverse(){
+        manipulatorMotor.set(-5);
     }
 
     @Override
