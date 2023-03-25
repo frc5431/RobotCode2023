@@ -30,6 +30,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
 
 public class RobotContainer {
@@ -40,7 +41,7 @@ public class RobotContainer {
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
     private final Buttonboard operator = new Buttonboard(3, 7, 3);
     private final AutonLoader autonLoader;
-    private final CircularLimit armLimit = new CircularLimit(Units.inchesToMeters(34) + Units.inchesToMeters(26));
+    private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
     public RobotContainer() {
 
@@ -189,9 +190,9 @@ public class RobotContainer {
 
         driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
             systems,
-            new Translation2d(4.02, -8.69),
+            new Translation2d(8.54, -5.73),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            312,
+            308,
             false
         ));
 

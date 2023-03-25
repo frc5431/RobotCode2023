@@ -40,7 +40,7 @@ public class ArmContainer {
     private final ArmComponent wristComponent;
 
     public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.25;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_INNER = 0.4;  // 0.18 to hold at horz
     public static final double MAX_SPEED_WRIST = 0.3;  // 0.064 to hold at horz
 
     private static final Rotation2d DEG_90 = fromDegrees(90);
@@ -53,15 +53,16 @@ public class ArmContainer {
     private final double SETPOINT_POSITION_TOLERANCE = 0.1;
     private final double SETPOINT_VELOCITY_TOLERANCE = 0.2;
 
-    public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(34), Units.inchesToMeters(26));
+    public static final KinematicsSolver solver = new KinematicsSolver(Units.inchesToMeters(24), Units.inchesToMeters(20)); // 34, 26
 
     private Translation2d goalPose = new Translation2d(Units.inchesToMeters(50), -Units.inchesToMeters(30)); // x = 5
     public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
-    public static final double shoulderMassKG = 10.259; // measured w/elec // 3.1+1.877+5.096 w/o elec
-    public static final double elbowMassKG = 3.1 + 1.877; // w/o elec
-    public static final double wristMassKG = 3.1; // w/o elec
-    public static final double coneMassKG = 0.8; // 0.67 // 0.9
+    // elec is 0.186 kg
+    public static final double shoulderMassKG = 10.7; // 10.259 measured w/elec // 3.1+1.877+5.096 w/o elec
+    public static final double elbowMassKG = 5.027; // w/elec
+    public static final double wristMassKG = 3.1; // w/elec
+    public static final double coneMassKG = 0.67; // 0.8 // 0.67 // 0.9
     public static final double GRAV_CONST = 9.81;
 
     // ((mass (kg) * acceleration (m/s/s)) (N) * distance of center of mass from pivot (m)) (Nm)
@@ -69,19 +70,19 @@ public class ArmContainer {
         shoulderMassKG * GRAV_CONST;
 
     public static final double shoulderMinCOMMeters =
-        Units.inchesToMeters(18.624); // 0.473 meters
+        Units.inchesToMeters(13.029); // 0.473 meters
 
     public static final double shoulderMaxCOMMeters =
-        Units.inchesToMeters(40.625);
+        Units.inchesToMeters(32); // 26.530
 
     public static final double elbowCosineMultiplierNoCOM =
         elbowMassKG * GRAV_CONST;
 
     public static final double elbowMinCOMMeters =
-        Units.inchesToMeters(19); // 20
+        Units.inchesToMeters(13.127); // 20
 
     public static final double elbowMaxCOMMeters =
-        Units.inchesToMeters(22.93);
+        Units.inchesToMeters(17.673);
 
     public static final double wristCosineMultiplierNoCOM = 
         wristMassKG * GRAV_CONST;
@@ -106,7 +107,7 @@ public class ArmContainer {
      */
 
     public ArmContainer(CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight, CANSparkMax wrist) {
-        outerArmLeft.setInverted(false);
+        outerArmLeft.setInverted(true);
         outerArmRight.follow(outerArmLeft, true);
         outerArmLeft.setIdleMode(IdleMode.kBrake);
         outerArmRight.setIdleMode(IdleMode.kBrake);
@@ -116,19 +117,19 @@ public class ArmContainer {
         // outerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
         // outerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
 
-        innerArmLeft.setInverted(true);
-        innerArmRight.follow(innerArmLeft, true);
-        innerArmLeft.setIdleMode(IdleMode.kBrake);
+        innerArmRight.setInverted(false);
+        innerArmLeft.follow(innerArmRight, true);
         innerArmRight.setIdleMode(IdleMode.kBrake);
+        innerArmLeft.setIdleMode(IdleMode.kBrake);
 
-        innerArmLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
-        innerArmLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
-        // innerArmLeft.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
-        // innerArmLeft.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
+        innerArmRight.enableSoftLimit(SoftLimitDirection.kForward, false);
+        innerArmRight.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        // innerArmRight.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
+        // innerArmRight.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
 
         wrist.setInverted(true);
         wrist.setIdleMode(IdleMode.kBrake);
-        
+
         wrist.enableSoftLimit(SoftLimitDirection.kForward, false);
         wrist.enableSoftLimit(SoftLimitDirection.kReverse, false);
         // wrist.setSoftLimit(SoftLimitDirection.kForward, (float) ( Math.PI/2 + 0.1));
@@ -139,7 +140,7 @@ public class ArmContainer {
         sparks.forEach((spark) -> {
             // spark.enableVoltageCompensation(12.0);
             spark.disableVoltageCompensation();
-            spark.setSmartCurrentLimit(40, 30);
+            spark.setSmartCurrentLimit(50, 30); // 40
             spark.burnFlash();
         });
 
@@ -152,7 +153,7 @@ public class ArmContainer {
             SmartDashboard.putNumber("shoulder arbff", arbFF);
         }, (bicepAngle) -> calcBicepAngleToGround(bicepAngle), Pair.of(-Math.PI, Math.PI));
 
-        innerComponent = new ArmComponent("elbow", "forearm", innerArmLeft, innerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
+        innerComponent = new ArmComponent("elbow", "forearm", innerArmRight, innerArmLeft, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
             Rotation2d fa2g = component.angle2Ground.apply(fromRadians(component.getSetpointRadians()));
             double arbFF = -getElbowCosMult() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
 

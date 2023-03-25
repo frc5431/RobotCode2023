@@ -42,14 +42,14 @@ public class Systems {
         // vision = new Vision(drivebase);
         leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
-        armOuterLeft = new CANSparkMax(17, MotorType.kBrushless);
-        armOuterRight = new CANSparkMax(18, MotorType.kBrushless);
-        armInnerLeft = new CANSparkMax(16, MotorType.kBrushless);
-        armInnerRight = new CANSparkMax(15, MotorType.kBrushless);
+        armOuterLeft = new CANSparkMax(15, MotorType.kBrushless);
+        armOuterRight = new CANSparkMax(16, MotorType.kBrushless);
+        armInnerLeft = new CANSparkMax(17, MotorType.kBrushless);
+        armInnerRight = new CANSparkMax(18, MotorType.kBrushless);
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new ArmContainer(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 11, 10);
+        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
         manipulator = new Manipulator(paddles);
         paddles.set(DoubleSolenoid.Value.kForward);
 

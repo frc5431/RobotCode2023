@@ -457,7 +457,7 @@
           },
           "3,0": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -850,15 +850,67 @@
               "_showGlyph": false
             }
           },
-          "16,3": {
+          "16,0": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/wrist amps",
               "_title": "wrist amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "14,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shoulder error",
+              "_title": "shoulder error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "14,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shoulder amps",
+              "_title": "shoulder amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "15,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elbow error",
+              "_title": "elbow error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "15,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elbow amps",
+              "_title": "elbow amps",
               "_glyph": 148,
               "_showGlyph": false
             }

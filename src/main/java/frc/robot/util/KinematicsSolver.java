@@ -4,12 +4,16 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class KinematicsSolver {
-    private double l1; // Length of first arm segment
-    private double l2; // Length of second arm segment
+    public final double l1; // Length of first arm segment
+    public final double l2; // Length of second arm segment
 
     public KinematicsSolver(double armSegment1Length, double armSegment2Length) {
         this.l1 = armSegment1Length;
         this.l2 = armSegment2Length;
+    }
+
+    public double getTotalLength() {
+        return l1+l2;
     }
 
     // Cos triangle rule: A^2 = B^2 + C^2 - 2BC * cos(a)
