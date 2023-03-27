@@ -30,7 +30,6 @@ public class Systems {
     private CANSparkMax intakeLeft;
     private CANSparkMax intakeRight;
 
-    private DoubleSolenoid paddles;
     private SingleSolenoid deadwheels_piston;
     private DoubleSolenoid intake_piston;
 
@@ -49,9 +48,7 @@ public class Systems {
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new ArmContainer(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
-        manipulator = new Manipulator(paddles);
-        paddles.set(DoubleSolenoid.Value.kForward);
+        manipulator = new Manipulator(new CANSparkMax(22, MotorType.kBrushless)); // Temp Device Id
 
         deadwheels_piston = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9);
         deadwheels = new Deadwheels(deadwheels_piston);
