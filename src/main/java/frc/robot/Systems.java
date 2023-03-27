@@ -10,7 +10,6 @@ import frc.robot.subsystems.*;
 import frc.team5431.titan.core.leds.Blinkin;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 import frc.team5431.titan.core.solenoid.DoubleSolenoid;
-import frc.team5431.titan.core.solenoid.SingleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
@@ -19,20 +18,14 @@ public class Systems {
 
     private ArmContainer arm;
     private Manipulator manipulator;
-    private Deadwheels deadwheels;
-    private Intake intake;
 
     private CANSparkMax armOuterLeft;
     private CANSparkMax armOuterRight;
     private CANSparkMax armInnerLeft;
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
-    private CANSparkMax intakeLeft;
-    private CANSparkMax intakeRight;
 
     private DoubleSolenoid paddles;
-    private SingleSolenoid deadwheels_piston;
-    private DoubleSolenoid intake_piston;
 
     private Compressor compressor;
     private PneumaticHub phub;
