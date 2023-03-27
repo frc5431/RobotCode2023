@@ -12,7 +12,7 @@ import frc.team5431.titan.core.leds.Blinkin;
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
  */
-public class A extends CommandBase {
+public class AutobalancerHardcode extends CommandBase {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;
     public final Blinkin leds;
@@ -23,7 +23,7 @@ public class A extends CommandBase {
     private double farthestGyroFromZero = 0;
     private boolean finished = false;
 
-    public A(Systems systems) {
+    public AutobalancerHardcode(Systems systems) {
         this.drivebase = systems.getDrivebase();
         this.leds = systems.getLeds();
         this.pigy = drivebase.getGyro();
