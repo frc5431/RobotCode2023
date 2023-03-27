@@ -12,6 +12,9 @@ import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.leds.Blinkin;
 
+/**
+ * Autobalancer code that uses a BangBang Controller intead of PID
+ */
 public class AutoAlignerBangBang extends CommandBase {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;

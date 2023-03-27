@@ -90,7 +90,7 @@ public class AutonLoader {
 
         SmartDashboard.putData("Auton", chooser);
     }
-
+//s
     public Command placeHigh() {
         return new SequentialCommandGroup(
             systems.getArm().getWrist().setDegreesCommand(0),
