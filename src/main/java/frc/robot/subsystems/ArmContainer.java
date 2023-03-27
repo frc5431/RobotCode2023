@@ -212,7 +212,7 @@ public class ArmContainer {
     }
 
     public double getShoulderCosMult() {
-        if (Manipulator.isOpen) {
+        if (Manipulator.isRunning) {
             return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
         } else {
             double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(13);
@@ -225,7 +225,7 @@ public class ArmContainer {
     }
 
     public double getElbowCosMult() {
-        if (Manipulator.isOpen) {
+        if (Manipulator.isRunning) {
             return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         } else {
             double coneDistance = Units.inchesToMeters(26+13);
@@ -238,7 +238,7 @@ public class ArmContainer {
     }
 
     public double getWristCosMult() {
-        if (Manipulator.isOpen) {
+        if (Manipulator.isRunning) {
             return wristCosineMultiplierNoCOM * wristCOMMeters;
         } else {
             double coneDistance = Units.inchesToMeters(12); // 12

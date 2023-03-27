@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.leds.Blinkin;
 import frc.team5431.titan.core.leds.BlinkinPattern;
-import frc.team5431.titan.core.solenoid.DoubleSolenoid;
 
 public class Systems {
     private Drivebase drivebase;
@@ -24,8 +23,6 @@ public class Systems {
     private CANSparkMax armInnerLeft;
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
-
-    private DoubleSolenoid paddles;
 
     private Compressor compressor;
     private PneumaticHub phub;
@@ -42,9 +39,7 @@ public class Systems {
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new ArmContainer(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        paddles = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 10, 11);
-        manipulator = new Manipulator(paddles);
-        paddles.set(DoubleSolenoid.Value.kForward);
+        manipulator = new Manipulator(new CANSparkMax(22, MotorType.kBrushless)); // Temp Device Id
 
         compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
         phub = new PneumaticHub(Constants.ID_PHUB);

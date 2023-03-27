@@ -7,6 +7,7 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.ArmContainer;
+
 public class PresetPosition {
     private final double outer;
     private final double inner;
