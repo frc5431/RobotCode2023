@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.AutoAlignerBangBang;
+import frc.robot.commands.AutoBalancerBangBang;
 import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
@@ -57,14 +57,12 @@ public class AutonLoader {
         this.drivebase = systems.getDrivebase();
         this.systems = systems;
 
-        // eventMap.put("deadwheelDrop", systems.getDeadwheels().deadwheelsCommand(true));
-        // eventMap.put("deadwheelRaise", systems.getDeadwheels().deadwheelsCommand(false));
         eventMap.put("deadwheelDrop", none());
         eventMap.put("deadwheelRaise", none());
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
         eventMap.put("autoBalance", new Autobalancer(systems));        
-        eventMap.put("autoBalanceBangBang", new AutoAlignerBangBang(systems));
+        eventMap.put("autoBalanceBangBang", new AutoBalancerBangBang(systems));
         eventMap.put("placeHigh", placeHigh());
         // eventMap.put("placeHigh", none());
         eventMap.put("stow", new ArmToGoalCommand(
