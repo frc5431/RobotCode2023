@@ -12,14 +12,18 @@ import frc.team5431.titan.core.leds.Blinkin;
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
  */
-public class AutoBalancerHardcode extends CommandBase {
+public class AutobalancerHardcode extends CommandBase {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;
     public final Blinkin leds;
 
-    public static final double worstPID = 0.15;
+    public static final double SPEED_VX = 2.5; // m/s
+    public static final double ALLOWED_RETURN_TO_0 = 5; // degrees
 
-    public AutoBalancerHardcode(Systems systems) {
+    private double farthestGyroFromZero = 0;
+    private boolean finished = false;
+
+    public AutobalancerHardcode(Systems systems) {
         this.drivebase = systems.getDrivebase();
         this.leds = systems.getLeds();
         this.pigy = drivebase.getGyro();
@@ -30,19 +34,29 @@ public class AutoBalancerHardcode extends CommandBase {
     @Override
     public void initialize() {
         leds.set(RobotContainer.getPatternFromAlliance(true));
+
+        farthestGyroFromZero = pigy.getPitch();
+        finished = false;
     }
 
     @Override
     public void execute() {
-        drivebase.drive(new ChassisSpeeds(worstPID * (pigy.getPitch() > 0 ? 1 : -1), 0, 0));
-        
+        double absPitch = Math.abs(pigy.getPitch());
+        double absGyroMax = Math.abs(farthestGyroFromZero);
+        double direction = -1 * Math.copySign(1.0, pigy.getPitch());
+        if (absPitch > absGyroMax) {
+            farthestGyroFromZero = pigy.getPitch();
+            drivebase.drive(new ChassisSpeeds(direction*SPEED_VX, 0, 0));
+        } else if (absPitch > (absGyroMax - ALLOWED_RETURN_TO_0)) {
+            drivebase.drive(new ChassisSpeeds(direction*SPEED_VX, 0, 0));
+        } else {
+            drivebase.stop();
+            finished = true;
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return (Math.abs(pigy.getPitch()) < 2.5);
-            
-        
+        return finished;
     }
-
 }
