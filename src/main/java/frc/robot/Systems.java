@@ -53,15 +53,6 @@ public class Systems {
         manipulator = new Manipulator(paddles);
         paddles.set(DoubleSolenoid.Value.kForward);
 
-        // deadwheels_piston = new SingleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 9);
-        // deadwheels = new Deadwheels(deadwheels_piston);
-
-        // intakeLeft = new CANSparkMax(21, MotorType.kBrushless);
-        // intakeRight = new CANSparkMax(20, MotorType.kBrushless);
-        // intake_piston = new DoubleSolenoid(Constants.ID_PHUB, PneumaticsModuleType.REVPH, 12, 13);
-        // intake = new Intake(intakeLeft, intakeRight, intake_piston);
-        // intake_piston.set(DoubleSolenoid.Value.kForward);
-
         compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
         phub = new PneumaticHub(Constants.ID_PHUB);
 
@@ -89,14 +80,6 @@ public class Systems {
 
     public Manipulator getManipulator() {
         return manipulator;
-    }
-
-    public Deadwheels getDeadwheels() {
-        return deadwheels;
-    }
-
-    public Intake getIntake() {
-        return intake;
     }
 
     public Compressor getCompressor() {

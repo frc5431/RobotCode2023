@@ -9,6 +9,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.leds.Blinkin;
+import frc.team5431.titan.core.misc.Logger;
 
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
@@ -32,13 +33,19 @@ public class AutobalancerBangBang extends CommandBase {
     @Override
     public void initialize() {
         leds.set(RobotContainer.getPatternFromAlliance(true));
-        bangin = new BangBangController(2.5);
+        bangin = new BangBangController(5);
+        Logger.l("Starting bangbang autobalancer");
+    }
+    
+    @Override
+    public void execute() {
+        cs.vxMetersPerSecond = (pigy.getPitch() > 0 ? -1 : 1) * bangin.calculate(-Math.abs(pigy.getPitch()), 0);
+        drivebase.drive(cs);
     }
 
     @Override
-    public void execute() {
-        cs.vxMetersPerSecond = (pigy.getPitch() > 0 ? -1 : 1) * bangin.calculate(Math.abs(pigy.getPitch()), 0);
-        drivebase.drive(cs);
+    public void end(boolean interrupted) {
+        Logger.l("Ending bangbang autobalancer");
     }
 
     @Override

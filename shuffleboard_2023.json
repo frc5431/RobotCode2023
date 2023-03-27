@@ -591,7 +591,7 @@
               "_showGlyph": false
             }
           },
-          "0,9": {
+          "0,8": {
             "size": [
               2,
               2
@@ -911,6 +911,84 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/elbow amps",
               "_title": "elbow amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,9": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Pitch",
+              "_title": "Pitch",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "17,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SL Amps",
+              "_title": "SL Amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "26,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/SF Amps",
+              "_title": "SF Amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/EL Amps",
+              "_title": "EL Amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "5,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/EF Amps",
+              "_title": "EF Amps",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,8": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Bal Strat",
+              "_title": "Bal Strat",
               "_glyph": 148,
               "_showGlyph": false
             }

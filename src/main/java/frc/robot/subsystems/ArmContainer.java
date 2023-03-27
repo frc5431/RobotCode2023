@@ -59,9 +59,9 @@ public class ArmContainer {
     public static final double IS_BACKWARDS_X = Units.inchesToMeters(-16);
 
     // elec is 0.186 kg
-    public static final double shoulderMassKG = 10.7; // 10.259 measured w/elec // 3.1+1.877+5.096 w/o elec
-    public static final double elbowMassKG = 5.027; // w/elec
-    public static final double wristMassKG = 3.1; // w/elec
+    public static final double shoulderMassKG = 10.02; // 10.259 measured w/elec // 3.1+1.877+5.096 w/o elec
+    public static final double elbowMassKG = 4.347; // w/elec
+    public static final double wristMassKG = 2.42; // 3.1 // w/elec
     public static final double coneMassKG = 0.67; // 0.8 // 0.67 // 0.9
     public static final double GRAV_CONST = 9.81;
 

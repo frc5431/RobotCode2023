@@ -8,6 +8,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.leds.Blinkin;
+import frc.team5431.titan.core.misc.Logger;
 
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
@@ -17,8 +18,8 @@ public class AutobalancerHardcode extends CommandBase {
     public final Drivebase drivebase;
     public final Blinkin leds;
 
-    public static final double SPEED_VX = 2.5; // m/s
-    public static final double ALLOWED_RETURN_TO_0 = 5; // degrees
+    public static final double SPEED_VX = 1.0; // m/s
+    public static final double ALLOWED_RETURN_TO_0 = 3; // degrees
 
     private double farthestGyroFromZero = 0;
     private boolean finished = false;
@@ -37,6 +38,7 @@ public class AutobalancerHardcode extends CommandBase {
 
         farthestGyroFromZero = pigy.getPitch();
         finished = false;
+        Logger.l("Starting 3015 autobalancer");
     }
 
     @Override
@@ -53,6 +55,11 @@ public class AutobalancerHardcode extends CommandBase {
             drivebase.stop();
             finished = true;
         }
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        Logger.l("Ending 3015 autobalancer");
     }
 
     @Override

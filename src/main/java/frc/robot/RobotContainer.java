@@ -129,6 +129,8 @@ public class RobotContainer {
         balanceStrategy.setDefaultOption("pid", new Autobalancer(systems));
         balanceStrategy.addOption("bangbang", new AutobalancerBangBang(systems));
         balanceStrategy.addOption("bb 3015", new AutobalancerHardcode(systems));
+
+        SmartDashboard.putData("Bal Strat", balanceStrategy);
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
@@ -168,7 +170,6 @@ public class RobotContainer {
 
         driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().open()));
         driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().close()));
-        // driver.x().onTrue(runOnce(() -> systems.getDeadwheels().toggle()));
 
         // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
         //     .withTimeout(8));
@@ -186,11 +187,6 @@ public class RobotContainer {
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
         operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
-
-        // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
-        // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());
-        // operatorJoystick.b().onTrue(runOnce(() -> systems.getIntake().toggle()));
-        // operatorJoystick.x().whileTrue(systems.getIntake().runIntakeCommand(false));
 
         // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
