@@ -7,11 +7,14 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.Autobalancer;
+import frc.robot.commands.AutobalancerBangBang;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
@@ -29,6 +32,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
@@ -42,6 +46,8 @@ public class RobotContainer {
     private final Buttonboard operator = new Buttonboard(3, 7, 3);
     private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
+
+    private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
 
     public RobotContainer() {
 
@@ -118,6 +124,10 @@ public class RobotContainer {
         //     .withSize(1,1)
         //     .withPosition(t.column(), t.row().getIndex());
         // });
+
+        balanceStrategy.setDefaultOption("pid", new Autobalancer(systems));
+        balanceStrategy.addOption("bangbang", new AutobalancerBangBang(systems));
+        balanceStrategy.addOption("bbvel", new AutobalancerBangBang(systems));
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
@@ -174,7 +184,7 @@ public class RobotContainer {
             .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operatorJoystick.back().onTrue(new Autobalancer(systems));
+        operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
 
         // operatorJoystick.y().toggleOnTrue(systems.getIntake().floorIntakeCommand());
         // operatorJoystick.a().onTrue(systems.getIntake().intakeStow());

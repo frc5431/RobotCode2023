@@ -140,7 +140,7 @@ public class ArmContainer {
         sparks.forEach((spark) -> {
             // spark.enableVoltageCompensation(12.0);
             spark.disableVoltageCompensation();
-            spark.setSmartCurrentLimit(50, 30); // 40
+            spark.setSmartCurrentLimit(60, 35); // 40
             spark.burnFlash();
         });
 
@@ -379,7 +379,10 @@ public class ArmContainer {
             SmartDashboard.putBoolean(jointName + " atSetpoint", atSetpoint());
             SmartDashboard.putNumber(jointName + " error", 
                 Math.abs(fromRadians(setpoint).minus(getPositionRot2d()).getRadians()));
-            SmartDashboard.putNumber(jointName + " amps", motor.getOutputCurrent());
+            if (follow.isPresent()) {
+                SmartDashboard.putNumber((jointName.charAt(0)+"L").toUpperCase()+" Amps", motor.getOutputCurrent());
+                SmartDashboard.putNumber((jointName.charAt(0)+"F").toUpperCase()+" Amps", follow.get().getOutputCurrent());
+            } else SmartDashboard.putNumber(jointName + " amps", motor.getOutputCurrent());
 
             runSetter();
         }

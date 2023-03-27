@@ -256,6 +256,7 @@ public class Drivebase extends SubsystemBase {
     public void periodic() {
         m_poseEstimator.update(getGyroscopeRotation(), getPositions());
         field2d.setRobotPose(getPosition());
+        SmartDashboard.putNumber("Pitch", m_pigeon2.getPitch());
         
         final double zeroDeadzone = 0.001;
 

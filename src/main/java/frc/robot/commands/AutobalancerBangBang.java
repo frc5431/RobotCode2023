@@ -15,7 +15,7 @@ import frc.team5431.titan.core.leds.Blinkin;
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
  */
-public class AutoBalancerBangBang extends CommandBase {
+public class AutobalancerBangBang extends CommandBase {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;
     public final Blinkin leds;
@@ -23,7 +23,7 @@ public class AutoBalancerBangBang extends CommandBase {
     public BangBangController bangin = new BangBangController(2.5);
     public ChassisSpeeds cs = new ChassisSpeeds(0, 0, 0);
 
-    public AutoBalancerBangBang(Systems systems) {
+    public AutobalancerBangBang(Systems systems) {
         this.drivebase = systems.getDrivebase();
         this.leds = systems.getLeds();
         this.pigy = drivebase.getGyro();
@@ -34,15 +34,12 @@ public class AutoBalancerBangBang extends CommandBase {
     @Override
     public void initialize() {
         leds.set(RobotContainer.getPatternFromAlliance(true));
-
-        if (DriverStation.getAlliance() == Alliance.Blue) {
-            pigy.setYaw(180);
-        }
+        bangin = new BangBangController(2.5);
     }
 
     @Override
     public void execute() {
-        cs.vxMetersPerSecond = bangin.calculate(pigy.getPitch(), 0) == 1 ? 1 : -1;
+        cs.vxMetersPerSecond = (pigy.getPitch() > 0 ? -1 : 1) * bangin.calculate(Math.abs(pigy.getPitch()), 0);
         drivebase.drive(cs);
     }
 

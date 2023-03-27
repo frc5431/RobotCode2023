@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.AutoBalancerBangBang;
+import frc.robot.commands.AutobalancerBangBang;
 import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
@@ -62,7 +62,7 @@ public class AutonLoader {
         eventMap.put("manipulatorOpen", systems.getManipulator().manipCommand(true));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipCommand(false));
         eventMap.put("autoBalance", new Autobalancer(systems));        
-        eventMap.put("autoBalanceBangBang", new AutoBalancerBangBang(systems));
+        eventMap.put("autoBalanceBangBang", new AutobalancerBangBang(systems));
         eventMap.put("placeHigh", placeHigh());
         // eventMap.put("placeHigh", none());
         eventMap.put("stow", new ArmToGoalCommand(
