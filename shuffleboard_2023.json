@@ -656,21 +656,6 @@
               "_showGlyph": false
             }
           },
-          "16,2": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/manip open",
-              "_title": "manip open",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
           "19,3": {
             "size": [
               7,
@@ -850,9 +835,9 @@
               "_showGlyph": false
             }
           },
-          "16,0": {
+          "16,2": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -876,19 +861,6 @@
               "_showGlyph": false
             }
           },
-          "14,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/shoulder amps",
-              "_title": "shoulder amps",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "15,1": {
             "size": [
               1,
@@ -898,19 +870,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/elbow error",
               "_title": "elbow error",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "15,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/elbow amps",
-              "_title": "elbow amps",
               "_glyph": 148,
               "_showGlyph": false
             }
@@ -928,7 +887,7 @@
               "_showGlyph": false
             }
           },
-          "17,0": {
+          "16,0": {
             "size": [
               1,
               1
@@ -941,7 +900,7 @@
               "_showGlyph": false
             }
           },
-          "26,0": {
+          "17,0": {
             "size": [
               1,
               1
@@ -954,7 +913,7 @@
               "_showGlyph": false
             }
           },
-          "4,1": {
+          "17,1": {
             "size": [
               1,
               1
@@ -967,7 +926,7 @@
               "_showGlyph": false
             }
           },
-          "5,1": {
+          "16,1": {
             "size": [
               1,
               1
@@ -989,6 +948,19 @@
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Bal Strat",
               "_title": "Bal Strat",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "16,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/manip amps",
+              "_title": "manip amps",
               "_glyph": 148,
               "_showGlyph": false
             }
