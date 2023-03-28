@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class KinematicsSolver {
     public final double l1; // Length of first arm segment
     public final double l2; // Length of second arm segment
+    public boolean useTopByDefault = false;
 
     public KinematicsSolver(double armSegment1Length, double armSegment2Length) {
         this.l1 = armSegment1Length;
@@ -14,6 +15,10 @@ public class KinematicsSolver {
 
     public double getTotalLength() {
         return l1+l2;
+    }
+
+    public void toggleTopDefault() {
+        useTopByDefault = !useTopByDefault;
     }
 
     // Cos triangle rule: A^2 = B^2 + C^2 - 2BC * cos(a)
@@ -33,9 +38,11 @@ public class KinematicsSolver {
         return p1 - p2;
     }
 
-    public Pair<Double, Double> posToAngles(Translation2d goal) {
-        double q2 = solveSegment2Angle(goal); //Replace once implemented
+    public Pair<Double, Double> posToAngles(Translation2d goal, boolean useTopPossibility) {
+        double q2 = (useTopPossibility ? -1 : 1) * solveSegment2Angle(goal); //Replace once implemented
         double q1 = solveSegment1Angle(q2, goal);
+
+        useTopByDefault = useTopPossibility;
 
         return Pair.of(q1 + Math.PI/2, -q2);
     }

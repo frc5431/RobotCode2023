@@ -13,6 +13,7 @@ public class PresetPosition {
     private final double inner;
     private final double wrist;
     private final Translation2d wristPos;
+    private final boolean useTopPossibility;
 
     public double getOuter() {
         return outer;
@@ -27,37 +28,42 @@ public class PresetPosition {
     public Translation2d getWristPos() {
         return wristPos;
     }
+    public boolean getTopPossibility() {
+        return useTopPossibility;
+    }
 
     // in degrees
-    private PresetPosition(double outer, double inner, double wrist) {
+    private PresetPosition(double outer, double inner, double wrist, boolean useTopPossibility) {
         this.outer = outer;
         this.inner = inner;
         this.wristPos = ArmContainer.solver.anglesToPos(degreesToRadians(outer), degreesToRadians(inner));
 
         this.wrist = wrist;
-    }
-
-    // in degrees
-    private PresetPosition(Translation2d wristPos, double wrist) {
-        this.wristPos = wristPos;
-
-        Pair<Double, Double> result = ArmContainer.solver.posToAngles(wristPos);
-        this.outer = result.getFirst();
-        this.inner = result.getSecond();
-
-        this.wrist = wrist;
+        this.useTopPossibility = useTopPossibility;
     }
     
-    public static PresetPosition fromRadians(double outer, double inner, double wrist){
-        return new PresetPosition(radiansToDegrees(outer), radiansToDegrees(inner), radiansToDegrees(wrist));
+    // in degrees
+    private PresetPosition(Translation2d wristPos, double wrist, boolean useTopPossibility) {
+        this.wristPos = wristPos;
+        
+        Pair<Double, Double> result = ArmContainer.solver.posToAngles(wristPos, useTopPossibility);
+        this.outer = result.getFirst();
+        this.inner = result.getSecond();
+        
+        this.wrist = wrist;
+        this.useTopPossibility = useTopPossibility;
+    }
+    
+    public static PresetPosition fromRadians(double outer, double inner, double wrist, boolean useTopPossibility){
+        return new PresetPosition(radiansToDegrees(outer), radiansToDegrees(inner), radiansToDegrees(wrist), useTopPossibility);
     }
 
-    public static PresetPosition fromDegrees(double outer, double inner, double wrist) {
-        return new PresetPosition(outer, inner, wrist);
+    public static PresetPosition fromDegrees(double outer, double inner, double wrist, boolean useTopPossibility) {
+        return new PresetPosition(outer, inner, wrist, useTopPossibility);
     }
 
-    public static PresetPosition fromGoal(Translation2d wristPos, double wristDegrees) {
-        return new PresetPosition(wristPos, wristDegrees);
+    public static PresetPosition fromGoal(Translation2d wristPos, double wristDegrees, boolean useTopPossibility) {
+        return new PresetPosition(wristPos, wristDegrees, useTopPossibility);
     }
 
     public static boolean isGoalBackwards(Translation2d t) {

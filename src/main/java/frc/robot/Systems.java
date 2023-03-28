@@ -32,22 +32,22 @@ public class Systems {
         // vision = new Vision(drivebase);
         leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
+        manipulator = new Manipulator(new CANSparkMax(20, MotorType.kBrushless));
+
         armOuterLeft = new CANSparkMax(15, MotorType.kBrushless);
         armOuterRight = new CANSparkMax(16, MotorType.kBrushless);
         armInnerLeft = new CANSparkMax(17, MotorType.kBrushless);
         armInnerRight = new CANSparkMax(18, MotorType.kBrushless);
         wrist = new CANSparkMax(19, MotorType.kBrushless);
-        arm = new ArmContainer(armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
-
-        manipulator = new Manipulator(new CANSparkMax(22, MotorType.kBrushless)); // Temp Device Id
+        arm = new ArmContainer(manipulator, armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
         compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
         phub = new PneumaticHub(Constants.ID_PHUB);
 
-        compressor.enableDigital();
+        // compressor.enableDigital();
         // compressor.enableAnalog(60, 105);
         // compressor.enableHybrid(60, 120);
-        // compressor.disable();
+        compressor.disable();
     }
 
     public Drivebase getDrivebase() {

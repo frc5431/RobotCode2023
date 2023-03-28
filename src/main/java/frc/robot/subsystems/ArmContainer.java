@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Manipulator.GamePiece;
 import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.robot.MotionMagic;
@@ -38,6 +39,7 @@ public class ArmContainer {
     private final ArmComponent outerComponent;
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
+    private final Manipulator manipulator;
 
     public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
     public static final double MAX_SPEED_INNER = 0.4;  // 0.18 to hold at horz
@@ -106,7 +108,8 @@ public class ArmContainer {
      *   - 0 facing away from forearm
      */
 
-    public ArmContainer(CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight, CANSparkMax wrist) {
+    public ArmContainer(Manipulator manip, CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight, CANSparkMax wrist) {
+        this.manipulator = manip;
         outerArmLeft.setInverted(true);
         outerArmRight.follow(outerArmLeft, true);
         outerArmLeft.setIdleMode(IdleMode.kBrake);
@@ -171,7 +174,7 @@ public class ArmContainer {
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist setdeg", component.getSetpointDegrees());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(-Math.PI/2, Math.PI/2));
+        }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(5.9-2*Math.PI, 1.85));
     }
 
     public ArmComponent getOuter() {
@@ -212,7 +215,7 @@ public class ArmContainer {
     }
 
     public double getShoulderCosMult() {
-        if (Manipulator.isRunning) {
+        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
             return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
         } else {
             double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(13);
@@ -225,7 +228,7 @@ public class ArmContainer {
     }
 
     public double getElbowCosMult() {
-        if (Manipulator.isRunning) {
+        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
             return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         } else {
             double coneDistance = Units.inchesToMeters(26+13);
@@ -238,7 +241,7 @@ public class ArmContainer {
     }
 
     public double getWristCosMult() {
-        if (Manipulator.isRunning) {
+        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
             return wristCosineMultiplierNoCOM * wristCOMMeters;
         } else {
             double coneDistance = Units.inchesToMeters(12); // 12
@@ -298,7 +301,7 @@ public class ArmContainer {
     }
 
     public void solveKinematics(Translation2d goal) {
-        Pair<Double, Double> ik = solver.posToAngles(goal);
+        Pair<Double, Double> ik = solver.posToAngles(goal, solver.useTopByDefault);
         if (!Double.isNaN(ik.getFirst()))
             getOuter().setRadians(ik.getFirst());
         if (!Double.isNaN(ik.getSecond()))

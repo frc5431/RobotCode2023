@@ -2,50 +2,107 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 import com.revrobotics.CANSparkMax;
 
 public class Manipulator extends SubsystemBase {
-    private static final double INTAKE_SPEED = 0.3;
+    private static final double INTAKE_SPEED = 0.4;
     private final CANSparkMax motor;
 
-    public static boolean isRunning;
+    private static enum MotorDirection { FORWARD, REVERSE, NONE; }
+    public static enum GamePiece { CONE, CUBE, NONE; }
+
+    public MotorDirection currentDirection;
+    public GamePiece heldGamePiece;
 
     public Manipulator(CANSparkMax motor) {
+        motor.restoreFactoryDefaults();
+        motor.clearFaults();
+        motor.setSmartCurrentLimit(40, 20);
+        motor.setOpenLoopRampRate(0.2);
+        motor.burnFlash();
+        motor.set(0);
+
+        currentDirection = MotorDirection.NONE;
+        heldGamePiece = GamePiece.NONE;
+
         this.motor = motor;
-        isRunning = false;
     }
 
-    public void intake() {
+    public void setPositive() {
         motor.set(INTAKE_SPEED);
-        isRunning = true;
+        currentDirection = MotorDirection.FORWARD;
     }
 
-    public void outtake() {
+    public void setNegative() {
         motor.set(-INTAKE_SPEED);
-        isRunning = true;
+        currentDirection = MotorDirection.REVERSE;
     }
 
     public void stop() {
         motor.set(0);
-        isRunning = false;
+        currentDirection = MotorDirection.NONE;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("manip running", isRunning);
+        double current = motor.getOutputCurrent();
+        SmartDashboard.putNumber("manip amps", current);
+
+        if (current > 35) {
+            // Stalling, have game piece
+            if (currentDirection == MotorDirection.FORWARD) {
+                heldGamePiece = GamePiece.CUBE;
+            } else if (currentDirection == MotorDirection.REVERSE) {
+                heldGamePiece = GamePiece.CONE;
+            } else {
+                // wtf how are we reaching 40A without motor direction
+            }
+        } else if (currentDirection != MotorDirection.NONE) {
+            heldGamePiece = GamePiece.NONE;
+        }
     }
 
-    public boolean isRunning() {
-        return isRunning;
+    public GamePiece getHeldGamePiece() {
+        return heldGamePiece;
     }
 
-    public Command manipCommand(boolean open) {
+    public Command manipRunOnceCommand(GamePiece piece, boolean intake) {
         return runOnce(() -> {
-            if (open) this.intake();
-            else this.outtake();
+            switch (piece) {
+                case CONE:
+                    if (intake) setNegative();
+                    else setPositive();
+                    break;
+                case CUBE:
+                    if (intake) setPositive();
+                    else setNegative();
+                    break;
+                default:
+                    stop();
+                    break;
+            }
         });
+    }
+
+    public Command manipRunCommand(GamePiece piece, boolean intake) {
+        return new StartEndCommand(() -> {
+            switch (piece) {
+                case CONE:
+                    if (intake) setNegative();
+                    else setPositive();
+                    break;
+                case CUBE:
+                    if (intake) setPositive();
+                    else setNegative();
+                    break;
+                default:
+                    stop();
+                    break;
+            }
+        }, () -> stop(), this);
     }
 }

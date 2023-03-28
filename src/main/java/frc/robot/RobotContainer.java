@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.commands.ArmGoalGroup;
-import frc.robot.commands.ArmMoveCommandGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.Autobalancer;
 import frc.robot.commands.AutobalancerBangBang;
@@ -37,6 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
+import frc.robot.subsystems.Manipulator.GamePiece;
 
 public class RobotContainer {
     private final Systems systems = new Systems();
@@ -168,8 +168,12 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
-        driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().intake()));
-        driver.rightBumper().onTrue(runOnce(() -> systems.getManipulator().outtake()));
+        // driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().setPositive()));
+        // driver.rightBumper().onTrue(systems.getManipulator().manipRunCommand(GamePiece.CONE, true));
+
+        operatorJoystick.a().toggleOnTrue(systems.getManipulator().manipRunCommand(GamePiece.CONE, true));
+        operatorJoystick.b().toggleOnTrue(systems.getManipulator().manipRunCommand(GamePiece.CUBE, true));
+        operatorJoystick.y().onTrue(runOnce(ArmContainer.solver::toggleTopDefault));
 
         // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
         //     .withTimeout(8));
@@ -191,16 +195,14 @@ public class RobotContainer {
         // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
             systems,
-            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
+            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle, false),
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        driver.rightTrigger().onTrue(new ArmMoveCommandGroup( // Arm while traveling
+        driver.rightTrigger().onTrue(new ArmGoalGroup(
             systems,
-            new Translation2d(8.54, -5.73),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            308,
-            false
+            PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false),
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         operator.A1().or(operatorJoystick.povUp()).or(operatorJoystick.a()).whileTrue(
@@ -211,29 +213,29 @@ public class RobotContainer {
             run(() -> systems.getArm().getWrist().add(-2))
         );
 
-        operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
-            systems,
-            Constants.armBackwardsHigh,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
+        // operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
+        //     systems,
+        //     Constants.armBackwardsHigh,
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        // ));
 
-        (operatorJoystick.leftBumper()).onTrue(new ArmGoalGroup( // Backwards double substation
-            systems,
-            PresetPosition.fromGoal(Constants.armBackwardsHigh.getWristPos(), 30),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
+        // (operatorJoystick.leftBumper()).onTrue(new ArmGoalGroup( // Backwards double substation
+        //     systems,
+        //     PresetPosition.fromGoal(Constants.armBackwardsHigh.getWristPos(), 30),
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        // ));
 
-        operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmGoalGroup( // Backwards mid
-            systems,
-            Constants.armBackwardsMid,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
+        // operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmGoalGroup( // Backwards mid
+        //     systems,
+        //     Constants.armBackwardsMid,
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        // ));
 
-        operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmGoalGroup( // Intermediate
-            systems,
-            Constants.armBackwardsIntermediate,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
+        // operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmGoalGroup( // Intermediate
+        //     systems,
+        //     Constants.armBackwardsIntermediate,
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        // ));
 
         operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmGoalGroup( // Normal Grab
             systems,
@@ -241,12 +243,10 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmMoveCommandGroup( // Inverted Grab
+        operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmGoalGroup( // Inverted Grab
             systems,
-            Constants.armInvertedGrab.getWristPos(),
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY,
-            Constants.armInvertedGrab.getWrist(),
-            true
+            Constants.armInvertedGrab,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
