@@ -15,6 +15,7 @@ import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.Autobalancer;
 import frc.robot.commands.AutobalancerBangBang;
 import frc.robot.commands.AutobalancerHardcode;
+import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
@@ -129,6 +130,7 @@ public class RobotContainer {
         balanceStrategy.setDefaultOption("pid", new Autobalancer(systems));
         balanceStrategy.addOption("bangbang", new AutobalancerBangBang(systems));
         balanceStrategy.addOption("bb 3015", new AutobalancerHardcode(systems));
+        balanceStrategy.addOption("bb 3015 pid", new AutobalancerHardcodePID(systems));
 
         SmartDashboard.putData("Bal Strat", balanceStrategy);
     }

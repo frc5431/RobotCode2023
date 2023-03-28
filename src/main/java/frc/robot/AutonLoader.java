@@ -89,34 +89,33 @@ public class AutonLoader {
     }
 //s
     public Command placeHigh() {
-        // return new SequentialCommandGroup(
-        //     systems.getArm().getWrist().setDegreesCommand(0),
-        //     new ArmGoalGroup(
-        //         systems,
-        //         PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false),
-        //         ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        //     ).withTimeout(1),
-        //     new ArmMoveCommandGroup( // midpoint
-        //         systems,
-        //         new Translation2d(25, -2),
-        //         ArmToGoalCommand.USE_INCHES,
-        //         295,
-        //         false
-        //     ).withTimeout(1),
-        //     new ArmToGoalCommand(
-        //         systems,
-        //         PresetPosition.fromGoal(new Translation2d(Constants.armHighX, Constants.armHighY), Constants.wristHighAngle),
-        //         ArmToGoalCommand.USE_INCHES).withTimeout(1),
-        //     waitSeconds(0.1),
-        //     new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.6),
-        //     systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5),
-        //     new DriveCommand(systems, new ChassisSpeeds(1.0, 0, 0)).withTimeout(0.5),
-        //     new ArmToGoalCommand(
-        //         systems,
-        //         PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle),
-        //         ArmToGoalCommand.USE_INCHES)
-        // );
-        return none();
+        return new SequentialCommandGroup(
+            systems.getArm().getWrist().setDegreesCommand(0), // while traveling
+            new ArmGoalGroup(
+                systems,
+                PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false),
+                ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+            ).withTimeout(1),
+            // new ArmMoveCommandGroup( // midpoint
+            //     systems,
+            //     new Translation2d(25, -2),
+            //     ArmToGoalCommand.USE_INCHES,
+            //     295,
+            //     false
+            // ).withTimeout(1),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armHigh,
+                ArmToGoalCommand.USE_INCHES).withTimeout(1.4),
+            waitSeconds(0.1),
+            new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.6),
+            systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5),
+            new DriveCommand(systems, new ChassisSpeeds(1.0, 0, 0)).withTimeout(0.5),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armStow,
+                ArmToGoalCommand.USE_INCHES)
+        );
     }
 
     public Command getAuto(String pathName) {
