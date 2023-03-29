@@ -27,13 +27,13 @@ public class Constants {
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
 
-    public static final PresetPosition armHigh = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 305, false);
+    public static final PresetPosition armHigh = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 295, false);
     public static final PresetPosition armMid = PresetPosition.fromGoal(new Translation2d(18.59, 1.14), 260.6, false);
     public static final PresetPosition armNormalGrabOld = PresetPosition.fromGoal(new Translation2d(6.17, -34.24), 15, false);
     public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 271.15, false);
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.58, -22.59), 290, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
-    public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false);
+    public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
     // public static final double armBackwardsHighX = -58.35; // -59.7
     // public static final double armBackwardsHighY = 12.1; // 3.7
