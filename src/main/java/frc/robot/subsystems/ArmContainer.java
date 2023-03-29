@@ -215,42 +215,45 @@ public class ArmContainer {
     }
 
     public double getShoulderCosMult() {
-        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
-            return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
-        } else {
-            double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(13);
-            double totalMass = shoulderMassKG + coneMassKG;
-            double newCOM = (shoulderMassKG * getCOMBicepMeters() + coneMassKG * coneDistance) / totalMass;
-            SmartDashboard.putNumber("shcom wo cone", shoulderMassKG * getCOMBicepMeters());
-            SmartDashboard.putNumber("shcom wt cone", totalMass * newCOM);
-            return totalMass * newCOM * GRAV_CONST;
-        }
+        return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
+        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        //     return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
+        // } else {
+        //     double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(7);
+        //     double totalMass = shoulderMassKG + coneMassKG;
+        //     double newCOM = (shoulderMassKG * getCOMBicepMeters() + coneMassKG * coneDistance) / totalMass;
+        //     SmartDashboard.putNumber("shcom wo cone", shoulderMassKG * getCOMBicepMeters());
+        //     SmartDashboard.putNumber("shcom wt cone", totalMass * newCOM);
+        //     return totalMass * newCOM * GRAV_CONST;
+        // }
     }
 
     public double getElbowCosMult() {
-        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
-            return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
-        } else {
-            double coneDistance = Units.inchesToMeters(26+13);
-            double totalMass = elbowMassKG + coneMassKG;
-            double newCOM = (elbowMassKG * getCOMForearmMeters() + coneMassKG * coneDistance) / totalMass;
-            SmartDashboard.putNumber("elcom wo cone", elbowMassKG * getCOMForearmMeters());
-            SmartDashboard.putNumber("elcom wt cone", totalMass * newCOM);
-            return totalMass * newCOM * GRAV_CONST;
-        }
+        return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
+        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        //     return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
+        // } else {
+        //     double coneDistance = Units.inchesToMeters(20+7);
+        //     double totalMass = elbowMassKG + coneMassKG;
+        //     double newCOM = (elbowMassKG * getCOMForearmMeters() + coneMassKG * coneDistance) / totalMass;
+        //     SmartDashboard.putNumber("elcom wo cone", elbowMassKG * getCOMForearmMeters());
+        //     SmartDashboard.putNumber("elcom wt cone", totalMass * newCOM);
+        //     return totalMass * newCOM * GRAV_CONST;
+        // }
     }
 
     public double getWristCosMult() {
-        if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
-            return wristCosineMultiplierNoCOM * wristCOMMeters;
-        } else {
-            double coneDistance = Units.inchesToMeters(12); // 12
-            double totalMass = wristMassKG + coneMassKG;
-            double newCOM = (wristMassKG * wristCOMMeters + coneMassKG * coneDistance) / totalMass;
-            SmartDashboard.putNumber("wrcom wo cone", wristMassKG * wristCOMMeters);
-            SmartDashboard.putNumber("wrcom wt cone", totalMass * newCOM);
-            return totalMass * newCOM * GRAV_CONST;
-        }
+        return wristCosineMultiplierNoCOM * wristCOMMeters;
+        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        //     return wristCosineMultiplierNoCOM * wristCOMMeters;
+        // } else {
+        //     double coneDistance = Units.inchesToMeters(7); // 12
+        //     double totalMass = wristMassKG + coneMassKG;
+        //     double newCOM = (wristMassKG * wristCOMMeters + coneMassKG * coneDistance) / totalMass;
+        //     SmartDashboard.putNumber("wrcom wo cone", wristMassKG * wristCOMMeters);
+        //     SmartDashboard.putNumber("wrcom wt cone", totalMass * newCOM);
+        //     return totalMass * newCOM * GRAV_CONST;
+        // }
     }
 
     public double getCOMBicepMeters() {

@@ -8,7 +8,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,7 +21,6 @@ import frc.robot.commands.Autobalancer;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.Manipulator.GamePiece;
-import frc.robot.util.PresetPosition;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -93,7 +91,7 @@ public class AutonLoader {
             systems.getArm().getWrist().setDegreesCommand(0), // while traveling
             new ArmGoalGroup(
                 systems,
-                PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false),
+                Constants.armWhileTraveling,
                 ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
             ).withTimeout(1),
             // new ArmMoveCommandGroup( // midpoint

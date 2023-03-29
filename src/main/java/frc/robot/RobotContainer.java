@@ -19,7 +19,6 @@ import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
-import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
@@ -33,11 +32,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.Manipulator.GamePiece;
+import frc.robot.subsystems.Manipulator.MotorDirection;
 
 public class RobotContainer {
     private final Systems systems = new Systems();
@@ -197,23 +198,41 @@ public class RobotContainer {
         // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
             systems,
-            PresetPosition.fromGoal(new Translation2d(Constants.armStowX, Constants.armStowY), Constants.wristStowAngle, false),
+            Constants.armStow,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         driver.rightTrigger().onTrue(new ArmGoalGroup(
             systems,
-            PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 308, false),
+            Constants.armWhileTraveling,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.A1().or(operatorJoystick.povUp()).or(operatorJoystick.a()).whileTrue(
+        operator.A1().or(operatorJoystick.povUp()).whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
         );
 
-        operator.B1().or(operatorJoystick.povDown()).or(operatorJoystick.y()).whileTrue(
+        operator.B1().or(operatorJoystick.povDown()).whileTrue(
             run(() -> systems.getArm().getWrist().add(-2))
         );
+
+        operatorJoystick.leftBumper().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armSingleSubPickup,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operatorJoystick.rightBumper().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armGroundCube,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operatorJoystick.rightTrigger().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armGroundUprightCone,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
 
         // operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
         //     systems,
@@ -241,13 +260,7 @@ public class RobotContainer {
 
         operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmGoalGroup( // Normal Grab
             systems,
-            Constants.armNormalGrab,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
-
-        operator.B3().or(operatorJoystick.rightTrigger()).onTrue(new ArmGoalGroup( // Inverted Grab
-            systems,
-            Constants.armInvertedGrab,
+            Constants.armNormalGrabOld,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
@@ -260,7 +273,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         )));
 
-        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmGoalGroup( // Middle node & grab from slidy boi
+        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmGoalGroup( // Middle node
             systems,
             Constants.armMid,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -272,7 +285,6 @@ public class RobotContainer {
         // operator.start().onTrue(runOnce(() -> systems.getArm().incrIn(10)));
         // operatorJoystick.povDown().onTrue(runOnce(() -> systems.getArm().getWrist().add(-20)));
         // operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
-
     }
 
     public Command getAutonomousCommand() {
@@ -329,6 +341,11 @@ public class RobotContainer {
         );
         
         systems.getArm().setGoal(gp);
+
+        if (systems.getManipulator().currentDirection != MotorDirection.NONE)
+            operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, 0.3);
+        else
+            operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, 0.0);
     }
 
     public void robotPeriodic() {
