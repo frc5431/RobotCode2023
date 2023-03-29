@@ -359,4 +359,8 @@ public class RobotContainer {
 
         systems.getArm().setGoalToCurrentPosition();
     }
+
+    public void disabledInit() {
+        operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, 0.0);
+    }
 }

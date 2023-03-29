@@ -20,13 +20,13 @@ public class AutobalancerHardcodePID extends CommandBase {
     public final Blinkin leds;
 
     public static final double SPEED_VX = 1.0; // m/s
-    public static final double ALLOWED_RETURN_TO_0 = 2.5; // degrees
+    public static final double ALLOWED_RETURN_TO_0 = 2.0; // degrees
 
     private double farthestGyroFromZero = 0;
     private boolean startPID = false;
     private boolean finished = false;
 
-    public PIDController pid = new PIDController(0.03, 0, 0.01);
+    public PIDController pid = new PIDController(0.2, 0, 0.01);
 
     public AutobalancerHardcodePID(Systems systems) {
         this.drivebase = systems.getDrivebase();
@@ -53,7 +53,7 @@ public class AutobalancerHardcodePID extends CommandBase {
     @Override
     public void execute() {
         if (startPID) {
-            drivebase.drive(new ChassisSpeeds(pid.calculate(pigy.getPitch(), 5), 0, 0));
+            drivebase.drive(new ChassisSpeeds(pid.calculate(pigy.getPitch(), 0), 0, 0));
             return;
         }
         double absPitch = Math.abs(pigy.getPitch());

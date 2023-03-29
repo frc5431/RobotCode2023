@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.Autobalancer;
+import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.Manipulator.GamePiece;
@@ -92,7 +93,7 @@ public class AutonLoader {
             new ArmGoalGroup(
                 systems,
                 Constants.armWhileTraveling,
-                ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+                ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             // new ArmMoveCommandGroup( // midpoint
             //     systems,
@@ -104,9 +105,10 @@ public class AutonLoader {
             new ArmToGoalCommand(
                 systems,
                 Constants.armHigh,
-                ArmToGoalCommand.USE_INCHES).withTimeout(1.4),
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(1),
             waitSeconds(0.1),
-            new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.6),
+            new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.75),
             systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5),
             new DriveCommand(systems, new ChassisSpeeds(1.0, 0, 0)).withTimeout(0.5),
             new ArmToGoalCommand(
@@ -118,23 +120,29 @@ public class AutonLoader {
 
     public Command getAuto(String pathName) {
         if (pathName.equals("none")) return runOnce(() -> drivebase.resetGyroAt(180));
-        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180)).andThen(placeHigh());
+        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180))
+            .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
+            .andThen(placeHigh());
         if (pathName.equals("timedMobility")) return runOnce(() -> drivebase.resetGyroAt(180))
+            .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
             .andThen(placeHigh())
             .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(3));
         if (pathName.equals("timedBalance")) return runOnce(() -> drivebase.resetGyroAt(180))
+            .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
             .andThen(placeHigh())
-            .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(0.5))
-            .andThen(new Autobalancer(systems));
+            .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(1.2))
+            .andThen(new AutobalancerHardcodePID(systems));
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
 
         CommandBase setGyroCommand = runOnce(() -> {
+            // not the problem
             Rotation2d rot2d = PathPlannerTrajectory.transformStateForAlliance(pathGroup.get(0).getInitialState(), DriverStation.getAlliance()).holonomicRotation;
             drivebase.resetGyroAt(rot2d.getDegrees());
         });
+        // CommandBase setGyroCommand = none();
 
-        return setGyroCommand.andThen(autoBuilder.fullAuto(pathGroup));
+        return setGyroCommand.andThen(waitSeconds(0.5)).andThen(autoBuilder.fullAuto(pathGroup));
     }
 
     public Command procureAuton() {

@@ -19,7 +19,7 @@ public class AutobalancerHardcode extends CommandBase {
     public final Blinkin leds;
 
     public static final double SPEED_VX = 1.0; // m/s
-    public static final double ALLOWED_RETURN_TO_0 = 3; // degrees
+    public static final double ALLOWED_RETURN_TO_0 = 2.0; // degrees
 
     private double farthestGyroFromZero = 0;
     private boolean finished = false;
