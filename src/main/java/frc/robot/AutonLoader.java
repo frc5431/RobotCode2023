@@ -161,7 +161,7 @@ public class AutonLoader {
         });
         // CommandBase setGyroCommand = none();
 
-        return setGyroCommand.andThen(waitSeconds(0.5)).andThen(autoBuilder.fullAuto(pathGroup));
+        return setGyroCommand.andThen(waitSeconds(0.2)).andThen(autoBuilder.fullAuto(pathGroup));
     }
 
     public Command procureAuton() {

@@ -80,9 +80,9 @@ public class Drivebase extends SubsystemBase {
                     new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
     );
     
-    public final WPI_Pigeon2 m_pigeon2;
+    public final WPI_Pigeon2 pigeon2;
 
-    public final SwerveDrivePoseEstimator m_poseEstimator;
+    public final SwerveDrivePoseEstimator poseEstimator;
 
     // These are our modules. We initialize them in the constructor.
     private final SwerveModule m_frontLeftModule;
@@ -99,9 +99,9 @@ public class Drivebase extends SubsystemBase {
     public final Field2d field2d;
 
     public Drivebase() {
-        m_pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
+        pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
         // m_pigeon2.configFactoryDefault();
-        m_pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
+        pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
         // m_pigeon2.zeroGyroBiasNow(200);
 
         MkModuleConfiguration moduleConfig = MkModuleConfiguration.getDefaultSteerFalcon500();
@@ -149,7 +149,7 @@ public class Drivebase extends SubsystemBase {
                 .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET)
                 .build();
 
-        m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(), getPositions(), new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(), getPositions(), new Pose2d());
         
 
         filter_vx = new SlewRateLimiter(SLEW_RATE_LIMIT_TRANSLATION);
@@ -163,7 +163,7 @@ public class Drivebase extends SubsystemBase {
         // chassisSpeedsLayout.addNumber("vY", () -> m_chassisSpeeds.vyMetersPerSecond);
         // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
 
-        SmartDashboard.putData("Gyro", m_pigeon2);
+        SmartDashboard.putData("Gyro", pigeon2);
 
         ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
 
@@ -187,33 +187,33 @@ public class Drivebase extends SubsystemBase {
 
 
     public void resetOdometry(Pose2d pose) {
-        m_poseEstimator.resetPosition(getGyroscopeRotation(), getPositions(), pose);
+        poseEstimator.resetPosition(getGyroscopeRotation(), getPositions(), pose);
     }
 
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        m_poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
     }
 
     public Pose2d getPosition() {
-        return m_poseEstimator.getEstimatedPosition();
+        return poseEstimator.getEstimatedPosition();
     }
 
 
     public void zeroGyroscope() {
-        m_pigeon2.reset();
+        pigeon2.reset();
         resetOdometry(getPosition());
     }
 
     public void resetGyroAt(double yaw) {
-        m_pigeon2.setYaw(yaw);
+        pigeon2.setYaw(yaw);
     }
 
     public Rotation2d getGyroscopeRotation() {
-        return m_pigeon2.getRotation2d();
+        return pigeon2.getRotation2d();
     }
 
     public WPI_Pigeon2 getGyro() {
-        return m_pigeon2;
+        return pigeon2;
     }
 
 
@@ -254,9 +254,9 @@ public class Drivebase extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_poseEstimator.update(getGyroscopeRotation(), getPositions());
+        poseEstimator.update(getGyroscopeRotation(), getPositions());
         field2d.setRobotPose(getPosition());
-        SmartDashboard.putNumber("Pitch", m_pigeon2.getPitch());
+        SmartDashboard.putNumber("Pitch", pigeon2.getPitch());
         
         final double zeroDeadzone = 0.001;
 
