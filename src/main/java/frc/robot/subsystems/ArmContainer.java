@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Manipulator.GamePiece;
 import frc.robot.util.KinematicsSolver;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.robot.MotionMagic;
@@ -39,6 +38,7 @@ public class ArmContainer {
     private final ArmComponent outerComponent;
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
+    @SuppressWarnings("unused")
     private final Manipulator manipulator;
 
     public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
@@ -216,7 +216,7 @@ public class ArmContainer {
 
     public double getShoulderCosMult() {
         return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
-        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        // if (manipulator.getHeldGamePiece() != Manipulator.GamePiece.CONE) {
         //     return shoulderCosineMultiplierNoCOM * getCOMBicepMeters();
         // } else {
         //     double coneDistance = this.goalPose.getNorm() + Units.inchesToMeters(7);
@@ -230,7 +230,7 @@ public class ArmContainer {
 
     public double getElbowCosMult() {
         return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
-        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        // if (manipulator.getHeldGamePiece() != Manipulator.GamePiece.CONE) {
         //     return elbowCosineMultiplierNoCOM * getCOMForearmMeters();
         // } else {
         //     double coneDistance = Units.inchesToMeters(20+7);
@@ -244,7 +244,7 @@ public class ArmContainer {
 
     public double getWristCosMult() {
         return wristCosineMultiplierNoCOM * wristCOMMeters;
-        // if (manipulator.getHeldGamePiece() != GamePiece.CONE) {
+        // if (manipulator.getHeldGamePiece() != Manipulator.GamePiece.CONE) {
         //     return wristCosineMultiplierNoCOM * wristCOMMeters;
         // } else {
         //     double coneDistance = Units.inchesToMeters(7); // 12
