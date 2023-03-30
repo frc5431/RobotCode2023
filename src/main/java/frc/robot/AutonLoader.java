@@ -6,10 +6,12 @@ import java.util.List;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,6 +87,23 @@ public class AutonLoader {
         }
 
         SmartDashboard.putData("Auton", chooser);
+
+        FieldObject2d targetPoseFieldObject = drivebase.field2d.getObject("TargetPose");
+        FieldObject2d activeTrajectoryObject = drivebase.field2d.getObject("ActiveTrajectory");
+
+        PPSwerveControllerCommand.setLoggingCallbacks(
+        (activeTrajectory) -> {
+            activeTrajectoryObject.setTrajectory(activeTrajectory);
+        },
+        (targetPose) -> {
+            targetPoseFieldObject.setPose(targetPose);
+        },
+        null,
+        (translationError, rotationError) -> {
+            SmartDashboard.putNumber("PPSwerveControllerCommand/xErrorMeters", translationError.getX());
+            SmartDashboard.putNumber("PPSwerveControllerCommand/yErrorMeters", translationError.getY());
+            SmartDashboard.putNumber("PPSwerveControllerCommand/rotationErrorDegrees", rotationError.getDegrees());
+        });
     }
 //s
     public Command placeHigh() {

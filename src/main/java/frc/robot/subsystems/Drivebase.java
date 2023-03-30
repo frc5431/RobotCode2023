@@ -96,7 +96,7 @@ public class Drivebase extends SubsystemBase {
     private final SlewRateLimiter filter_vy;
     private final SlewRateLimiter filter_or;
 
-    private final Field2d field2d;
+    public final Field2d field2d;
 
     public Drivebase() {
         m_pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
