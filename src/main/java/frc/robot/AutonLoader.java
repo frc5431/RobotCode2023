@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.Autobalancer;
@@ -154,14 +156,29 @@ public class AutonLoader {
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
 
-        CommandBase setGyroCommand = runOnce(() -> {
-            // not the problem
-            Rotation2d rot2d = PathPlannerTrajectory.transformStateForAlliance(pathGroup.get(0).getInitialState(), DriverStation.getAlliance()).holonomicRotation;
-            drivebase.resetGyroAt(rot2d.getDegrees());
-        });
+        CommandBase setGyroCommand = new CommandBase() {
+            Rotation2d rot2d = new Rotation2d();
+
+            @Override
+            public void initialize() {
+                Rotation2d rot2d = PathPlannerTrajectory.transformStateForAlliance(pathGroup.get(0).getInitialState(), DriverStation.getAlliance()).holonomicRotation;
+                drivebase.resetGyroAt(rot2d.getDegrees());
+            }
+
+            @Override
+            public boolean isFinished() {
+                // Wait until returned value matches set value
+                return Math.abs(Rotation2d.fromDegrees(drivebase.pigeon2.getYaw()).minus(rot2d).getDegrees()) < 1;
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return Set.of();
+            }
+        };
         // CommandBase setGyroCommand = none();
 
-        return setGyroCommand.andThen(waitSeconds(0.2)).andThen(autoBuilder.fullAuto(pathGroup));
+        return setGyroCommand.andThen(autoBuilder.fullAuto(pathGroup));
     }
 
     public Command procureAuton() {
