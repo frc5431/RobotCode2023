@@ -110,7 +110,7 @@ public class ArmContainer {
 
     public ArmContainer(Manipulator manip, CANSparkMax outerArmLeft, CANSparkMax outerArmRight, CANSparkMax innerArmLeft, CANSparkMax innerArmRight, CANSparkMax wrist) {
         this.manipulator = manip;
-        outerArmLeft.setInverted(true);
+        outerArmLeft.setInverted(false);
         outerArmRight.follow(outerArmLeft, true);
         outerArmLeft.setIdleMode(IdleMode.kBrake);
         outerArmRight.setIdleMode(IdleMode.kBrake);
@@ -130,7 +130,7 @@ public class ArmContainer {
         // innerArmRight.setSoftLimit(SoftLimitDirection.kForward, 0.80f);
         // innerArmRight.setSoftLimit(SoftLimitDirection.kReverse, 0.20f);
 
-        wrist.setInverted(true);
+        wrist.setInverted(false);
         wrist.setIdleMode(IdleMode.kBrake);
 
         wrist.enableSoftLimit(SoftLimitDirection.kForward, false);

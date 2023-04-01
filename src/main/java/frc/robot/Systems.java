@@ -3,9 +3,6 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.leds.Blinkin;
 import frc.team5431.titan.core.leds.BlinkinPattern;
@@ -24,9 +21,6 @@ public class Systems {
     private CANSparkMax armInnerRight;
     private CANSparkMax wrist;
 
-    private Compressor compressor;
-    private PneumaticHub phub;
-
     public Systems() {
         drivebase = new Drivebase();
         // vision = new Vision(drivebase);
@@ -41,13 +35,13 @@ public class Systems {
         wrist = new CANSparkMax(19, MotorType.kBrushless);
         arm = new ArmContainer(manipulator, armOuterLeft, armOuterRight, armInnerLeft, armInnerRight, wrist);
 
-        compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
-        phub = new PneumaticHub(Constants.ID_PHUB);
+        // compressor = new Compressor(Constants.ID_PHUB, PneumaticsModuleType.REVPH);
+        // phub = new PneumaticHub(Constants.ID_PHUB);
 
-        // compressor.enableDigital();
-        // compressor.enableAnalog(60, 105);
-        // compressor.enableHybrid(60, 120);
-        compressor.disable();
+        // // compressor.enableDigital();
+        // // compressor.enableAnalog(60, 105);
+        // // compressor.enableHybrid(60, 120);
+        // compressor.disable();
     }
 
     public Drivebase getDrivebase() {
@@ -68,13 +62,5 @@ public class Systems {
 
     public Manipulator getManipulator() {
         return manipulator;
-    }
-
-    public Compressor getCompressor() {
-        return compressor;
-    }
-
-    public PneumaticHub getPneumaticHub() {
-        return phub;
     }
 }

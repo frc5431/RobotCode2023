@@ -7,21 +7,16 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.Autobalancer;
-import frc.robot.commands.AutobalancerBangBang;
-import frc.robot.commands.AutobalancerHardcode;
-import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -33,7 +28,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
@@ -50,18 +44,29 @@ public class RobotContainer {
     private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
-    private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
+    // private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
 
     public RobotContainer() {
 
         driver.setDeadzone(0.15);
         // operatorJoystick.setDeadzone(0.15);
 
+        // drivebase.setDefaultCommand(new DefaultDriveCommand(
+        //         systems,
+        //         () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+        //         () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
+        //         () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+
         drivebase.setDefaultCommand(new DefaultDriveCommand(
-                systems,
-                () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+            systems,
+            () -> {
+                double inX = -driver.getLeftY(); // swap intended
+                double inY = -driver.getLeftX();
+                double mag = Math.hypot(inX, inY);
+                double theta = Math.atan2(inY, inX);
+                return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
+            },
+            () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         systems.getLeds().setDefaultCommand(run(
             () -> systems.getLeds().set(getPatternFromAlliance()), 
@@ -84,13 +89,14 @@ public class RobotContainer {
 
         configureBindings();
 
-        Robot.periodics.add(Pair.of(() -> {
-            SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
-            SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
-        }, 0.3));
+        // Robot.periodics.add(Pair.of(() -> {
+        //     SmartDashboard.putNumber("pressure", systems.getCompressor().getPressure());
+        //     SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
+        // }, 0.3));
 
         List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
-        List<CANSparkMax> sparks = systems.getArm().getSparks();
+        List<CANSparkMax> sparks = new ArrayList<>(systems.getArm().getSparks());
+        sparks.add(systems.getManipulator().getMotor());
 
         String[] falconNames = new String[] {
                 "FLSteer",
@@ -108,7 +114,8 @@ public class RobotContainer {
             "OuterR",
             "InnerL",
             "InnerR",
-            "Wrist"
+            "Wrist",
+            "Intake"
         };
 
         Robot.periodics.add(Pair.of(() -> {
@@ -128,12 +135,12 @@ public class RobotContainer {
         //     .withPosition(t.column(), t.row().getIndex());
         // });
 
-        balanceStrategy.setDefaultOption("pid", new Autobalancer(systems));
-        balanceStrategy.addOption("bangbang", new AutobalancerBangBang(systems));
-        balanceStrategy.addOption("bb 3015", new AutobalancerHardcode(systems));
-        balanceStrategy.addOption("bb 3015 pid", new AutobalancerHardcodePID(systems));
+        // balanceStrategy.setDefaultOption("pid", new Autobalancer(systems));
+        // balanceStrategy.addOption("bangbang", new AutobalancerBangBang(systems));
+        // balanceStrategy.addOption("bb 3015", new AutobalancerHardcode(systems));
+        // balanceStrategy.addOption("bb 3015 pid", new AutobalancerHardcodePID(systems));
 
-        SmartDashboard.putData("Bal Strat", balanceStrategy);
+        // SmartDashboard.putData("Bal Strat", balanceStrategy);
     }
 
     public static BlinkinPattern getPatternFromAlliance() {
@@ -176,7 +183,7 @@ public class RobotContainer {
 
         operatorJoystick.a().toggleOnTrue(systems.getManipulator().manipRunCommand(GamePiece.CONE, true));
         operatorJoystick.b().toggleOnTrue(systems.getManipulator().manipRunCommand(GamePiece.CUBE, true));
-        operatorJoystick.y().onTrue(runOnce(ArmContainer.solver::toggleTopDefault));
+        // operatorJoystick.y().onTrue(runOnce(ArmContainer.solver::toggleTopDefault));
 
         // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
         //     .withTimeout(8));
@@ -193,7 +200,7 @@ public class RobotContainer {
             .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
+        // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
 
         // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
@@ -258,9 +265,9 @@ public class RobotContainer {
         //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         // ));
 
-        operator.C2().or(operatorJoystick.leftTrigger()).onTrue(new ArmGoalGroup( // Normal Grab
+        operatorJoystick.leftTrigger().onTrue(new ArmGoalGroup( // Normal Grab
             systems,
-            Constants.armNormalGrabOld,
+            Constants.armGroundTippedCone,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
@@ -308,12 +315,13 @@ public class RobotContainer {
         // Deadband
         value = deadband(value, 0.075);
 
-        value = value * value * value;
+        // More sensitive at smaller speeds
+        double newValue = Math.pow(value, 2);
 
-        // Square the axis
-        // value = Math.copySign(value * value, value);
+        // Copy the sign to the new value
+        newValue = Math.copySign(newValue, value);
 
-        return value;
+        return newValue;
     }
 
     public void teleopPeriodic() {

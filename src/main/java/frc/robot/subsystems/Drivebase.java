@@ -277,6 +277,7 @@ public class Drivebase extends SubsystemBase {
 
         SmartDashboard.putNumber("DT X spd", m_chassisSpeeds.vxMetersPerSecond);
         SmartDashboard.putNumber("DT Y spd", m_chassisSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("DT . spd", Math.hypot(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond));
         SmartDashboard.putNumber("DT O rot", m_chassisSpeeds.omegaRadiansPerSecond);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);

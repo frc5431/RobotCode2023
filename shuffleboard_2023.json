@@ -604,58 +604,6 @@
               "_showGlyph": false
             }
           },
-          "20,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/shcom wo cone",
-              "_title": "shcom wo cone",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "20,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/shcom wt cone",
-              "_title": "shcom wt cone",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "21,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/elcom wo cone",
-              "_title": "elcom wo cone",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "21,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/elcom wt cone",
-              "_title": "elcom wt cone",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "19,3": {
             "size": [
               7,
@@ -677,22 +625,6 @@
               "imageHeight": -1
             }
           },
-          "13,6": {
-            "size": [
-              6,
-              4
-            ],
-            "content": {
-              "_type": "Field",
-              "_source0": "network_table:///SmartDashboard/Field",
-              "_title": "Field",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Game/Game": "A2023_Charged_Up",
-              "Visuals/Robot Icon Size": 50.0,
-              "Visuals/Show Outside Circles": false
-            }
-          },
           "4,2": {
             "size": [
               6,
@@ -712,32 +644,6 @@
               "fps": -1,
               "imageWidth": 0,
               "imageHeight": 0
-            }
-          },
-          "22,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/wrcom wo cone",
-              "_title": "wrcom wo cone",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "22,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/wrcom wt cone",
-              "_title": "wrcom wt cone",
-              "_glyph": 148,
-              "_showGlyph": false
             }
           },
           "10,6": {
@@ -939,19 +845,6 @@
               "_showGlyph": false
             }
           },
-          "10,8": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Bal Strat",
-              "_title": "Bal Strat",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "16,3": {
             "size": [
               2,
@@ -987,6 +880,50 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/cur md",
               "_title": "cur md",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "13,6": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///Shuffleboard/Vision/Field",
+              "_title": "Shuffleboard/Vision/Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "A2023_Charged_Up",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/TargetPose": "#FFFFFFFF",
+              "Colors/ActiveTrajectory": "#FFFFFFFF"
+            }
+          },
+          "25,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Intake Temp",
+              "_title": "Intake Temp",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,0": {
+            "size": [
+              1,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DT . spd",
+              "_title": "DT . spd",
               "_glyph": 148,
               "_showGlyph": false
             }

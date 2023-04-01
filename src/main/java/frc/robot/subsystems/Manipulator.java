@@ -73,6 +73,10 @@ public class Manipulator extends SubsystemBase {
         return heldGamePiece;
     }
 
+    public CANSparkMax getMotor() {
+        return motor;
+    }
+
     public Command manipRunOnceCommand(GamePiece piece, boolean intake) {
         return runOnce(() -> {
             switch (piece) {

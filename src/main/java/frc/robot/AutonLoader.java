@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.Autobalancer;
 import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
@@ -64,7 +63,7 @@ public class AutonLoader {
         eventMap.put("deadwheelRaise", none());
         eventMap.put("manipulatorOpen", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, false));
         eventMap.put("manipulatorGrab", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true));
-        eventMap.put("autoBalance", new Autobalancer(systems));
+        eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
         eventMap.put("placeHigh", placeHigh());
         // eventMap.put("placeHigh", none());
         eventMap.put("stow", new ArmToGoalCommand(
@@ -161,7 +160,7 @@ public class AutonLoader {
 
             @Override
             public void initialize() {
-                Rotation2d rot2d = PathPlannerTrajectory.transformStateForAlliance(pathGroup.get(0).getInitialState(), DriverStation.getAlliance()).holonomicRotation;
+                rot2d = PathPlannerTrajectory.transformStateForAlliance(pathGroup.get(0).getInitialState(), DriverStation.getAlliance()).holonomicRotation;
                 drivebase.resetGyroAt(rot2d.getDegrees());
             }
 
@@ -178,7 +177,9 @@ public class AutonLoader {
         };
         // CommandBase setGyroCommand = none();
 
-        return setGyroCommand.andThen(autoBuilder.fullAuto(pathGroup));
+        return setGyroCommand
+        .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
+        .andThen(autoBuilder.fullAuto(pathGroup));
     }
 
     public Command procureAuton() {
