@@ -33,6 +33,7 @@ public class AutonLoader {
         "far", "farBalance",
         "mid", "midBalance",
         "near", "nearBalance",
+        "nearTwoGPBal", "nearTwoGPHoldOne",
         "special", "placeHigh",
         "timedMobility",
         "timedBalance",
@@ -169,7 +170,7 @@ public class AutonLoader {
 
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, Constants.PATH_CONSTRAINTS);
 
-        CommandBase setGyroCommand = new CommandBase() {
+        Command setGyroCommand = new CommandBase() {
             Rotation2d rot2d = new Rotation2d();
 
             @Override
@@ -191,8 +192,13 @@ public class AutonLoader {
         };
         // CommandBase setGyroCommand = none();
 
+        // If running a path with two game pieces, start with a cone rather than a cube.
+        Command setupIntakeCommand = pathName.contains("TwoGP")
+            ? systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, true)
+            : systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true);
+
         return setGyroCommand
-        .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
+        .andThen(setupIntakeCommand)
         .andThen(autoBuilder.fullAuto(pathGroup));
     }
 
