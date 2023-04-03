@@ -35,6 +35,8 @@ public class Constants {
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
+    public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-28.17, -18.23), 293.9, false);
+    public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(-28.17, -33.79), 294.6, false);
     // public static final double armBackwardsHighX = -58.35; // -59.7
     // public static final double armBackwardsHighY = 12.1; // 3.7
     // public static final double wristBackwardsHighAngle = 12; // 340
@@ -43,7 +45,6 @@ public class Constants {
     // public static final double armBackwardsMidY = -11;
     // public static final double wristBackwardsMidAngle = 335.7;
     // public static final PresetPosition armBackwardsMid = PresetPosition.fromGoal(new Translation2d(armBackwardsMidX, armBackwardsMidY), wristBackwardsMidAngle, false);
-    // public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-13.89, -1.7), 260.0, false);
 
     public static final int ID_PIGEON2 = 13;
     public static final int ID_PHUB = 1;

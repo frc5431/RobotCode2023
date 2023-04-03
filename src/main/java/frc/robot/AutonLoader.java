@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
@@ -61,16 +60,23 @@ public class AutonLoader {
 
         eventMap.put("deadwheelDrop", none());
         eventMap.put("deadwheelRaise", none());
-        eventMap.put("manipulatorOpen", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, false));
-        eventMap.put("manipulatorGrab", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true));
+        eventMap.put("cubeIntake", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true));
+        eventMap.put("cubeOuttake", systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, false));
+        eventMap.put("coneIntake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, true));
+        eventMap.put("coneOuttake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, false));
         eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
         eventMap.put("placeHigh", placeHigh());
         // eventMap.put("placeHigh", none());
+        eventMap.put("placeHighAdjacent", placeHighNoDrive());
         eventMap.put("stow", new ArmToGoalCommand(
             systems,
             Constants.armStow,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
+        eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armBackwardsGroundCube", new ArmToGoalCommand(systems, Constants.armBackwardsGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
         autoBuilder = new SwerveAutoBuilder(
                 drivebase::getPosition,
@@ -109,19 +115,11 @@ public class AutonLoader {
 //s
     public Command placeHigh() {
         return new SequentialCommandGroup(
-            systems.getArm().getWrist().setDegreesCommand(0), // while traveling
-            new ArmGoalGroup(
+            new ArmToGoalCommand(
                 systems,
                 Constants.armWhileTraveling,
                 ArmToGoalCommand.USE_INCHES
-            ).withTimeout(1),
-            // new ArmMoveCommandGroup( // midpoint
-            //     systems,
-            //     new Translation2d(25, -2),
-            //     ArmToGoalCommand.USE_INCHES,
-            //     295,
-            //     false
-            // ).withTimeout(1),
+            ).withTimeout(0.5),
             new ArmToGoalCommand(
                 systems,
                 Constants.armHigh,
@@ -135,6 +133,22 @@ public class AutonLoader {
                 systems,
                 Constants.armStow,
                 ArmToGoalCommand.USE_INCHES)
+        );
+    }
+    public Command placeHighNoDrive() {
+        return new SequentialCommandGroup(
+            new ArmToGoalCommand(
+                systems,
+                Constants.armWhileTraveling,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.5),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armHigh,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(1),
+            waitSeconds(0.1),
+            systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5)
         );
     }
 
