@@ -40,7 +40,7 @@ public class AutobalancerHardcodePID extends CommandBase {
     public void initialize() {
         leds.set(RobotContainer.getPatternFromAlliance(true));
 
-        farthestGyroFromZero = pigy.getPitch();
+        setFarthestGyroFromZero(pigy.getPitch());
         startPID = false;
         finished = false;
         Logger.l("Starting 3015 autobalancer");
@@ -60,7 +60,7 @@ public class AutobalancerHardcodePID extends CommandBase {
         double absGyroMax = Math.abs(farthestGyroFromZero);
         double direction = -1 * Math.copySign(1.0, pigy.getPitch());
         if (absPitch > absGyroMax) {
-            farthestGyroFromZero = pigy.getPitch();
+            setFarthestGyroFromZero(pigy.getPitch());
             drivebase.drive(new ChassisSpeeds(direction*SPEED_VX, 0, 0));
         } else if (absPitch > (absGyroMax - ALLOWED_RETURN_TO_0)) {
             drivebase.drive(new ChassisSpeeds(direction*SPEED_VX, 0, 0));
@@ -68,6 +68,10 @@ public class AutobalancerHardcodePID extends CommandBase {
             drivebase.stop();
             startPID = true;
         }
+    }
+
+    private void setFarthestGyroFromZero(double val) {
+        farthestGyroFromZero = Math.copySign(Math.min(Math.abs(val), 11), val);
     }
 
     @Override
