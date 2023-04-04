@@ -71,7 +71,7 @@ public class AutobalancerHardcodePID extends CommandBase {
     }
 
     private void setFarthestGyroFromZero(double val) {
-        farthestGyroFromZero = Math.copySign(Math.min(Math.abs(val), 11), val);
+        farthestGyroFromZero = Math.copySign(Math.min(Math.abs(val), 14), val);
     }
 
     @Override

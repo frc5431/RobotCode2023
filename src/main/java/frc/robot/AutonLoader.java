@@ -68,7 +68,8 @@ public class AutonLoader {
         eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
         eventMap.put("placeHigh", placeHigh());
         // eventMap.put("placeHigh", none());
-        eventMap.put("placeHighAdjacent", placeHighNoDrive());
+        eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
+        eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(
             systems,
             Constants.armStow,
@@ -136,20 +137,20 @@ public class AutonLoader {
                 ArmToGoalCommand.USE_INCHES)
         );
     }
-    public Command placeHighNoDrive() {
+    public Command placeHighNoDrive(GamePiece holding) {
         return new SequentialCommandGroup(
             new ArmToGoalCommand(
                 systems,
-                Constants.armWhileTraveling,
+                Constants.armMid,
                 ArmToGoalCommand.USE_INCHES
-            ).withTimeout(0.5),
+            ).withTimeout(0.75),
             new ArmToGoalCommand(
                 systems,
                 Constants.armHigh,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             waitSeconds(0.1),
-            systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5)
+            systems.getManipulator().manipRunCommand(holding, false).withTimeout(1)
         );
     }
 

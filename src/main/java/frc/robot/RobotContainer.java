@@ -8,6 +8,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
@@ -47,6 +48,7 @@ public class RobotContainer {
     // private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
 
     public RobotContainer() {
+        autonLoader = new AutonLoader(systems);
 
         driver.setDeadzone(0.15);
         // operatorJoystick.setDeadzone(0.15);
@@ -126,7 +128,6 @@ public class RobotContainer {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
             }
         }, 0.2));
-        autonLoader = new AutonLoader(systems);
 
         // ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
         // operator.iterate().forEach(t -> {
@@ -201,6 +202,24 @@ public class RobotContainer {
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
+        // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
+        //     systems,
+        //     Constants.armStow,
+        //     ArmToGoalCommand.USE_INCHES)));
+
+
+        operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high
+            new ArmToGoalCommand(
+                systems,
+                Constants.armMid,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.75),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armHigh,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(1)
+        ));
 
         // Arm controls, but for driver by request of Phillip
         driver.leftTrigger().onTrue(new ArmGoalGroup( // Stow
@@ -241,30 +260,6 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        // operator.A3().or(operatorJoystick.b()).onTrue(new ArmGoalGroup( // Backwards high - requires intermediate pos!
-        //     systems,
-        //     Constants.armBackwardsHigh,
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        // ));
-
-        // (operatorJoystick.leftBumper()).onTrue(new ArmGoalGroup( // Backwards double substation
-        //     systems,
-        //     PresetPosition.fromGoal(Constants.armBackwardsHigh.getWristPos(), 30),
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        // ));
-
-        // operator.B4().or(operatorJoystick.rightBumper()).onTrue(new ArmGoalGroup( // Backwards mid
-        //     systems,
-        //     Constants.armBackwardsMid,
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        // ));
-
-        // operator.A4().or(operatorJoystick.x()).or(driver.a()).onTrue(new ArmGoalGroup( // Intermediate
-        //     systems,
-        //     Constants.armBackwardsIntermediate,
-        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        // ));
-
         operatorJoystick.leftTrigger().onTrue(new ArmGoalGroup( // Normal Grab
             systems,
             Constants.armGroundTippedCone,
@@ -272,15 +267,13 @@ public class RobotContainer {
         ));
 
         // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operator.A2().or(operatorJoystick.povRight()).onTrue( // High node
-            systems.getArm().getWrist().setDegreesCommand(0)
-        .andThen(new ArmGoalGroup(
+        operatorJoystick.x().onTrue(new ArmGoalGroup(
             systems,
             Constants.armHigh,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        )));
+        ));
 
-        operator.B2().or(operatorJoystick.povLeft()).onTrue(new ArmGoalGroup( // Middle node
+        operatorJoystick.povLeft().onTrue(new ArmGoalGroup( // Middle node
             systems,
             Constants.armMid,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY

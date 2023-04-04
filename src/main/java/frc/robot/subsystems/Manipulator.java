@@ -110,6 +110,6 @@ public class Manipulator extends SubsystemBase {
                     stop();
                     break;
             }
-        }, () -> stop(), this);
+        }, () -> stop(), this).withName(piece.name() + (intake ? " intake" : " outtake"));
     }
 }
