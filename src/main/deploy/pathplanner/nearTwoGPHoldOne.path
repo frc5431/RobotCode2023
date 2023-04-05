@@ -145,8 +145,7 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "placeHighAdjacentCube",
-          "stow"
+          "placeHighAdjacentCube"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -248,6 +247,13 @@
       "names": [
         "armGroundUprightCone",
         "coneIntake"
+      ]
+    },
+    {
+      "position": 5.3818181818181765,
+      "names": [
+        "event",
+        "stow"
       ]
     }
   ]
