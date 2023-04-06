@@ -87,8 +87,8 @@ public class AutonLoader {
                 true,
                 drivebase);
 
-        for (String pathNames : paths) {
-                chooser.addOption(pathNames, getAuto(pathNames));
+        for (String pathName : paths) {
+            chooser.addOption(pathName, getAuto(pathName));
         }
 
         SmartDashboard.putData("Auton", chooser);
