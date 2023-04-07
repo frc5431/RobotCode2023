@@ -20,13 +20,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
   public Drivebase drivebase;
-  public PhotonCamera camera = new PhotonCamera("OV5647");
+  public PhotonCamera camera;
   public final AprilTagFieldLayout LAYOUT;
 
   private double previousTimestamp = 0;
 
   public Vision(Drivebase drivebase) {
     this.drivebase = drivebase;
+    camera = new PhotonCamera("OV5647");
     AprilTagFieldLayout layout;
     try {
       layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();

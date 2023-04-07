@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.util.Buttonboard;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
@@ -41,7 +40,7 @@ public class RobotContainer {
 
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
-    private final Buttonboard operator = new Buttonboard(3, 7, 3);
+    // private final Buttonboard operator = new Buttonboard(3, 7, 3);
     private final AutonLoader autonLoader;
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
@@ -188,7 +187,7 @@ public class RobotContainer {
 
         // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
         //     .withTimeout(8));
-        operator.A6().or(operatorJoystick.start()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
+        operatorJoystick.start().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
             // .andThen(waitSeconds(8)));
             .withTimeout(8));
         // operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
@@ -234,11 +233,11 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operator.A1().or(operatorJoystick.povUp()).whileTrue(
+        operatorJoystick.povUp().whileTrue(
             run(() -> systems.getArm().getWrist().add(2))
         );
 
-        operator.B1().or(operatorJoystick.povDown()).whileTrue(
+        operatorJoystick.povDown().whileTrue(
             run(() -> systems.getArm().getWrist().add(-2))
         );
 
@@ -306,7 +305,7 @@ public class RobotContainer {
 
     private static double modifyAxis(double value) {
         // Deadband
-        value = deadband(value, 0.075);
+        value = deadband(value, 0.15);
 
         // More sensitive at smaller speeds
         double newValue = Math.pow(value, 2);

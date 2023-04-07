@@ -206,19 +206,6 @@
               "_showGlyph": false
             }
           },
-          "2,2": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/pressure",
-              "_title": "pressure",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "10,5": {
             "size": [
               2,
@@ -269,21 +256,6 @@
               "_title": "wrist arbff",
               "_glyph": 148,
               "_showGlyph": false
-            }
-          },
-          "2,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/pressure switch val",
-              "_title": "pressure switch val",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
             }
           },
           "10,3": {
