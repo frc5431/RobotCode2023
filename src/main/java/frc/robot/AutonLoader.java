@@ -77,7 +77,7 @@ public class AutonLoader {
         eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
         autoBuilder = new SwerveAutoBuilder(
-                drivebase::getPosition,
+                drivebase::getEstimatedPosition,
                 drivebase::resetOdometry,
                 drivebase.m_kinematics,
                 Constants.TRANSLATION_PID,

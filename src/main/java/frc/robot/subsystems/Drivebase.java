@@ -178,7 +178,7 @@ public class Drivebase extends SubsystemBase {
     }
 
     private String getFormattedPose() {
-        Pose2d pose = getPosition();
+        Pose2d pose = getEstimatedPosition();
         return String.format("(%.2f, %.2f) %.2f degrees",
             pose.getX(),
             pose.getY(),
@@ -194,14 +194,14 @@ public class Drivebase extends SubsystemBase {
         poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
     }
 
-    public Pose2d getPosition() {
+    public Pose2d getEstimatedPosition() {
         return poseEstimator.getEstimatedPosition();
     }
 
 
     public void zeroGyroscope() {
         pigeon2.reset();
-        resetOdometry(getPosition());
+        resetOdometry(getEstimatedPosition());
     }
 
     public void resetGyroAt(double yaw) {
@@ -255,7 +255,7 @@ public class Drivebase extends SubsystemBase {
     @Override
     public void periodic() {
         poseEstimator.update(getGyroscopeRotation(), getPositions());
-        field2d.setRobotPose(getPosition());
+        field2d.setRobotPose(getEstimatedPosition());
         SmartDashboard.putNumber("Pitch", pigeon2.getPitch());
         
         final double zeroDeadzone = 0.001;
