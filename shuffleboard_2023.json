@@ -856,24 +856,6 @@
               "_showGlyph": false
             }
           },
-          "13,6": {
-            "size": [
-              6,
-              4
-            ],
-            "content": {
-              "_type": "Field",
-              "_source0": "network_table:///Shuffleboard/Vision/Field",
-              "_title": "Shuffleboard/Vision/Field",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Game/Game": "A2023_Charged_Up",
-              "Visuals/Robot Icon Size": 50.0,
-              "Visuals/Show Outside Circles": false,
-              "Colors/TargetPose": "#FFFFFFFF",
-              "Colors/ActiveTrajectory": "#FFFFFFFF"
-            }
-          },
           "25,2": {
             "size": [
               1,
@@ -898,6 +880,40 @@
               "_title": "DT . spd",
               "_glyph": 148,
               "_showGlyph": false
+            }
+          },
+          "13,6": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///Shuffleboard/Vision/Field",
+              "_title": "Shuffleboard/Vision/Field",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Game/Game": "A2023_Charged_Up",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false,
+              "Colors/TargetPose": "#FFFFFFFF",
+              "Colors/ActiveTrajectory": "#FFFFFFFF",
+              "Colors/Cam Est Pos": "#FFFFFFFF"
+            }
+          },
+          "21,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Has Targets?",
+              "_title": "Has Targets?",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
             }
           }
         }

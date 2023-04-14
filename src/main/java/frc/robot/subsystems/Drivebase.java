@@ -168,7 +168,7 @@ public class Drivebase extends SubsystemBase {
         ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
 
         field2d = new Field2d();
-        
+
         visionTab.addString("Pose", this::getFormattedPose)
             .withPosition(0, 0)
             .withSize(2, 0);

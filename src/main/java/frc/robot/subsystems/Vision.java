@@ -65,8 +65,12 @@ public class Vision extends SubsystemBase {
     public void detect() {
         Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(drivebase.getEstimatedPosition());
 
+        // SmartDashboard.putBoolean("Has Targets?", camera.getLatestResult().hasTargets());
+        // SmartDashboard.putNumberArray("Target IDs", camera.getLatestResult().getTargets().stream().mapToDouble((a) -> (double) a.getFiducialId()).toArray());
+
         if (result.isPresent()) {
             EstimatedRobotPose camPose = result.get();
+            // System.out.println("Adding vis meas " + camPose.estimatedPose + " w/ " + camPose.targetsUsed.size() + " targets");
             drivebase.addVisionMeasurement(
                     camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
             drivebase.field2d.getObject("Cam Est Pos").setPose(camPose.estimatedPose.toPose2d());

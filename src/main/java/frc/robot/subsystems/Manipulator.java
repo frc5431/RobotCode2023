@@ -21,7 +21,7 @@ public class Manipulator extends SubsystemBase {
     public Manipulator(CANSparkMax motor) {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
-        motor.setInverted(true);
+        motor.setInverted(false);
         motor.setSmartCurrentLimit(40, 20);
         motor.setOpenLoopRampRate(0.2);
         motor.burnFlash();

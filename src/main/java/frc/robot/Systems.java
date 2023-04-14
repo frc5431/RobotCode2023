@@ -23,7 +23,7 @@ public class Systems {
 
     public Systems() {
         drivebase = new Drivebase();
-        // vision = new Vision(drivebase);
+        vision = new Vision(drivebase);
         leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
         manipulator = new Manipulator(new CANSparkMax(20, MotorType.kBrushless));
