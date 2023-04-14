@@ -29,7 +29,7 @@ public class Constants {
 
     public static final PresetPosition armHigh = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 295, false);
     public static final PresetPosition armMid = PresetPosition.fromGoal(new Translation2d(18.59, 1.14), 260.6, false);
-    public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(14.44, -38.8), 31.96, false);
+    public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(14.04, -39.07), 36.17, false);
     public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 255, false);
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -24.56), 311, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
@@ -86,8 +86,9 @@ public class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(52.910); // 53.701
 
     //#region Auto Constants
+    // Pretty sure constraints from the path file are not used, and the following is.
     public static final PathConstraints PATH_CONSTRAINTS = new PathConstraints(4, 3);
-    public static final PIDConstants TRANSLATION_PID = new PIDConstants(5, 0, 0.03);
+    public static final PIDConstants TRANSLATION_PID = new PIDConstants(6, 0, 0.04);
     public static final PIDConstants ROTATION_PID = new PIDConstants(2.5, 0, 0);
     //#endregion Auto Constants
 

@@ -900,21 +900,6 @@
               "Colors/ActiveTrajectory": "#FFFFFFFF",
               "Colors/Cam Est Pos": "#FFFFFFFF"
             }
-          },
-          "21,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Has Targets?",
-              "_title": "Has Targets?",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
           }
         }
       }

@@ -17,13 +17,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.Manipulator.GamePiece;
+import frc.robot.util.PresetPosition;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -34,6 +34,8 @@ public class AutonLoader {
         "mid", "midBalance",
         "near", "nearBalance",
         "nearTwoGPBal", "nearTwoGPHoldOne",
+        "nearConeMidTwoCube",
+        "nearThreeCube",
         "special", "placeHigh",
         "timedMobility",
         "timedBalance",
@@ -67,6 +69,8 @@ public class AutonLoader {
         eventMap.put("coneOuttake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, false));
         eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
         eventMap.put("placeHigh", placeHigh());
+        eventMap.put("placeMidCone", placeMidCone());
+        eventMap.put("placeLowCube", placeLowCube());
         // eventMap.put("placeHigh", none());
         eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
@@ -112,7 +116,7 @@ public class AutonLoader {
     }
 //s
     public Command placeHigh() {
-        return new SequentialCommandGroup(
+        return sequence(
             new ArmToGoalCommand(
                 systems,
                 Constants.armWhileTraveling,
@@ -134,7 +138,7 @@ public class AutonLoader {
         );
     }
     public Command placeHighNoDrive(GamePiece holding) {
-        return new SequentialCommandGroup(
+        return sequence(
             new ArmToGoalCommand(
                 systems,
                 Constants.armMid,
@@ -146,7 +150,30 @@ public class AutonLoader {
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             waitSeconds(0.1),
-            systems.getManipulator().manipRunCommand(holding, false).withTimeout(1)
+            systems.getManipulator().manipRunCommand(holding, false).withTimeout(0.5)
+        );
+    }
+
+    public Command placeMidCone() {
+        return sequence(
+            new ArmToGoalCommand(
+                systems,
+                Constants.armMid,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.75),
+            waitSeconds(0.1),
+            systems.getManipulator().manipRunCommand(GamePiece.CONE, false).withTimeout(0.5)
+        );
+    }
+
+    public Command placeLowCube() {
+        return sequence(
+            new ArmToGoalCommand(
+                systems,
+                PresetPosition.fromGoal(Constants.armStow.getWristPos(), 244, false),
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.3),
+            systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.4)
         );
     }
 
@@ -190,7 +217,7 @@ public class AutonLoader {
         // CommandBase setGyroCommand = none();
 
         // If running a path with two game pieces, start with a cone rather than a cube.
-        Command setupIntakeCommand = pathName.contains("TwoGP")
+        Command setupIntakeCommand = (pathName.contains("TwoGP") || pathName.contains("ConeMid"))
             ? systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, true)
             : systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true);
 

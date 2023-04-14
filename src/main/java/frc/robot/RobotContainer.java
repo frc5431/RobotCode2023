@@ -252,19 +252,19 @@ public class RobotContainer {
             Constants.armGroundCube,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
-
-        operatorJoystick.rightTrigger().onTrue(new ArmGoalGroup(
-            systems,
-            Constants.armGroundUprightCone,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
-
+        
         operatorJoystick.leftTrigger().onTrue(new ArmGoalGroup( // Normal Grab
             systems,
             Constants.armGroundTippedCone,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
+        operatorJoystick.rightTrigger().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armGroundUprightCone,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+        
         // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
         operatorJoystick.x().onTrue(new ArmGoalGroup(
             systems,
