@@ -358,6 +358,7 @@ public class RobotContainer {
 
     public void robotPeriodic() {
         SmartDashboard.putData(CommandScheduler.getInstance());
+        SmartDashboard.putData(systems.getArm().getOuter());
     }
 
     public void teleopInit() {
