@@ -327,7 +327,11 @@ public class ArmContainer {
     }
 
     public boolean isGoalBackwards() {
-        return goalPose.getX() < IS_BACKWARDS_X;
+        return isPoseBackwards(goalPose);
+    }
+
+    public boolean isPoseBackwards(Translation2d pose) {
+        return pose.getX() < IS_BACKWARDS_X;
     }
 
     public class ArmComponent extends SubsystemBase {

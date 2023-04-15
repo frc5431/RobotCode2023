@@ -67,6 +67,9 @@ public class Constants {
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -23.98), 308, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
+    public static final PresetPosition armToBackIntermediary = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58), 0, false);
+    
+    
     // public static final double armBackwardsHighX = -58.35; // -59.7
     // public static final double armBackwardsHighY = 12.1; // 3.7
     // public static final double wristBackwardsHighAngle = 12; // 340
