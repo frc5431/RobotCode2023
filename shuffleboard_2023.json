@@ -900,6 +900,19 @@
               "Colors/ActiveTrajectory": "#FFFFFFFF",
               "Colors/Cam Est Pos": "#FFFFFFFF"
             }
+          },
+          "10,8": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Current Apritag ID",
+              "_title": "Current Apritag ID",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

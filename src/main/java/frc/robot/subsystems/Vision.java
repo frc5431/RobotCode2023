@@ -5,6 +5,7 @@ import frc.robot.Robot;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -65,11 +67,14 @@ public class Vision extends SubsystemBase {
     public void detect() {
         Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(drivebase.getEstimatedPosition());
 
+        
         // SmartDashboard.putBoolean("Has Targets?", camera.getLatestResult().hasTargets());
         // SmartDashboard.putNumberArray("Target IDs", camera.getLatestResult().getTargets().stream().mapToDouble((a) -> (double) a.getFiducialId()).toArray());
 
         if (result.isPresent()) {
             EstimatedRobotPose camPose = result.get();
+
+            SmartDashboard.putString("Current Apritag ID", String.join(" ", camPose.targetsUsed.stream().map((a) -> " " + a.getFiducialId()).collect(Collectors.toList())));
             // System.out.println("Adding vis meas " + camPose.estimatedPose + " w/ " + camPose.targetsUsed.size() + " targets");
             drivebase.addVisionMeasurement(
                     camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
