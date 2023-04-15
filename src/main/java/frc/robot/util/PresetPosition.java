@@ -8,6 +8,7 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.ArmContainer;
 
 /**
@@ -73,6 +74,10 @@ public class PresetPosition {
 
     public Pose2d toPose2d() {
         return new Pose2d(wristPos, Rotation2d.fromDegrees(wrist));
+    }
+
+    public PresetPosition inchesToMeters() {
+        return fromGoal(new Translation2d(Units.inchesToMeters(wristPos.getX()), Units.inchesToMeters(wristPos.getY())), wrist, useTopPossibility);
     }
 
     public static boolean isGoalBackwards(Translation2d t) {

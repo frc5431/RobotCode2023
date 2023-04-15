@@ -1,8 +1,5 @@
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 
@@ -10,9 +7,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ArmTrajectoryCommand;
@@ -35,25 +30,18 @@ public class Constants {
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
 
-    public static final TrajectoryConfig TRAJECTORY_CONFIG = new TrajectoryConfig(1, 0.5);
+    public static final TrajectoryConfig ARM_TRAJECTORY_CONFIG = new TrajectoryConfig(1.5, 1);
+    public static final Translation2d armBackwardsIntermediate = new Translation2d(Units.inchesToMeters(-30.39), Units.inchesToMeters(-24.15));
 
     // Needs to be converted from inches to meters as it is not passed through ArmToGoalCommand.USE_INCHES
     private static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
 
     public static final Command pickupBackCube(Systems systems) {
-        List<Translation2d> intermed = new ArrayList<>();
-        if (!systems.getArm().isGoalBackwards())
-            intermed.add(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58))); // Intermediate pos
-        Trajectory traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), intermed, armBackwardsGroundCube.toPose2d(), TRAJECTORY_CONFIG);
-        return new ArmTrajectoryCommand(systems, traj);
+        return new ArmTrajectoryCommand(systems, armBackwardsGroundCube);
     }
 
     public static final Command stowLowFromBackCube(Systems systems) {
-        List<Translation2d> intermed = new ArrayList<>();
-        if (systems.getArm().isGoalBackwards())
-            intermed.add(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58))); // Intermediate pos
-        Trajectory traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), intermed, armLowCube.toPose2d(), TRAJECTORY_CONFIG);
-        return new ArmTrajectoryCommand(systems, traj);
+        return new ArmTrajectoryCommand(systems, armLowCube.inchesToMeters());
     }
 
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
