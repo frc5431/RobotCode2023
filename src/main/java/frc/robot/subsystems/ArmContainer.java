@@ -43,9 +43,9 @@ public class ArmContainer {
     @SuppressWarnings("unused")
     private final Manipulator manipulator;
 
-    public static final double MAX_SPEED_OUTER = 0.38; // 0.073 to hold at horz
-    public static final double MAX_SPEED_INNER = 0.4;  // 0.18 to hold at horz
-    public static final double MAX_SPEED_WRIST = 0.3;  // 0.064 to hold at horz
+    public static final double MAX_SPEED_OUTER = 0.8; // 0.073 to hold at horz
+    public static final double MAX_SPEED_INNER = 1.0;  // 0.18 to hold at horz
+    public static final double MAX_SPEED_WRIST = 0.5;  // 0.064 to hold at horz
 
     private static final Rotation2d DEG_90 = fromDegrees(90);
     private static final double TORQUE_NM_NEO = 2.6;
