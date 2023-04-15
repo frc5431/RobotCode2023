@@ -1,10 +1,8 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,22 +14,21 @@ import frc.robot.util.PresetPosition;
 public class ArmTrajectoryCommand extends CommandBase {
     Timer elapsedTime = new Timer();
     private Trajectory traj;
-    private final PresetPosition setPos;
+    private final List<PresetPosition> setPos;
+    private final PresetPosition end;
     private final Systems systems;
 
-    public ArmTrajectoryCommand(Systems systems, PresetPosition pos) {
+    public ArmTrajectoryCommand(Systems systems, List<PresetPosition> pos, PresetPosition end) {
         this.systems = systems;
         this.setPos = pos;
+        this.end = end;
         setName("ArmTrajCommand");
         addRequirements(systems.getArm().getAllComponentsForRequirements());
     }
 
     @Override
     public void initialize() {
-        List<Translation2d> intermed = new ArrayList<>();
-        if (systems.getArm().isGoalBackwards() != setPos.isGoalBackwards())
-            intermed.add(Constants.armBackwardsIntermediate); // Intermediate pos
-        traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), intermed, setPos.toPose2d(), Constants.ARM_TRAJECTORY_CONFIG);
+        traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), setPos.stream().map((PresetPosition s) -> s.toPose2d().getTranslation()).toList(), end.toPose2d(), Constants.ARM_TRAJECTORY_CONFIG);
         System.out.println(traj.getStates());
         elapsedTime.restart();
     }

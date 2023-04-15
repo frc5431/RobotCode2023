@@ -8,9 +8,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.ArmTrajectoryCommandFactory;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
@@ -200,8 +202,8 @@ public class RobotContainer {
         //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operatorJoystick.back().onTrue(Constants.pickupBackCube(systems));
-        operatorJoystick.start().onTrue(Constants.stowLowFromBackCube(systems));
+        operatorJoystick.back().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube)));
+        operatorJoystick.start().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube)));
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,

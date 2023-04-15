@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.ArmTrajectoryCommand;
 import frc.robot.util.PresetPosition;
 
 public class Constants {
@@ -34,15 +32,7 @@ public class Constants {
     public static final Translation2d armBackwardsIntermediate = new Translation2d(Units.inchesToMeters(-30.39), Units.inchesToMeters(-24.15));
 
     // Needs to be converted from inches to meters as it is not passed through ArmToGoalCommand.USE_INCHES
-    private static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
-
-    public static final Command pickupBackCube(Systems systems) {
-        return new ArmTrajectoryCommand(systems, armBackwardsGroundCube);
-    }
-
-    public static final Command stowLowFromBackCube(Systems systems) {
-        return new ArmTrajectoryCommand(systems, armLowCube.inchesToMeters());
-    }
+    public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
 
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
     public static final PresetPosition armHighCone = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 286, false);
@@ -55,7 +45,7 @@ public class Constants {
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -23.98), 308, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
-    public static final PresetPosition armToBackIntermediary = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58), 0, false);
+    public static final PresetPosition armToBackIntermediary = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58)), 0, false);
     
     
     // public static final double armBackwardsHighX = -58.35; // -59.7
