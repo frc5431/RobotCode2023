@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.ArmTrajectoryCommandFactory;
 import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
@@ -76,9 +78,9 @@ public class AutonLoader {
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("stowLowCubeAfterBack", Constants.stowLowFromBackCube(systems));
+        eventMap.put("stowLowCubeAfterBack", new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube)));
         eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("armBackwardsGroundCube", Constants.pickupBackCube(systems));
+        eventMap.put("armBackwardsGroundCube", new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube)));
         eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
