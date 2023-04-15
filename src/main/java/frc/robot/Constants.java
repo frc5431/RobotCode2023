@@ -29,7 +29,6 @@ public class Constants {
     public static final double APRILTAG_HEIGHT = 0.59;
 
     public static final TrajectoryConfig ARM_TRAJECTORY_CONFIG = new TrajectoryConfig(1.5, 1);
-    public static final Translation2d armBackwardsIntermediate = new Translation2d(Units.inchesToMeters(-30.39), Units.inchesToMeters(-24.15));
 
     // Needs to be converted from inches to meters as it is not passed through ArmToGoalCommand.USE_INCHES
     public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
@@ -45,7 +44,7 @@ public class Constants {
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -23.98), 308, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
-    public static final PresetPosition armToBackIntermediary = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58)), 0, false);
+    public static final PresetPosition armToBackIntermediary = PresetPosition.fromGoal(new Translation2d(-30.39, -24.15), 0, false);
     
     
     // public static final double armBackwardsHighX = -58.35; // -59.7

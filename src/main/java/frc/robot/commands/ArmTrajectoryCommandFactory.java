@@ -25,7 +25,7 @@ public final class ArmTrajectoryCommandFactory {
      */
     public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
         if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() != systems.getArm().isGoalBackwards()) {
-            return new ArmToGoalCommand(systems, goalPositions.get(0), ArmToGoalCommand.USE_INCHES);
+            return new ArmToGoalCommand(systems, goalPositions.get(0).inchesToMeters(), ArmToGoalCommand.USE_INCHES);
         }
         List<PresetPosition> positions = new ArrayList<>();
         for(int i = 0; i < goalPositions.size(); i++) {
@@ -40,10 +40,10 @@ public final class ArmTrajectoryCommandFactory {
             }
 
             if(pos.isGoalBackwards() != prevPos.isGoalBackwards()) {
-                positions.add(Constants.armToBackIntermediary);
+                positions.add(Constants.armToBackIntermediary.inchesToMeters());
             }
             if(i != goalPositions.size() - 1)
-                positions.add(pos);
+                positions.add(pos.inchesToMeters());
         }
         return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1));
     }
