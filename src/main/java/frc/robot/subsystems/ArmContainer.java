@@ -17,6 +17,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -38,6 +39,7 @@ public class ArmContainer {
     private final ArmComponent outerComponent;
     private final ArmComponent innerComponent;
     private final ArmComponent wristComponent;
+
     @SuppressWarnings("unused")
     private final Manipulator manipulator;
 
@@ -318,6 +320,10 @@ public class ArmContainer {
 
     public Translation2d getWristRobotSpacePosition() {
         return solver.anglesToPos(outerComponent.getPositionRadians(), innerComponent.getPositionRadians());
+    }
+
+    public Pose2d getCurrentPose() {
+        return new Pose2d(getWristRobotSpacePosition(), wristComponent.getPositionRot2d());
     }
 
     public boolean isGoalBackwards() {

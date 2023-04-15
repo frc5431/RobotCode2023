@@ -187,19 +187,21 @@ public class RobotContainer {
 
         // operator.A5().or(operatorJoystick.back()).onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.YELLOW)
         //     .withTimeout(8));
-        operatorJoystick.start().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
-            // .andThen(waitSeconds(8)));
-            .withTimeout(8));
+        // operatorJoystick.start().onTrue(systems.getLeds().ledRunCommand(BlinkinPattern.VIOLET)
+        //     // .andThen(waitSeconds(8)));
+        //     .withTimeout(8));
         // operator.A7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance())
         //     .withTimeout(5));
         // operator.B7().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
         //     .withTimeout(5));
         // operator.C7().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
-            .withTimeout(5));
+        // driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
+        //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
+        operatorJoystick.back().onTrue(Constants.pickupBackCube(systems));
+        operatorJoystick.start().onTrue(Constants.stowLowFromBackCube(systems));
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,
@@ -210,12 +212,12 @@ public class RobotContainer {
         operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high
             new ArmToGoalCommand(
                 systems,
-                Constants.armMid,
+                Constants.armMidCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
                 systems,
-                Constants.armHigh,
+                Constants.armHighCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1)
         ));
@@ -243,7 +245,7 @@ public class RobotContainer {
 
         operatorJoystick.leftBumper().onTrue(new ArmGoalGroup(
             systems,
-            Constants.armSingleSubPickup,
+            Constants.armMidCube,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
@@ -264,17 +266,23 @@ public class RobotContainer {
             Constants.armGroundUprightCone,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
-        
-        // In theory, the top IK possibility would be more optimal for this node. However we cant set the possibility without problems
-        operatorJoystick.x().onTrue(new ArmGoalGroup(
-            systems,
-            Constants.armHigh,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+
+        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high
+            new ArmToGoalCommand(
+                systems,
+                Constants.armMidCone,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.75),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armHighCube,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(1)
         ));
 
         operatorJoystick.povLeft().onTrue(new ArmGoalGroup( // Middle node
             systems,
-            Constants.armMid,
+            Constants.armMidCone,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 

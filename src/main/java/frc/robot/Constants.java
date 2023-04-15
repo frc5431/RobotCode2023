@@ -1,5 +1,8 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 
@@ -7,7 +10,12 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.ArmTrajectoryCommand;
 import frc.robot.util.PresetPosition;
 
 public class Constants {
@@ -27,16 +35,38 @@ public class Constants {
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
 
-    public static final PresetPosition armHigh = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 295, false);
-    public static final PresetPosition armMid = PresetPosition.fromGoal(new Translation2d(18.59, 1.14), 260.6, false);
+    public static final TrajectoryConfig TRAJECTORY_CONFIG = new TrajectoryConfig(1, 0.5);
+
+    // Needs to be converted from inches to meters as it is not passed through ArmToGoalCommand.USE_INCHES
+    private static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
+
+    public static final Command pickupBackCube(Systems systems) {
+        List<Translation2d> intermed = new ArrayList<>();
+        if (!systems.getArm().isGoalBackwards())
+            intermed.add(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58))); // Intermediate pos
+        Trajectory traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), intermed, armBackwardsGroundCube.toPose2d(), TRAJECTORY_CONFIG);
+        return new ArmTrajectoryCommand(systems, traj);
+    }
+
+    public static final Command stowLowFromBackCube(Systems systems) {
+        List<Translation2d> intermed = new ArrayList<>();
+        if (systems.getArm().isGoalBackwards())
+            intermed.add(new Translation2d(Units.inchesToMeters(-29.98), Units.inchesToMeters(-29.58))); // Intermediate pos
+        Trajectory traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), intermed, armLowCube.toPose2d(), TRAJECTORY_CONFIG);
+        return new ArmTrajectoryCommand(systems, traj);
+    }
+
+    public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
+    public static final PresetPosition armHighCone = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 286, false);
+    public static final PresetPosition armHighCube = PresetPosition.fromGoal(armHighCone.getWristPos(), 230, false);
+    public static final PresetPosition armMidCone = PresetPosition.fromGoal(new Translation2d(18.59, 1.14), 260.6, false);
+    public static final PresetPosition armMidCube = PresetPosition.fromGoal(new Translation2d(16.54, -15.7), 303.4, false);
+    public static final PresetPosition armLowCube = PresetPosition.fromGoal(Constants.armStow.getWristPos(), 244, false);
     public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(14.04, -39.07), 36.17, false);
-    public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 255, false);
-    public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -24.56), 311, false);
+    public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 260, false);
+    public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.41, -23.98), 308, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
-    public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
-    public static final PresetPosition armBackwardsIntermediate = PresetPosition.fromGoal(new Translation2d(-28.17, -18.23), 293.9, false);
-    public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(-28.17, -33.79), 294.6, false);
     // public static final double armBackwardsHighX = -58.35; // -59.7
     // public static final double armBackwardsHighY = 12.1; // 3.7
     // public static final double wristBackwardsHighAngle = 12; // 340

@@ -5,9 +5,14 @@ import edu.wpi.first.math.Pair;
 import static edu.wpi.first.math.util.Units.radiansToDegrees;
 import static edu.wpi.first.math.util.Units.degreesToRadians;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.ArmContainer;
 
+/**
+ * Default in inches, IF USED IN ArmToGoalCommand WITH USE_INCHES
+ */
 public class PresetPosition {
     private final double outer;
     private final double inner;
@@ -64,6 +69,10 @@ public class PresetPosition {
 
     public static PresetPosition fromGoal(Translation2d wristPos, double wristDegrees, boolean useTopPossibility) {
         return new PresetPosition(wristPos, wristDegrees, useTopPossibility);
+    }
+
+    public Pose2d toPose2d() {
+        return new Pose2d(wristPos, Rotation2d.fromDegrees(wrist));
     }
 
     public static boolean isGoalBackwards(Translation2d t) {

@@ -23,7 +23,6 @@ import frc.robot.commands.AutobalancerHardcodePID;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.Manipulator.GamePiece;
-import frc.robot.util.PresetPosition;
 
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
@@ -36,6 +35,7 @@ public class AutonLoader {
         "nearTwoGPBal", "nearTwoGPHoldOne",
         "nearConeMidTwoCube",
         "nearThreeCube",
+        "midTwoCubeBal",
         "special", "placeHigh",
         "timedMobility",
         "timedBalance",
@@ -75,8 +75,10 @@ public class AutonLoader {
         eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("stowLowCubeAfterBack", Constants.stowLowFromBackCube(systems));
         eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("armBackwardsGroundCube", new ArmToGoalCommand(systems, Constants.armBackwardsGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armBackwardsGroundCube", Constants.pickupBackCube(systems));
         eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
@@ -124,7 +126,7 @@ public class AutonLoader {
             ).withTimeout(0.5),
             new ArmToGoalCommand(
                 systems,
-                Constants.armHigh,
+                Constants.armHighCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             waitSeconds(0.1),
@@ -141,12 +143,12 @@ public class AutonLoader {
         return sequence(
             new ArmToGoalCommand(
                 systems,
-                Constants.armMid,
+                Constants.armMidCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
                 systems,
-                Constants.armHigh,
+                Constants.armHighCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             waitSeconds(0.1),
@@ -158,7 +160,7 @@ public class AutonLoader {
         return sequence(
             new ArmToGoalCommand(
                 systems,
-                Constants.armMid,
+                Constants.armMidCone,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             waitSeconds(0.1),
@@ -170,7 +172,7 @@ public class AutonLoader {
         return sequence(
             new ArmToGoalCommand(
                 systems,
-                PresetPosition.fromGoal(Constants.armStow.getWristPos(), 244, false),
+                Constants.armLowCube,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.3),
             systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.4)
