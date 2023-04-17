@@ -87,4 +87,9 @@ public class PresetPosition {
     public boolean isGoalBackwards() {
         return isGoalBackwards(wristPos);
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%f, %f) r: %f", wristPos.getX(), wristPos.getY(), wrist);
+    }
 }

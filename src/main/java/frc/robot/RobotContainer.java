@@ -25,11 +25,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.subsystems.Drivebase;
@@ -44,6 +46,7 @@ public class RobotContainer {
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
     // private final Buttonboard operator = new Buttonboard(3, 7, 3);
     private final AutonLoader autonLoader;
+    private final Field2d armField = new Field2d();
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
     // private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
@@ -204,6 +207,7 @@ public class RobotContainer {
 
         operatorJoystick.back().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube)));
         operatorJoystick.start().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube)));
+        operatorJoystick.y().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armMidCone, Constants.armHighCone)));
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,
@@ -356,11 +360,13 @@ public class RobotContainer {
             operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, 0.3);
         else
             operatorJoystick.getHID().setRumble(RumbleType.kLeftRumble, 0.0);
-    }
-
+    }    
     public void robotPeriodic() {
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putData(systems.getArm().getOuter());
+        armField.setRobotPose(new Pose2d(systems.getArm().getGoal().plus(new Translation2d(4.5, 2.2)), systems.getArm().getWrist().getPositionRot2d()));
+        SmartDashboard.putData("Field", armField);
+        systems.getArm().debugPeriodic();
     }
 
     public void teleopInit() {

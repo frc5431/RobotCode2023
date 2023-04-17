@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,8 +29,8 @@ public class ArmTrajectoryCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        traj = TrajectoryGenerator.generateTrajectory(systems.getArm().getCurrentPose(), setPos.stream().map((PresetPosition s) -> s.toPose2d().getTranslation()).toList(), end.toPose2d(), Constants.ARM_TRAJECTORY_CONFIG);
-        System.out.println(traj.getStates());
+        traj = TrajectoryGenerator.generateTrajectory(new Pose2d(systems.getArm().getGoal(), new Rotation2d()), setPos.stream().map((PresetPosition s) -> s.toPose2d().getTranslation()).toList(), end.toPose2d(), Constants.ARM_TRAJECTORY_CONFIG);
+        System.out.println("Starting arm traj with time " + traj.getTotalTimeSeconds());
         elapsedTime.restart();
     }
 
@@ -38,6 +39,7 @@ public class ArmTrajectoryCommand extends CommandBase {
         var state = traj.sample(elapsedTime.get());
         Pose2d set = state.poseMeters;
         systems.getArm().setGoal(set.getTranslation());
+        System.out.println("set: " + set);
         systems.getArm().getWrist().setDegrees(set.getRotation().getDegrees());
     }
 

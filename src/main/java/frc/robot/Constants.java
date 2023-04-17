@@ -28,11 +28,11 @@ public class Constants {
     public static final double LOW_APRILTAG_HEIGHT = 0.36;
     public static final double APRILTAG_HEIGHT = 0.59;
 
-    public static final TrajectoryConfig ARM_TRAJECTORY_CONFIG = new TrajectoryConfig(3, 1.5);
-    public static final Translation2d armBackwardsIntermediate = new Translation2d(Units.inchesToMeters(-30.39), Units.inchesToMeters(-24.15));
+    public static final TrajectoryConfig ARM_TRAJECTORY_CONFIG = new TrajectoryConfig(5, 2.2);
+    public static final Translation2d armBackwardsIntermediate = new Translation2d(-30.39, -24.15);
 
     // Needs to be converted from inches to meters as it is not passed through ArmToGoalCommand.USE_INCHES
-    public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(Units.inchesToMeters(-29.09), Units.inchesToMeters(-33.005)), 306.59, false);
+    public static final PresetPosition armBackwardsGroundCube = PresetPosition.fromGoal(new Translation2d(-29.09, -33.005), 306.59, false);
 
     public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
     public static final PresetPosition armHighCone = PresetPosition.fromGoal(new Translation2d(36.53, 10.37), 286, false);

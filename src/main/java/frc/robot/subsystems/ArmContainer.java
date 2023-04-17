@@ -334,6 +334,30 @@ public class ArmContainer {
         return pose.getX() < IS_BACKWARDS_X;
     }
 
+    Translation2d old_pos = null;
+    double old_speed = 0;
+    double max_speed;
+    double max_acceleration;
+    public void debugPeriodic() {
+        if(old_pos == null) {
+            old_pos = getWristRobotSpacePosition();
+        }
+        double speed =  getWristRobotSpacePosition().getDistance(old_pos) / 0.02;
+        if(max_speed < speed) {
+            max_speed = speed;
+        }
+        if(max_acceleration < (speed - old_speed) / 0.02) {
+            max_acceleration = (speed - old_speed) / 0.02;
+        }
+        SmartDashboard.putNumber("arm spd", speed);
+        SmartDashboard.putNumber("arm accel", (speed - old_speed) / 0.02);
+        SmartDashboard.putNumber("max arm spd", max_speed);
+        SmartDashboard.putNumber("max arm accel", max_acceleration);
+        old_pos = getWristRobotSpacePosition();
+        old_speed = speed;
+
+    }
+
     public class ArmComponent extends SubsystemBase {
         private final CANSparkMax motor;
         private final Optional<CANSparkMax> follow;
@@ -383,7 +407,7 @@ public class ArmContainer {
             this(jointName, segmentName, motor, null, pidConstants, maxSpeed, setter, angle2ground, clamp);
         }
 
-
+        double maxSpeed = 0;
         @Override
         public void periodic() {
             final Rotation2d angle = getPositionRot2d();
@@ -399,7 +423,10 @@ public class ArmContainer {
                 SmartDashboard.putNumber((jointName.charAt(0)+"L").toUpperCase()+" Amps", motor.getOutputCurrent());
                 SmartDashboard.putNumber((jointName.charAt(0)+"F").toUpperCase()+" Amps", follow.get().getOutputCurrent());
             } else SmartDashboard.putNumber(jointName + " amps", motor.getOutputCurrent());
-
+            if(motor.getAppliedOutput() > maxSpeed) {
+                maxSpeed = motor.getAppliedOutput();
+            }
+            SmartDashboard.putNumber(jointName + " max spd", maxSpeed);
             runSetter();
         }
 

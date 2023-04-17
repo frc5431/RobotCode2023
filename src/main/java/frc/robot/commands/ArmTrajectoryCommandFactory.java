@@ -24,8 +24,10 @@ public final class ArmTrajectoryCommandFactory {
      * @return a command that takes you from current position to end position going through all goal positions
      */
     public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
-        if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() != systems.getArm().isGoalBackwards()) {
-            return new ArmToGoalCommand(systems, goalPositions.get(0).inchesToMeters(), ArmToGoalCommand.USE_INCHES);
+        System.out.println(goalPositions);
+
+        if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() == systems.getArm().isGoalBackwards()) {
+            return new ArmToGoalCommand(systems, goalPositions.get(0), ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY);
         }
         List<PresetPosition> positions = new ArrayList<>();
         for(int i = 0; i < goalPositions.size(); i++) {
@@ -38,14 +40,15 @@ public final class ArmTrajectoryCommandFactory {
             }else {
                 prevPos = positions.get(i -1);
             }
-
+            System.out.println(pos.isGoalBackwards() != prevPos.isGoalBackwards());
             if(pos.isGoalBackwards() != prevPos.isGoalBackwards()) {
                 positions.add(Constants.armToBackIntermediary.inchesToMeters());
             }
             if(i != goalPositions.size() - 1)
                 positions.add(pos.inchesToMeters());
         }
-        return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1));
+        System.out.println(positions);
+        return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1).inchesToMeters());
     }
 
 
