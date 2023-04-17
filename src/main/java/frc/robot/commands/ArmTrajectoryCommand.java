@@ -15,7 +15,7 @@ import frc.robot.util.PresetPosition;
 
 public class ArmTrajectoryCommand extends CommandBase {
     Timer elapsedTime = new Timer();
-    private Trajectory traj;
+    private Trajectory traj = null;
     private final PresetPosition setPos;
     private final Systems systems;
 
@@ -47,10 +47,11 @@ public class ArmTrajectoryCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         elapsedTime.stop();
+        traj = null;
     }
 
     @Override
     public boolean isFinished() {
-        return elapsedTime.get() > traj.getTotalTimeSeconds();
+        return traj != null && elapsedTime.get() > traj.getTotalTimeSeconds();
     }
 }
