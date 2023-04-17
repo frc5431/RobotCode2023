@@ -78,9 +78,9 @@ public class AutonLoader {
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("stowLowCubeAfterBack", new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube)));
+        eventMap.put("stowLowCubeAfterBack", ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube));
         eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("armBackwardsGroundCube", new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube)));
+        eventMap.put("armBackwardsGroundCube", ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube));
         eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 

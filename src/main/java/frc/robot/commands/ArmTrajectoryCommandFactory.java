@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Constants;
 import frc.robot.Systems;
 import frc.robot.util.PresetPosition;
@@ -24,32 +25,32 @@ public final class ArmTrajectoryCommandFactory {
      * @return a command that takes you from current position to end position going through all goal positions
      */
     public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
-        System.out.println(goalPositions);
+        return new ProxyCommand(() -> {
+            System.out.println(goalPositions);
 
-        if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() == systems.getArm().isGoalBackwards()) {
-            return new ArmToGoalCommand(systems, goalPositions.get(0), ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY);
-        }
-        List<PresetPosition> positions = new ArrayList<>();
-        for(int i = 0; i < goalPositions.size(); i++) {
-            var pos = goalPositions.get(i);
+            if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() == systems.getArm().isGoalBackwards()) {
+                return new ArmToGoalCommand(systems, goalPositions.get(0), ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY);
+            }
+            List<PresetPosition> positions = new ArrayList<>();
+            for(int i = 0; i < goalPositions.size(); i++) {
+                var pos = goalPositions.get(i);
 
-            // Incorperate Intermediate position if neccisary
-            PresetPosition prevPos;
-            if((i - 1) < 0) {
-                prevPos = PresetPosition.fromGoal(systems.getArm().getCurrentPose().getTranslation(), systems.getArm().getWrist().getPositionDegrees(), false);
-            }else {
-                prevPos = positions.get(i -1);
+                // Incorperate Intermediate position if neccisary
+                PresetPosition prevPos;
+                if((i - 1) < 0) {
+                    prevPos = PresetPosition.fromGoal(systems.getArm().getCurrentPose().getTranslation(), systems.getArm().getWrist().getPositionDegrees(), false);
+                }else {
+                    prevPos = positions.get(i -1);
+                }
+                System.out.println(pos.isGoalBackwards() != prevPos.isGoalBackwards());
+                if(pos.isGoalBackwards() != prevPos.isGoalBackwards()) {
+                    positions.add(Constants.armToBackIntermediate.inchesToMeters());
+                }
+                if(i != goalPositions.size() - 1)
+                    positions.add(pos.inchesToMeters());
             }
-            System.out.println(pos.isGoalBackwards() != prevPos.isGoalBackwards());
-            if(pos.isGoalBackwards() != prevPos.isGoalBackwards()) {
-                positions.add(Constants.armToBackIntermediary.inchesToMeters());
-            }
-            if(i != goalPositions.size() - 1)
-                positions.add(pos.inchesToMeters());
-        }
-        System.out.println(positions);
-        return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1).inchesToMeters());
+            System.out.println(positions);
+            return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1).inchesToMeters());
+        });
     }
-
-
 }

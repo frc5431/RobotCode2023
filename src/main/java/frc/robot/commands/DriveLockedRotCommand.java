@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -8,6 +9,7 @@ import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.misc.Logger;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -18,16 +20,21 @@ public class DriveLockedRotCommand extends CommandBase {
     private final DoubleSupplier m_translationYSupplier;
     private final double gyroAngle;
 
+    private final BooleanSupplier isManualRotating;
+
     private PIDController rotController = new PIDController(6.0, 0.0, 0.0);
 
     public DriveLockedRotCommand(Systems systems,
                                DoubleSupplier translationXSupplier,
                                DoubleSupplier translationYSupplier,
-                               double gyroAngle) {
+                               double gyroAngle,
+                               BooleanSupplier isManualRotating) {
+        this.isManualRotating = isManualRotating;
         this.m_drivetrainSubsystem = systems.getDrivebase();
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
         this.gyroAngle = gyroAngle;
+
 
         addRequirements(m_drivetrainSubsystem);
         setName("DefaultDriveCommand");
@@ -35,20 +42,23 @@ public class DriveLockedRotCommand extends CommandBase {
 
     public DriveLockedRotCommand(Systems systems,
                                Supplier<Pair<Double, Double>> magThetaSupplier,
-                               double gyroAngle) {
+                               double gyroAngle,
+                               BooleanSupplier isManualRotating) {
         this(
             systems,
             () -> magThetaSupplier.get().getFirst() * Math.cos(magThetaSupplier.get().getSecond()),
             () -> magThetaSupplier.get().getFirst() * Math.sin(magThetaSupplier.get().getSecond()),
-            gyroAngle
+            gyroAngle,
+            isManualRotating
         );
     }
 
     @Override
     public void initialize() {
         Logger.l("Going to rot " + gyroAngle);
-        rotController = new PIDController(6.0, 0.0, 0.0);
-        rotController.setTolerance(5, 2);
+        rotController = new PIDController(0.12, 0.12, 0.012);
+        rotController.setTolerance(1, 2);
+        rotController.enableContinuousInput(0, 360);
         rotController.setSetpoint(gyroAngle);
     }
 
@@ -57,6 +67,8 @@ public class DriveLockedRotCommand extends CommandBase {
         double x = m_translationXSupplier.getAsDouble();
         double y = m_translationYSupplier.getAsDouble();
         double rot = rotController.calculate(m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+
+        rot = MathUtil.clamp(rot, -Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
         m_drivetrainSubsystem.drive(
@@ -77,6 +89,6 @@ public class DriveLockedRotCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return rotController.atSetpoint();
+        return rotController.atSetpoint() || isManualRotating.getAsBoolean();
     }
 }

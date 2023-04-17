@@ -14,12 +14,15 @@ import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.ArmTrajectoryCommandFactory;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DriveLockedRotCommand;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -171,7 +174,7 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Y button zeros the gyroscope
-        driver.y().onTrue(runOnce(drivebase::zeroGyroscope));
+        driver.back().onTrue(runOnce(drivebase::zeroGyroscope));
 
         // D-Pad cardinal directions
         driver.povUp().whileTrue(run(
@@ -183,6 +186,23 @@ public class RobotContainer {
         driver.povRight().whileTrue(run(
                 () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
+
+        Supplier<Pair<Double, Double>> defaultDrive = () -> {
+            double inX = -driver.getLeftY(); // swap intended
+            double inY = -driver.getLeftX();
+            double mag = Math.hypot(inX, inY);
+            double theta = Math.atan2(inY, inX);
+            return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
+        };
+
+        BooleanSupplier isManualAdjustment = () -> {
+            return modifyAxis(-driver.getRightX()) != 0;
+        };
+
+        driver.a().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 180, isManualAdjustment));
+        driver.b().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 270, isManualAdjustment));
+        driver.x().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 90, isManualAdjustment));
+        driver.y().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 0, isManualAdjustment));
         // driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().setPositive()));
         // driver.rightBumper().onTrue(systems.getManipulator().manipRunCommand(GamePiece.CONE, true));
 
@@ -205,9 +225,9 @@ public class RobotContainer {
         //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operatorJoystick.back().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube)));
-        operatorJoystick.start().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube)));
-        operatorJoystick.y().onTrue(new ProxyCommand(() -> ArmTrajectoryCommandFactory.procure(systems, Constants.armMidCone, Constants.armHighCone)));
+        operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.armBackwardsGroundCube));
+        operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.armLowCube));
+        operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.armHighIntermediate, Constants.armHighCone));
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,

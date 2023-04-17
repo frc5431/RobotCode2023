@@ -149,7 +149,7 @@ public class ArmContainer {
             spark.burnFlash();
         });
 
-        outerComponent = new ArmComponent("shoulder", "bicep", outerArmLeft, outerArmRight, new MotionMagic(0.5, 0.0, 0.0, 0.0), MAX_SPEED_OUTER, (component) -> {
+        outerComponent = new ArmComponent("shoulder", "bicep", outerArmLeft, outerArmRight, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_OUTER, (component) -> {
             Rotation2d ba2g = component.angle2Ground.apply(fromRadians(component.getSetpointRadians()));
             double arbFF = getShoulderCosMult() * ba2g.getCos() / SHOULDER_TORQUE_TOTAL;
 
@@ -158,7 +158,7 @@ public class ArmContainer {
             SmartDashboard.putNumber("shoulder arbff", arbFF);
         }, (bicepAngle) -> calcBicepAngleToGround(bicepAngle), Pair.of(-Math.PI, Math.PI));
 
-        innerComponent = new ArmComponent("elbow", "forearm", innerArmRight, innerArmLeft, new MotionMagic(1.0, 0.0, 0.0, 0.0), MAX_SPEED_INNER, (component) -> {
+        innerComponent = new ArmComponent("elbow", "forearm", innerArmRight, innerArmLeft, new MotionMagic(1.5, 0.0, 0.01, 0.0), MAX_SPEED_INNER, (component) -> {
             Rotation2d fa2g = component.angle2Ground.apply(fromRadians(component.getSetpointRadians()));
             double arbFF = -getElbowCosMult() * fa2g.getCos() / FOREARM_TORQUE_TOTAL;
 
@@ -167,7 +167,7 @@ public class ArmContainer {
             SmartDashboard.putNumber("elbow arbff", arbFF);
         }, (forearmAngle) -> calcForearmAngleToGround(outerComponent.getPositionRot2d(), forearmAngle), Pair.of(-Math.PI+0.3, Math.PI-0.3));
 
-        wristComponent = new ArmComponent("wrist", "hand", wrist, new MotionMagic(0.3, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
+        wristComponent = new ArmComponent("wrist", "hand", wrist, new MotionMagic(0.4, 0.0, 0.0, 0.0), MAX_SPEED_WRIST, (component) -> {
             Rotation2d wa2g = component.angle2Ground.apply(fromRadians(component.getSetpointRadians()));
             double arbFF = getWristCosMult() * wa2g.getCos() / WRIST_TORQUE_TOTAL;
 

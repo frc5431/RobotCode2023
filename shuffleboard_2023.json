@@ -822,7 +822,7 @@
               "_showGlyph": false
             }
           },
-          "5,1": {
+          "7,1": {
             "size": [
               1,
               1
@@ -851,7 +851,7 @@
           "20,0": {
             "size": [
               1,
-              2
+              1
             ],
             "content": {
               "_type": "Text View",
@@ -876,7 +876,8 @@
               "Visuals/Robot Icon Size": 50.0,
               "Visuals/Show Outside Circles": false,
               "Colors/TargetPose": "#FFFFFFFF",
-              "Colors/ActiveTrajectory": "#FFFFFFFF"
+              "Colors/ActiveTrajectory": "#FFFFFFFF",
+              "Colors/Cam Est Pos": "#FFFFFFFF"
             }
           },
           "10,8": {
@@ -919,6 +920,97 @@
               "Game/Game": "A2021_Slalom_Path",
               "Visuals/Robot Icon Size": 50.0,
               "Visuals/Show Outside Circles": true
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/shoulder max spd",
+              "_title": "shoulder max spd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "14,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/elbow max spd",
+              "_title": "elbow max spd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "15,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist max spd",
+              "_title": "wrist max spd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/arm spd",
+              "_title": "arm spd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/arm accel",
+              "_title": "arm accel",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/max arm spd",
+              "_title": "max arm spd",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "4,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/max arm accel",
+              "_title": "max arm accel",
+              "_glyph": 148,
+              "_showGlyph": false
             }
           }
         }
