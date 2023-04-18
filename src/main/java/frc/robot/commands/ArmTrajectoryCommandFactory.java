@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Constants;
@@ -18,13 +19,21 @@ public final class ArmTrajectoryCommandFactory {
         return procure(systems, Stream.of(goalPositions).toList());
     }
 
+    public static Command procure(Systems systems, TrajectoryConfig config, PresetPosition... goalPositions) {
+        return procure(systems, Stream.of(goalPositions).toList(), config);
+    }
+
+    public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
+        return procure(systems, goalPositions, Constants.ARM_TRAJECTORY_CONFIG);
+    }
+
     /**
      * 
      * @param systems
      * @param goalPositions A list of goal positions in inches
      * @return a command that takes you from current position to end position going through all goal positions
      */
-    public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
+    public static Command procure(Systems systems, List<PresetPosition> goalPositions, TrajectoryConfig config) {
         return new ProxyCommand(() -> {
             System.out.println(goalPositions);
 
@@ -50,7 +59,7 @@ public final class ArmTrajectoryCommandFactory {
                     positions.add(pos.inchesToMeters());
             }
             System.out.println(positions);
-            return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1).inchesToMeters());
+            return new ArmTrajectoryCommand(systems, positions, goalPositions.get(goalPositions.size() - 1).inchesToMeters(), config);
         });
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,11 +19,17 @@ public class ArmTrajectoryCommand extends CommandBase {
     private final List<PresetPosition> setPos;
     private final PresetPosition end;
     private final Systems systems;
+    private final TrajectoryConfig config;
 
     public ArmTrajectoryCommand(Systems systems, List<PresetPosition> pos, PresetPosition end) {
+        this(systems, pos, end, Constants.ARM_TRAJECTORY_CONFIG);
+    }
+
+    public ArmTrajectoryCommand(Systems systems, List<PresetPosition> pos, PresetPosition end, TrajectoryConfig config) {
         this.systems = systems;
         this.setPos = pos;
         this.end = end;
+        this.config = config;
         setName("ArmTrajCommand");
         addRequirements(systems.getArm().getAllComponentsForRequirements());
     }
@@ -33,7 +40,7 @@ public class ArmTrajectoryCommand extends CommandBase {
             new Pose2d(systems.getArm().getGoal(), new Rotation2d()),
             setPos.stream().map((PresetPosition s) -> s.toPose2d().getTranslation()).toList(),
             end.toPose2d(),
-            Constants.ARM_TRAJECTORY_CONFIG);
+            config);
         System.out.println("Starting arm traj with time " + traj.getTotalTimeSeconds());
         elapsedTime.restart();
     }

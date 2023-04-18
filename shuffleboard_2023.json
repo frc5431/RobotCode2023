@@ -76,19 +76,6 @@
               "_showGlyph": false
             }
           },
-          "18,2": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/DT O rot",
-              "_title": "DT O rot",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "10,2": {
             "size": [
               2,
@@ -908,8 +895,8 @@
           },
           "4,2": {
             "size": [
-              6,
-              5
+              5,
+              4
             ],
             "content": {
               "_type": "Field",
@@ -1009,6 +996,19 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/max arm accel",
               "_title": "max arm accel",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DT O rot",
+              "_title": "DT O rot",
               "_glyph": 148,
               "_showGlyph": false
             }
