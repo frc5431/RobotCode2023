@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.introspect.AccessorNamingStrategy.Provider;
@@ -25,14 +26,15 @@ public final class ArmTrajectoryCommandFactory {
     public static Command procure(Systems systems, TrajectoryConfig config, PresetPosition... goalPositions) {
         return procure(systems, Stream.of(goalPositions).toList(), config);
     }
-
-    public static Command procure(Systems systems, TrajectoryConfig config, Future<PresetPosition>... goalPositions) {
+    
+    @SafeVarargs
+    public static Command procure(Systems systems, TrajectoryConfig config,  Supplier<PresetPosition>... goalPositions) {
         List<PresetPosition> poses = new ArrayList<>();
         for(var pose : goalPositions) {
             try {
                 poses.add(pose.get());
             }catch(Exception ignored) {
-                
+                System.out.println("test action attempted before futures could be resolved.");
             }
         }
         return procure(systems, poses, config);
