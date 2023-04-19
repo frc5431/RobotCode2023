@@ -2,11 +2,8 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.introspect.AccessorNamingStrategy.Provider;
 
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,7 +23,7 @@ public final class ArmTrajectoryCommandFactory {
     public static Command procure(Systems systems, TrajectoryConfig config, PresetPosition... goalPositions) {
         return procure(systems, Stream.of(goalPositions).toList(), config);
     }
-    
+
     @SafeVarargs
     public static Command procure(Systems systems, TrajectoryConfig config,  Supplier<PresetPosition>... goalPositions) {
         List<PresetPosition> poses = new ArrayList<>();
