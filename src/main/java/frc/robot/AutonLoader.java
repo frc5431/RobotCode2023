@@ -70,19 +70,20 @@ public class AutonLoader {
         eventMap.put("coneIntake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, true));
         eventMap.put("coneOuttake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, false));
         eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
-        eventMap.put("placeHigh", placeHigh().asProxy());
-        eventMap.put("placeMidCone", placeMidCone().asProxy());
-        eventMap.put("placeLowCube", placeLowCube().asProxy());
+        eventMap.put("placeHigh", placeHigh());
+        eventMap.put("placeMidCone", placeMidCone());
+        eventMap.put("placeLowCube", placeLowCube());
         // eventMap.put("placeHigh", none());
-        eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE).asProxy());
-        eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE).asProxy());
-        eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY).asProxy());
-        eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY).asProxy());
+        eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
+        eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
+        eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armlowcone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("stowLowCubeAfterBack", (ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube)));
-        eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY).asProxy());
+        eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("armBackwardsGroundCube", (ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armBackwardsGroundCube)));
-        eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY).asProxy());
-        eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY).asProxy());
+        eventMap.put("armGroundUprightCone", new ArmToGoalCommand(systems, Constants.armGroundUprightCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
+        eventMap.put("armGroundTippedCone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
         autoBuilder = new SwerveAutoBuilder(
                 drivebase::getEstimatedPosition,

@@ -31,7 +31,8 @@ public class ArmTrajectoryCommand extends CommandBase {
         this.end = end;
         this.config = config;
         setName("ArmTrajCommand");
-        addRequirements(systems.getArm().getAllComponentsForRequirements());
+        
+        //addRequirements(systems.getArm().getAllComponentsForRequirements());
     }
 
     @Override

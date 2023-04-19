@@ -227,7 +227,7 @@ public class RobotContainer {
 
         operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armBackwardsGroundCube));
         operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
-        operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armHighIntermediate, Constants.armHighCone));
+        operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, Constants.armHighIntermediate, Constants.armHighCone));
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,
