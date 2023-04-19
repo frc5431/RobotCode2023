@@ -72,6 +72,10 @@ public class PresetPosition {
         return new PresetPosition(wristPos, wristDegrees, useTopPossibility);
     }
 
+    public static PresetPosition fromPose(Pose2d pose, boolean useTopPossibility) {
+        return fromGoal(pose.getTranslation(), pose.getRotation().getDegrees(), useTopPossibility);
+    }
+
     public Pose2d toPose2d() {
         return new Pose2d(wristPos, Rotation2d.fromDegrees(wrist));
     }

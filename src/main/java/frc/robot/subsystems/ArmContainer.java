@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.KinematicsSolver;
+import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.misc.Calc;
 import frc.team5431.titan.core.robot.MotionMagic;
 
@@ -95,6 +96,8 @@ public class ArmContainer {
         Units.inchesToMeters(3); // 3.5
 
     private final List<CANSparkMax> sparks;
+
+    private PresetPosition intermediatePosition;
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -177,6 +180,17 @@ public class ArmContainer {
             SmartDashboard.putNumber("wrist setdeg", component.getSetpointDegrees());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(3.85-2*Math.PI, Units.degreesToRadians(328)));
+
+
+        
+    }
+
+    public void setIntermediatePosition() {
+        intermediatePosition = PresetPosition.fromPose(getCurrentPose(), false);
+    }
+
+    public PresetPosition getIntermediatePostion() {
+        return intermediatePosition;
     }
 
     public ArmComponent getOuter() {
