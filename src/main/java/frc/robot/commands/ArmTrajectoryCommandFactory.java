@@ -37,7 +37,7 @@ public final class ArmTrajectoryCommandFactory {
         return new ProxyCommand(() -> {
             System.out.println(goalPositions);
 
-            if(goalPositions.size() == 1 && goalPositions.get(0).isGoalBackwards() == systems.getArm().isGoalBackwards()) {
+            if(goalPositions.size() == 1 && goalPositions.get(0).inchesToMeters().isGoalBackwards() == systems.getArm().isGoalBackwards()) {
                 return new ArmToGoalCommand(systems, goalPositions.get(0), ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY);
             }
             List<PresetPosition> positions = new ArrayList<>();
