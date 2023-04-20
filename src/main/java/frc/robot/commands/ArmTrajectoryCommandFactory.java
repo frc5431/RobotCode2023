@@ -32,7 +32,7 @@ public final class ArmTrajectoryCommandFactory {
                 try {
                     poses.add(poseSupp.get());
                 } catch(Exception ignored) {
-                    System.out.println("test action attempted before futures could be resolved.");
+                    System.out.println("test action attempted before supplier result could be resolved.");
                 }
             }
             return procure(systems, poses, config);
