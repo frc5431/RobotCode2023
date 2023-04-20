@@ -206,7 +206,7 @@ public class AutonLoader {
 
     public Command getAuto(String pathName) {
         if (pathName.equals("none")) return runOnce(() -> drivebase.resetGyroAt(180));
-        if (pathName.equals("placeHighCube")) return runOnce(() -> drivebase.resetGyroAt(180))
+        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180))
             .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
             .andThen(placeHighCube());
         if (pathName.equals("timedMobility")) return runOnce(() -> drivebase.resetGyroAt(180))
