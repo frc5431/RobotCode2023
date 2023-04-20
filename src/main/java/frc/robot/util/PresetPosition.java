@@ -84,6 +84,10 @@ public class PresetPosition {
         return fromGoal(new Translation2d(Units.inchesToMeters(wristPos.getX()), Units.inchesToMeters(wristPos.getY())), wrist, useTopPossibility);
     }
 
+    public PresetPosition metersToInches() {
+        return fromGoal(new Translation2d(Units.metersToInches(wristPos.getX()), Units.metersToInches(wristPos.getY())), wrist, useTopPossibility);
+    }
+
     public static boolean isGoalBackwards(Translation2d t) {
         return t.getX() < ArmContainer.IS_BACKWARDS_X;
     }

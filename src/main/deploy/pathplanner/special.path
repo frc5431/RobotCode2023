@@ -44,7 +44,7 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "placeHigh"
+          "placeHighCone"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

@@ -224,7 +224,7 @@ public class RobotContainer {
         //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        // operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armBackwardsGroundCube));
+        operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
         // operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
         operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
 

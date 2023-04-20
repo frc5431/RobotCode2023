@@ -184,7 +184,7 @@ public class ArmContainer {
     }
 
     public void setIntermediatePosition() {
-        intermediateHighPosition = PresetPosition.fromPose(getCurrentPose(), false);
+        intermediateHighPosition = PresetPosition.fromGoal(goalPose, wristComponent.getPositionDegrees(), false).metersToInches();
     }
 
     public PresetPosition getIntermediatePostion() {
@@ -368,6 +368,7 @@ public class ArmContainer {
         old_pos = getWristRobotSpacePosition();
         old_speed = speed;
 
+        SmartDashboard.putString("high intermed", intermediateHighPosition.toString());
     }
 
     public class ArmComponent extends SubsystemBase {

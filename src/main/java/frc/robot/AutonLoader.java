@@ -37,6 +37,7 @@ public class AutonLoader {
         "nearConeMidTwoCube",
         "nearThreeCube",
         "midTwoCubeBal",
+        "nearThrowCube",
         "special", "placeHigh",
         "timedMobility",
         "timedBalance",
@@ -69,10 +70,11 @@ public class AutonLoader {
         eventMap.put("coneIntake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, true));
         eventMap.put("coneOuttake", systems.getManipulator().manipRunOnceCommand(GamePiece.CONE, false));
         eventMap.put("autoBalance", new AutobalancerHardcodePID(systems));
-        eventMap.put("placeHigh", placeHigh());
+        eventMap.put("placeHighCone", placeHighCone());
+        eventMap.put("placeHighCube", placeHighCube());
         eventMap.put("placeMidCone", placeMidCone());
         eventMap.put("placeLowCube", placeLowCube());
-        // eventMap.put("placeHigh", none());
+        // eventMap.put("placeHighCone", none());
         eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
@@ -118,7 +120,7 @@ public class AutonLoader {
         });
     }
 //s
-    public Command placeHigh() {
+    public Command placeHighCone() {
         return sequence(
             new ArmToGoalCommand(
                 systems,
@@ -128,6 +130,28 @@ public class AutonLoader {
             new ArmToGoalCommand(
                 systems,
                 Constants.armHighCone,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(1),
+            waitSeconds(0.1),
+            new DriveCommand(systems, new ChassisSpeeds(-1.0, 0, 0)).withTimeout(0.75),
+            systems.getManipulator().manipRunCommand(GamePiece.CUBE, false).withTimeout(0.5),
+            new DriveCommand(systems, new ChassisSpeeds(1.0, 0, 0)).withTimeout(0.5),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armStow,
+                ArmToGoalCommand.USE_INCHES)
+        );
+    }
+    public Command placeHighCube() {
+        return sequence(
+            new ArmToGoalCommand(
+                systems,
+                Constants.armWhileTraveling,
+                ArmToGoalCommand.USE_INCHES
+            ).withTimeout(0.5),
+            new ArmToGoalCommand(
+                systems,
+                Constants.armHighCube,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1),
             waitSeconds(0.1),
@@ -182,16 +206,16 @@ public class AutonLoader {
 
     public Command getAuto(String pathName) {
         if (pathName.equals("none")) return runOnce(() -> drivebase.resetGyroAt(180));
-        if (pathName.equals("placeHigh")) return runOnce(() -> drivebase.resetGyroAt(180))
+        if (pathName.equals("placeHighCube")) return runOnce(() -> drivebase.resetGyroAt(180))
             .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
-            .andThen(placeHigh());
+            .andThen(placeHighCube());
         if (pathName.equals("timedMobility")) return runOnce(() -> drivebase.resetGyroAt(180))
             .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
-            .andThen(placeHigh())
+            .andThen(placeHighCube())
             .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(3));
         if (pathName.equals("timedBalance")) return runOnce(() -> drivebase.resetGyroAt(180))
             .andThen(systems.getManipulator().manipRunOnceCommand(GamePiece.CUBE, true))
-            .andThen(placeHigh())
+            .andThen(placeHighCube())
             .andThen(new DriveCommand(systems, new ChassisSpeeds(2.0, 0, 0)).withTimeout(1.2))
             .andThen(new AutobalancerHardcodePID(systems));
 
