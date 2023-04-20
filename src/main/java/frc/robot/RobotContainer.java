@@ -235,10 +235,10 @@ public class RobotContainer {
         //     ArmToGoalCommand.USE_INCHES)));
 
 
-        operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high
+        operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high cone
             new ArmToGoalCommand(
                 systems,
-                Constants.armMidCone,
+                Constants.armHighIntermediateOld,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
@@ -293,10 +293,10 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high
+        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high cube
             new ArmToGoalCommand(
                 systems,
-                Constants.armMidCone,
+                Constants.armHighIntermediateOld,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
