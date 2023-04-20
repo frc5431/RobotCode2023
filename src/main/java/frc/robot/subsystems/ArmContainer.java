@@ -181,9 +181,6 @@ public class ArmContainer {
             SmartDashboard.putNumber("wrist setdeg", component.getSetpointDegrees());
             SmartDashboard.putNumber("wrist arbff", arbFF);
         }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(3.85-2*Math.PI, Units.degreesToRadians(328)));
-
-
-        
     }
 
     public void setIntermediatePosition() {
