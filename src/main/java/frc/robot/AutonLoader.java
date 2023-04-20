@@ -76,7 +76,6 @@ public class AutonLoader {
         eventMap.put("placeHighAdjacentCone", placeHighNoDrive(GamePiece.CONE));
         eventMap.put("placeHighAdjacentCube", placeHighNoDrive(GamePiece.CUBE));
         eventMap.put("stow", new ArmToGoalCommand(systems, Constants.armStow, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
-        eventMap.put("armlowcone", new ArmToGoalCommand(systems, Constants.armGroundTippedCone, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("stowLowCube", new ArmToGoalCommand(systems, Constants.armLowCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
         eventMap.put("stowLowCubeAfterBack", (ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube)));
         eventMap.put("armGroundCube", new ArmToGoalCommand(systems, Constants.armGroundCube, ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
@@ -145,7 +144,7 @@ public class AutonLoader {
         return sequence(
             new ArmToGoalCommand(
                 systems,
-                Constants.armMidCone,
+                Constants.armHighIntermediateOld,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
