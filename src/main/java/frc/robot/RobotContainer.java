@@ -8,7 +8,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
@@ -313,7 +312,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.start().onTrue(new InstantCommand( () -> systems.getArm().setIntermediatePosition() ));
+        operatorJoystick.start().onTrue(runOnce(systems.getArm()::setIntermediatePosition));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));

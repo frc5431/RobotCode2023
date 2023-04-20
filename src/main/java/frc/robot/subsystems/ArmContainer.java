@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.KinematicsSolver;
 import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.misc.Calc;
@@ -97,7 +98,7 @@ public class ArmContainer {
 
     private final List<CANSparkMax> sparks;
 
-    private PresetPosition intermediatePosition;
+    private PresetPosition intermediateHighPosition = Constants.armHighIntermediate; // default to existing high intermed
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -186,11 +187,11 @@ public class ArmContainer {
     }
 
     public void setIntermediatePosition() {
-        intermediatePosition = PresetPosition.fromPose(getCurrentPose(), false);
+        intermediateHighPosition = PresetPosition.fromPose(getCurrentPose(), false);
     }
 
     public PresetPosition getIntermediatePostion() {
-        return intermediatePosition;
+        return intermediateHighPosition;
     }
 
     public ArmComponent getOuter() {

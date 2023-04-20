@@ -25,16 +25,18 @@ public final class ArmTrajectoryCommandFactory {
     }
 
     @SafeVarargs
-    public static Command procure(Systems systems, TrajectoryConfig config,  Supplier<PresetPosition>... goalPositions) {
-        List<PresetPosition> poses = new ArrayList<>();
-        for(var pose : goalPositions) {
-            try {
-                poses.add(pose.get());
-            }catch(Exception ignored) {
-                System.out.println("test action attempted before futures could be resolved.");
+    public static Command procure(Systems systems, TrajectoryConfig config, Supplier<PresetPosition>... goalPositions) {
+        return new ProxyCommand(() -> {
+            List<PresetPosition> poses = new ArrayList<>();
+            for (var poseSupp : goalPositions) {
+                try {
+                    poses.add(poseSupp.get());
+                } catch(Exception ignored) {
+                    System.out.println("test action attempted before futures could be resolved.");
+                }
             }
-        }
-        return procure(systems, poses, config);
+            return procure(systems, poses, config);
+        });
     }
 
     public static Command procure(Systems systems, List<PresetPosition> goalPositions) {
