@@ -24,7 +24,7 @@ public class Systems {
     public Systems() {
         drivebase = new Drivebase();
         if(Robot.isReal()) {
-            vision = new Vision(drivebase); 
+            // vision = new Vision(drivebase); 
         }
         leds = new Blinkin(0, BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
 
