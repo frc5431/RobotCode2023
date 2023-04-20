@@ -43,7 +43,7 @@ public class Constants {
     public static final PresetPosition armHighIntermediateOld = PresetPosition.fromGoal(new Translation2d(18.59, 1.14), 260.6, false);
     public static final PresetPosition armMidCube = PresetPosition.fromGoal(new Translation2d(16.54, -15.7), 303.4, false);
     public static final PresetPosition armLowCube = PresetPosition.fromGoal(Constants.armStow.getWristPos(), 244, false);
-    public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(7.94, -38.64), 36.17, false);
+    public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(13.05, -39.55), 40.74, false);
     public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 260, false);
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(4.95, -29.28), 355, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
