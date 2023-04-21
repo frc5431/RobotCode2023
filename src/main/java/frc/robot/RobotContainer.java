@@ -226,7 +226,7 @@ public class RobotContainer {
 
         operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
         // operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
-        operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
+        // operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
 
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
@@ -271,7 +271,7 @@ public class RobotContainer {
 
         operatorJoystick.leftBumper().onTrue(new ArmGoalGroup(
             systems,
-            Constants.armMidCube,
+            Constants.armDoubleSubPickup,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
@@ -304,6 +304,12 @@ public class RobotContainer {
                 Constants.armHighCube,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(1)
+        ));
+
+        operatorJoystick.y().onTrue(new ArmToGoalCommand( // Double sub
+            systems,
+            Constants.armMidCube,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
         operatorJoystick.povLeft().onTrue(new ArmGoalGroup( // Middle node

@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 
 public class Manipulator extends SubsystemBase {
-    private static final double INTAKE_SPEED = 0.6;
+    private static final double INTAKE_SPEED = 0.8;
     private final CANSparkMax motor;
 
     public static enum MotorDirection { FORWARD, REVERSE, NONE; }
@@ -21,8 +21,8 @@ public class Manipulator extends SubsystemBase {
     public Manipulator(CANSparkMax motor) {
         motor.restoreFactoryDefaults();
         motor.clearFaults();
-        motor.setInverted(false);
-        motor.setSmartCurrentLimit(40, 20);
+        motor.setInverted(true);
+        motor.setSmartCurrentLimit(40, 30);
         motor.setOpenLoopRampRate(0.2);
         motor.burnFlash();
         motor.set(0);
