@@ -1024,6 +1024,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "21,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/wrist pid error",
+              "_title": "wrist pid error",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "22,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/pressure",
+              "_title": "pressure",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
