@@ -36,7 +36,7 @@ public class Constants {
     public static final PresetPosition armHighIntermediate = PresetPosition.fromGoal(new Translation2d(28.21, 6.09), 0, false);
     public static final PresetPosition armToBackIntermediate = PresetPosition.fromGoal(new Translation2d(-30.39, -16.15), 0, false);
 
-    public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(2.49, -19.85), 305, false);
+    public static final PresetPosition armStow = PresetPosition.fromGoal(new Translation2d(-2.05, -25.55), 323.12, false);
     public static final PresetPosition armHighCone = PresetPosition.fromGoal(new Translation2d(40.1, 9), 312.2, false);
     public static final PresetPosition armHighCube = PresetPosition.fromGoal(armHighCone.getWristPos(), 230, false);
     public static final PresetPosition armMidCone = PresetPosition.fromGoal(new Translation2d(23.08, -1.19), 284, false);
@@ -45,9 +45,11 @@ public class Constants {
     public static final PresetPosition armLowCube = PresetPosition.fromGoal(Constants.armStow.getWristPos(), 244, false);
     public static final PresetPosition armGroundTippedCone = PresetPosition.fromGoal(new Translation2d(13.05, -38.25), 33, false);
     public static final PresetPosition armGroundCube = PresetPosition.fromGoal(new Translation2d(9.07, -30.05), 260, false);
+    public static final PresetPosition armGroundCubeWithin = PresetPosition.fromGoal(new Translation2d(-.4, -33.78), 312.94, false);
     public static final PresetPosition armGroundUprightCone = PresetPosition.fromGoal(new Translation2d(3.58, -22.59), 290, false);
     public static final PresetPosition armSingleSubPickup = PresetPosition.fromGoal(new Translation2d(20.694, -7.11), 345.2, false);
     public static final PresetPosition armDoubleSubPickup = PresetPosition.fromGoal(new Translation2d(26.426, -0.59), 297.47, false);
+    public static final PresetPosition armDoubleSubStandingPickup = PresetPosition.fromGoal(new Translation2d(38.75, 13.62), 245.85, false);
     public static final PresetPosition armWhileTraveling = PresetPosition.fromGoal(new Translation2d(8.54, -5.73), 259, false);
     
     // public static final double armBackwardsHighX = -58.35; // -59.7
