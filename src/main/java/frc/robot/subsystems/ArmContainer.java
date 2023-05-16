@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.util.KinematicsSolver;
 import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.misc.Calc;
+import frc.team5431.titan.core.misc.KinematicsSolver;
 import frc.team5431.titan.core.robot.MotionMagic;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
