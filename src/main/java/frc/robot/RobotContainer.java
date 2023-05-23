@@ -224,9 +224,10 @@ public class RobotContainer {
         //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
 
-        operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armBackwardsGroundCube));
-        operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
-        operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, Constants.armHighIntermediate, Constants.armHighCone));
+        //operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
+        // operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
+        // operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
+
         // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,
@@ -234,10 +235,10 @@ public class RobotContainer {
         //     ArmToGoalCommand.USE_INCHES)));
 
 
-        operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high
+        operatorJoystick.povRight().onTrue(new SequentialCommandGroup( // Assisted high cone
             new ArmToGoalCommand(
                 systems,
-                Constants.armMidCone,
+                Constants.armHighIntermediateOld,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
@@ -270,7 +271,19 @@ public class RobotContainer {
 
         operatorJoystick.leftBumper().onTrue(new ArmGoalGroup(
             systems,
-            Constants.armMidCube,
+            Constants.armDoubleSubPickup,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operatorJoystick.start().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armDoubleSubStandingPickup,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
+        operatorJoystick.back().onTrue(new ArmGoalGroup(
+            systems,
+            Constants.armGroundCubeWithin,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
@@ -292,10 +305,10 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high
+        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high cube
             new ArmToGoalCommand(
                 systems,
-                Constants.armMidCone,
+                Constants.armHighIntermediateOld,
                 ArmToGoalCommand.USE_INCHES
             ).withTimeout(0.75),
             new ArmToGoalCommand(
@@ -305,11 +318,33 @@ public class RobotContainer {
             ).withTimeout(1)
         ));
 
+        operatorJoystick.start().onTrue(new SequentialCommandGroup( //Doubble Sub Standing Cone
+        new ArmToGoalCommand(
+            systems,
+            Constants.armMidCube,
+            ArmToGoalCommand.USE_INCHES
+        ).withTimeout(0.75),
+        new ArmToGoalCommand(
+            systems,
+            Constants.armDoubleSubStandingPickup,
+            ArmToGoalCommand.USE_INCHES
+        ).withTimeout(1)
+    ));
+
+        operatorJoystick.y().onTrue(new ArmToGoalCommand( // Double sub
+            systems,
+            Constants.armMidCube,
+            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        ));
+
         operatorJoystick.povLeft().onTrue(new ArmGoalGroup( // Middle node
             systems,
             Constants.armMidCone,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
+
+        // operatorJoystick.start().onTrue(new ArmToGoalCommand(systems, Constants.armDoubleSubPickup,
+        // ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY));
 
         // operator.leftBumper().onTrue(runOnce(() -> systems.getArm().incrOut(-10)));
         // operator.rightBumper().onTrue(runOnce(() -> systems.getArm().incrOut(10)));

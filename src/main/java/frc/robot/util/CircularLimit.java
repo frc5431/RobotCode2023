@@ -21,12 +21,12 @@ public class CircularLimit {
         return Math.atan2(point.getY(), point.getX());
     }
 
-    public static Translation2d PointOnCircle(double radius, double angle) {
+    public static Translation2d pointOnCircle(double radius, double angle) {
         return new Translation2d(radius * Math.cos(angle), radius * Math.sin(angle));
     }
 
     public static Translation2d getClosestPointOnCircle(double radius, Translation2d point) {
-        return PointOnCircle(radius, angleOfPoint(point));
+        return pointOnCircle(radius, angleOfPoint(point));
     }
 
     public Translation2d getClosestPointOnCircle(Translation2d point) {

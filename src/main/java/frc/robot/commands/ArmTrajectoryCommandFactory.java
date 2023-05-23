@@ -2,11 +2,8 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.introspect.AccessorNamingStrategy.Provider;
 
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,18 +23,20 @@ public final class ArmTrajectoryCommandFactory {
     public static Command procure(Systems systems, TrajectoryConfig config, PresetPosition... goalPositions) {
         return procure(systems, Stream.of(goalPositions).toList(), config);
     }
-    
+
     @SafeVarargs
-    public static Command procure(Systems systems, TrajectoryConfig config,  Supplier<PresetPosition>... goalPositions) {
-        List<PresetPosition> poses = new ArrayList<>();
-        for(var pose : goalPositions) {
-            try {
-                poses.add(pose.get());
-            }catch(Exception ignored) {
-                System.out.println("test action attempted before futures could be resolved.");
+    public static Command procure(Systems systems, TrajectoryConfig config, Supplier<PresetPosition>... goalPositions) {
+        return new ProxyCommand(() -> {
+            List<PresetPosition> poses = new ArrayList<>();
+            for (var poseSupp : goalPositions) {
+                try {
+                    poses.add(poseSupp.get());
+                } catch(Exception ignored) {
+                    System.out.println("test action attempted before supplier result could be resolved.");
+                }
             }
-        }
-        return procure(systems, poses, config);
+            return procure(systems, poses, config);
+        });
     }
 
     public static Command procure(Systems systems, List<PresetPosition> goalPositions) {

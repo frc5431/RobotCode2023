@@ -72,12 +72,20 @@ public class PresetPosition {
         return new PresetPosition(wristPos, wristDegrees, useTopPossibility);
     }
 
+    public static PresetPosition fromPose(Pose2d pose, boolean useTopPossibility) {
+        return fromGoal(pose.getTranslation(), pose.getRotation().getDegrees(), useTopPossibility);
+    }
+
     public Pose2d toPose2d() {
         return new Pose2d(wristPos, Rotation2d.fromDegrees(wrist));
     }
 
     public PresetPosition inchesToMeters() {
         return fromGoal(new Translation2d(Units.inchesToMeters(wristPos.getX()), Units.inchesToMeters(wristPos.getY())), wrist, useTopPossibility);
+    }
+
+    public PresetPosition metersToInches() {
+        return fromGoal(new Translation2d(Units.metersToInches(wristPos.getX()), Units.metersToInches(wristPos.getY())), wrist, useTopPossibility);
     }
 
     public static boolean isGoalBackwards(Translation2d t) {

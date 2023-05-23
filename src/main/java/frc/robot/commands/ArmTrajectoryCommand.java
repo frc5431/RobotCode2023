@@ -51,6 +51,9 @@ public class ArmTrajectoryCommand extends CommandBase {
         var state = traj.sample(elapsedTime.get());
         Pose2d set = state.poseMeters;
         systems.getArm().setGoal(set.getTranslation());
+        if(set.getTranslation().getDistance(setPos.get(0).getWristPos()) < 0.1) {
+            System.out.println("Approached within 10cm of setpoint 1");
+        }
         // System.out.println("set: " + set);
         systems.getArm().getWrist().setDegrees(set.getRotation().getDegrees());
     }

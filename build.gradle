@@ -76,7 +76,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-    implementation 'com.github.frc5431:titanutil:2023.1.1.1'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 

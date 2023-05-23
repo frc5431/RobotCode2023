@@ -25,8 +25,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.KinematicsSolver;
+import frc.robot.Constants;
+import frc.robot.util.PresetPosition;
 import frc.team5431.titan.core.misc.Calc;
+import frc.team5431.titan.core.misc.KinematicsSolver;
 import frc.team5431.titan.core.robot.MotionMagic;
 
 import static edu.wpi.first.math.geometry.Rotation2d.fromDegrees;
@@ -95,6 +97,8 @@ public class ArmContainer {
         Units.inchesToMeters(3); // 3.5
 
     private final List<CANSparkMax> sparks;
+
+    private PresetPosition intermediateHighPosition = Constants.armHighIntermediate; // default to existing high intermed
 
     /* Arm encoder directions (robot facing right)
      * - shoulder
@@ -176,7 +180,15 @@ public class ArmContainer {
             SmartDashboard.putNumber("wrist set", component.getSetpointRadians());
             SmartDashboard.putNumber("wrist setdeg", component.getSetpointDegrees());
             SmartDashboard.putNumber("wrist arbff", arbFF);
-        }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(3.85-2*Math.PI, Units.degreesToRadians(328)));
+        }, (handAngle) -> calcHandAngleToGround(outerComponent.getPositionRot2d(), innerComponent.getPositionRot2d(), handAngle) , Pair.of(3.92-2*Math.PI, 0.8));
+    }
+
+    public void setIntermediatePosition() {
+        intermediateHighPosition = PresetPosition.fromGoal(goalPose, wristComponent.getPositionDegrees(), false).metersToInches();
+    }
+
+    public PresetPosition getIntermediatePostion() {
+        return intermediateHighPosition;
     }
 
     public ArmComponent getOuter() {
@@ -356,6 +368,7 @@ public class ArmContainer {
         old_pos = getWristRobotSpacePosition();
         old_speed = speed;
 
+        SmartDashboard.putString("high intermed", intermediateHighPosition.toString());
     }
 
     public class ArmComponent extends SubsystemBase {
