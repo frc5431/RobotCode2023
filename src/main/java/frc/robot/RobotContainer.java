@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
-import frc.robot.commands.ArmTrajectoryCommandFactory;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveLockedRotCommand;
 import frc.robot.util.CircularLimit;
