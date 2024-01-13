@@ -1,7 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.subsystems.*;
 import frc.team5431.titan.core.leds.Blinkin;

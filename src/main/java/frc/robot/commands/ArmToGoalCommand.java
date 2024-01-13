@@ -3,12 +3,12 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Systems;
 import frc.robot.subsystems.ArmContainer;
 import frc.robot.util.PresetPosition;
 
-public class ArmToGoalCommand extends CommandBase {
+public class ArmToGoalCommand extends Command {
 
     public static final int USE_PID = 1;
     public static final int FINISH_INSTANTLY = 2;

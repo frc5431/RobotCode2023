@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.misc.Logger;
@@ -10,7 +10,7 @@ import frc.team5431.titan.core.misc.Logger;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class DefaultDriveCommand extends CommandBase {
+public class DefaultDriveCommand extends Command {
     private final Drivebase m_drivetrainSubsystem;
 
     private final DoubleSupplier m_translationXSupplier;

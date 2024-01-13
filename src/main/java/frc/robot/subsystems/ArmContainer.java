@@ -8,12 +8,12 @@ import java.util.function.Function;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
+import com.revrobotics.SparkAbsoluteEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
@@ -374,7 +374,7 @@ public class ArmContainer {
     public class ArmComponent extends SubsystemBase {
         private final CANSparkMax motor;
         private final Optional<CANSparkMax> follow;
-        private final SparkMaxPIDController controller;
+        private final SparkPIDController controller;
         private final AbsoluteEncoder absoluteEncoder;
         public final Consumer<ArmComponent> setter;
         public final Function<Rotation2d, Rotation2d> angle2Ground;
@@ -393,7 +393,7 @@ public class ArmContainer {
             this.follow = Optional.ofNullable(follow);
 
             controller = motor.getPIDController();
-            absoluteEncoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+            absoluteEncoder = motor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
             this.setter = setter;
             this.angle2Ground = angle2Ground;
             this.MAX_SPEED = maxSpeed;
@@ -443,7 +443,6 @@ public class ArmContainer {
             runSetter();
         }
 
-
         public double getSetpointRadians() {
             return setpoint;
         }
@@ -463,7 +462,6 @@ public class ArmContainer {
         public Rotation2d getPositionRot2d() {
             return fromRadians(getPositionRadians());
         }
-
 
         public void setDegrees(double value) {
             setRadians(degreesToRadians(value));
@@ -487,8 +485,7 @@ public class ArmContainer {
             Rotation2d currentPosition = fromRadians(absoluteEncoder.getPosition());
             Rotation2d setpointRot2d = fromRadians(setpoint);
             return Math.abs(setpointRot2d.minus(currentPosition).getRadians()) < SETPOINT_POSITION_TOLERANCE 
-                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE
-                ;
+                && Math.abs(absoluteEncoder.getVelocity()) < SETPOINT_VELOCITY_TOLERANCE;
         }
 
         public CANSparkMax getMotor() {
@@ -499,7 +496,7 @@ public class ArmContainer {
             return follow;
         }
 
-        public SparkMaxPIDController getController() {
+        public SparkPIDController getController() {
             return controller;
         }
 

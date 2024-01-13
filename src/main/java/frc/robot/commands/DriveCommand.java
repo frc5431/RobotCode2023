@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
 import frc.team5431.titan.core.misc.Logger;
 
-public class DriveCommand extends CommandBase {
+public class DriveCommand extends Command {
     private final Drivebase drivebase;
     private final ChassisSpeeds speeds;
     private final boolean robotOriented;

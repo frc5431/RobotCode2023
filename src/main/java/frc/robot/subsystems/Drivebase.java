@@ -1,8 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
@@ -80,7 +81,8 @@ public class Drivebase extends SubsystemBase {
                     new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
     );
     
-    public final WPI_Pigeon2 pigeon2;
+    public final Pigeon2 pigeon2;
+    public final Pigeon2Configuration pigConfig = new Pigeon2Configuration();
 
     public final SwerveDrivePoseEstimator poseEstimator;
 
@@ -99,9 +101,14 @@ public class Drivebase extends SubsystemBase {
     public final Field2d field2d;
 
     public Drivebase() {
-        pigeon2 = new WPI_Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
+        pigeon2 = new Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
         // m_pigeon2.configFactoryDefault();
-        pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
+        MountPoseConfigs config = new MountPoseConfigs();
+        config.MountPosePitch = 0;
+        config.MountPoseRoll = 0;
+        config.MountPoseYaw = 180;
+        pigeon2.getConfigurator().apply(config);
+        //pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
         // m_pigeon2.zeroGyroBiasNow(200);
 
         MkModuleConfiguration moduleConfig = MkModuleConfiguration.getDefaultSteerFalcon500();
@@ -212,7 +219,7 @@ public class Drivebase extends SubsystemBase {
         return pigeon2.getRotation2d();
     }
 
-    public WPI_Pigeon2 getGyro() {
+    public Pigeon2 getGyro() {
         return pigeon2;
     }
 
@@ -242,11 +249,11 @@ public class Drivebase extends SubsystemBase {
         };
     }
 
-    public List<WPI_TalonFX> getMotors() {
-        List<WPI_TalonFX> retval = new ArrayList<>();
+    public List<TalonFX> getMotors() {
+        List<TalonFX> retval = new ArrayList<>();
         for (SwerveModule s : new SwerveModule[]{ m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule }) {
-            retval.add((WPI_TalonFX) s.getSteerMotor());
-            retval.add((WPI_TalonFX) s.getDriveMotor());
+            retval.add((TalonFX) s.getSteerMotor());
+            retval.add((TalonFX) s.getDriveMotor());
         }
         return retval;
     }
@@ -256,7 +263,7 @@ public class Drivebase extends SubsystemBase {
     public void periodic() {
         poseEstimator.update(getGyroscopeRotation(), getPositions());
         field2d.setRobotPose(getEstimatedPosition());
-        SmartDashboard.putNumber("Pitch", pigeon2.getPitch());
+        SmartDashboard.putNumber("Pitch", pigeon2.getPitch().getValueAsDouble());
         
         final double zeroDeadzone = 0.001;
 

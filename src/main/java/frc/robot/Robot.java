@@ -10,10 +10,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team5431.titan.core.vision.Limelight;
 
 import java.util.ArrayList;
 
-import com.pathplanner.lib.server.PathPlannerServer;
+// import com.pathplanner.lib.server.PathPlannerServer;
 
 public class Robot extends TimedRobot {
   public static final ArrayList<Pair<Runnable, Double>> periodics = new ArrayList<>();
@@ -24,7 +25,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     DriverStation.silenceJoystickConnectionWarning(true); // false
-    PathPlannerServer.startServer(5811);
+    //PathPlannerServer.startServer(5811);
+    
     DataLogManager.start();
     m_robotContainer = new RobotContainer();
 
@@ -59,11 +61,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    // if (m_autonomousCommand != null) {
+    //   m_autonomousCommand.schedule();
+    // }
   }
 
   @Override

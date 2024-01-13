@@ -11,18 +11,20 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
+import frc.robot.commands.ArmTrajectoryCommandFactory;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveLockedRotCommand;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
 
+import java.security.DigestException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
@@ -31,6 +33,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,14 +50,14 @@ public class RobotContainer {
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operatorJoystick = new CommandXboxController(1);
     // private final Buttonboard operator = new Buttonboard(3, 7, 3);
-    private final AutonLoader autonLoader;
+    //private final AutonLoader autonLoader;
     private final Field2d armField = new Field2d();
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
-    // private final SendableChooser<CommandBase> balanceStrategy = new SendableChooser<>();
+    // private final SendableChooser<Command> balanceStrategy = new SendableChooser<>();
 
     public RobotContainer() {
-        autonLoader = new AutonLoader(systems);
+        //autonLoader = new AutonLoader(systems);
 
         driver.setDeadzone(0.15);
         // operatorJoystick.setDeadzone(0.15);
@@ -63,6 +67,8 @@ public class RobotContainer {
         //         () -> modifyAxis(-driver.getLeftY()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
         //         () -> modifyAxis(-driver.getLeftX()) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND,
         //         () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+
+// line break commit good because if not, error
 
         drivebase.setDefaultCommand(new DefaultDriveCommand(
             systems,
@@ -101,7 +107,7 @@ public class RobotContainer {
         //     SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         // }, 0.3));
 
-        List<WPI_TalonFX> falcons = systems.getDrivebase().getMotors();
+        List<TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = new ArrayList<>(systems.getArm().getSparks());
         sparks.add(systems.getManipulator().getMotor());
 
@@ -127,7 +133,8 @@ public class RobotContainer {
 
         Robot.periodics.add(Pair.of(() -> {
             for (int i = 0; i < falcons.size(); i++) {
-                SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getTemperature());
+                //i hate this new way of having to subs
+                SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getDeviceTemp().getValueAsDouble());
             }
             for (int i = 0; i < sparks.size(); i++) {
                 SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
@@ -161,12 +168,20 @@ public class RobotContainer {
             //     case Red -> BlinkinPattern.RED;
             //     default -> BlinkinPattern.GREEN;
             // };
-        } else {
-            return switch (DriverStation.getAlliance()) {
-                case Blue -> BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE;
-                case Red -> BlinkinPattern.COLOR_WAVES_LAVA_PALETTE;
-                default -> BlinkinPattern.COLOR_WAVES_FOREST_PALETTE;
-            };
+        } else {    
+                var robotTeam = DriverStation.getAlliance();
+
+                if (robotTeam.get() == Alliance.Red) {
+                    return BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE;
+                }
+                if (robotTeam.get() == Alliance.Blue) {
+                    return BlinkinPattern.COLOR_WAVES_LAVA_PALETTE;
+                }
+                else {
+                    System.out.println("Error in getting alliance, none returned, frc/robot/TypedApriltag.java");
+                    return BlinkinPattern.COLOR_WAVES_LAVA_PALETTE;
+                }
+    
         }
     }
 
@@ -222,12 +237,11 @@ public class RobotContainer {
         // driver.back().onTrue(systems.getLeds().ledRunCommand(getPatternFromAlliance(true))
         //     .withTimeout(5));
         // driver.start().toggleOnTrue(systems.getLeds().ledCommand(BlinkinPattern.BLACK).andThen(waitSeconds(150)));
-
-        //operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
+        operatorJoystick.back().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, () -> Constants.armStow));
         // operatorJoystick.start().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG_SLOW, Constants.armLowCube));
         // operatorJoystick.y().onTrue(ArmTrajectoryCommandFactory.procure(systems, Constants.ARM_TRAJECTORY_CONFIG, () -> systems.getArm().getIntermediatePostion(), () -> Constants.armHighCone));
 
-        // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getSelected));
+        // operatorJoystick.back().onTrue(new ProxyCommand(balanceStrategy::getected));
         // operatorJoystick.back().onTrue(autonLoader.placeHighNoDrive().andThen(new ArmToGoalCommand(
         //     systems,
         //     Constants.armStow,
@@ -280,11 +294,11 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.back().onTrue(new ArmGoalGroup(
-            systems,
-            Constants.armGroundCubeWithin,
-            ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
-        ));
+        // operatorJoystick.back().onTrue(new ArmGoalGroup(
+        //     systems,
+        //     Constants.armGroundCubeWithin,
+        //     ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
+        // ));
 
         operatorJoystick.rightBumper().onTrue(new ArmGoalGroup(
             systems,
@@ -304,7 +318,7 @@ public class RobotContainer {
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
         ));
 
-        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Assisted high cube
+        operatorJoystick.y().onTrue(new SequentialCommandGroup( // Assisted high cube
             new ArmToGoalCommand(
                 systems,
                 Constants.armHighIntermediateOld,
@@ -330,7 +344,7 @@ public class RobotContainer {
         ).withTimeout(1)
     ));
 
-        operatorJoystick.y().onTrue(new ArmToGoalCommand( // Double sub
+        operatorJoystick.x().onTrue(new ArmToGoalCommand( // Double sub
             systems,
             Constants.armMidCube,
             ArmToGoalCommand.USE_INCHES | ArmToGoalCommand.FINISH_INSTANTLY
@@ -353,10 +367,10 @@ public class RobotContainer {
         // operatorJoystick.povUp().onTrue(runOnce(() -> systems.getArm().getWrist().add(20)));
     }
 
-    public Command getAutonomousCommand() {
-        // jolly good
-        return autonLoader.procureAuton();
-    }
+    // public Command getAutonomousCommand() {
+    //     // jolly good
+    //     return autonLoader.procureAuton();
+    // }
 
     private static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
@@ -384,7 +398,6 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        // TODO extract into default command for arm
         var gp = systems.getArm().getGoal();
         double leftx = operatorJoystick.getLeftX();
         double lefty = -operatorJoystick.getLeftY();
@@ -420,6 +433,7 @@ public class RobotContainer {
         armField.setRobotPose(new Pose2d(systems.getArm().getGoal().plus(new Translation2d(4.5, 2.2)), systems.getArm().getWrist().getPositionRot2d()));
         SmartDashboard.putData("Field", armField);
         systems.getArm().debugPeriodic();
+        
     }
 
     public void teleopInit() {

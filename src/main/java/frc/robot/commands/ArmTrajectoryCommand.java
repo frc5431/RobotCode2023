@@ -8,12 +8,12 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Systems;
 import frc.robot.util.PresetPosition;
 
-public class ArmTrajectoryCommand extends CommandBase {
+public class ArmTrajectoryCommand extends Command {
     Timer elapsedTime = new Timer();
     private Trajectory traj = null;
     private final List<PresetPosition> setPos;

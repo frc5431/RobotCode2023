@@ -1,10 +1,11 @@
 package frc.robot.commands;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.Systems;
 import frc.robot.subsystems.Drivebase;
@@ -14,7 +15,7 @@ import frc.team5431.titan.core.misc.Logger;
 /**
  * Autobalancer code that uses a BangBang Controller intead of PID
  */
-public class AutobalancerBangBang extends CommandBase {
+public class AutobalancerBangBang extends Command {
     public final Pigeon2 pigy;
     public final Drivebase drivebase;
     public final Blinkin leds;
@@ -39,7 +40,7 @@ public class AutobalancerBangBang extends CommandBase {
     
     @Override
     public void execute() {
-        cs.vxMetersPerSecond = (pigy.getPitch() > 0 ? -1 : 1) * bangin.calculate(-Math.abs(pigy.getPitch()), 0);
+        cs.vxMetersPerSecond = (pigy.getPitch().getValueAsDouble() > 0 ? -1 : 1) * bangin.calculate(-Math.abs(pigy.getPitch().getValueAsDouble()), 0);
         drivebase.drive(cs);
     }
 
