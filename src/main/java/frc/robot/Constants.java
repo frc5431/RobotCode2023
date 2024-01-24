@@ -95,26 +95,26 @@ public class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.648;
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 4; // 2
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3; // 1
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 10; // 9
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(89.736+180); //291.888
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 2;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 1;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(291.888); // 293.906
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 8;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(103.184); //461.602
-                                                                                            
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(103.975); // 105.381
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6; // 4 
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5; // 3
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11; // 10
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(66.006 + 180); // 110.654
-                                                                                         //267.363
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2; // 6
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 1; // 5
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9; // 11
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(112.412); // -201.445
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 4;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 3;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(110.654); // 111.533
+
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(52.910); // 53.701
+
 
     //#region Auto Constants
     // Pretty sure constraints from the path file are not used, and the following is.

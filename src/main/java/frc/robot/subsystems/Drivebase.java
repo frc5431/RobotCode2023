@@ -115,6 +115,9 @@ public class Drivebase extends SubsystemBase {
         moduleConfig.setDriveCurrentLimit(40.0);
         moduleConfig.setSteerCurrentLimit(30.0);
 
+        //tbest tibe ccp
+        moduleConfig.setSteerPID(0.05, 0.0, 0.01);
+        
         m_frontLeftModule = new MkSwerveModuleBuilder(moduleConfig)
                 // .withLayout(getSMLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList))
                 //         .withPosition(0, 0))
@@ -124,6 +127,7 @@ public class Drivebase extends SubsystemBase {
                 .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
                 .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET)
                 .build();
+                
 
         // We will do the same for the other modules
         m_frontRightModule = new MkSwerveModuleBuilder(moduleConfig)
