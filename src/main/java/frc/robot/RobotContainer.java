@@ -8,11 +8,12 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.OldTunerConstatns;
 import frc.robot.commands.ArmGoalGroup;
 import frc.robot.commands.ArmToGoalCommand;
 import frc.robot.commands.ArmTrajectoryCommandFactory;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DriveLockedRotCommand;
+// import frc.robot.commands.DefaultDriveCommand;
+// import frc.robot.commands.DriveLockedRotCommand;
 import frc.robot.util.CircularLimit;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import frc.team5431.titan.core.leds.BlinkinPattern;
@@ -23,6 +24,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
@@ -52,8 +55,20 @@ public class RobotContainer {
     private final CircularLimit armLimit = new CircularLimit(ArmContainer.solver.getTotalLength());
 
     // private final SendableChooser<Command> balanceStrategy = new SendableChooser<>();
+    private SwerveRequest.FieldCentric driveFC = new SwerveRequest.FieldCentric()
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     public RobotContainer() {
+        drivebase.setDefaultCommand( // Drivetrain will execute this command periodically
+        drivebase.applyRequest(() -> {
+          return driveFC
+              .withVelocityX(
+                  modifyAxis(driver.getLeftY() + (driver.povUp().getAsBoolean() ? 0.1 : 0))
+                      * TunerConstatns.kSpeedAt12VoltsMps)
+              .withVelocityY(modifyAxis(driver.getLeftX()) * TunerConstatns.kSpeedAt12VoltsMps)
+              .withRotationalRate(modifyAxis(driver.getRightX()) * OldTunerConstatns.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+        }));
+
         //autonLoader = new AutonLoader(systems);
 
         driver.setDeadzone(0.15);
@@ -67,16 +82,16 @@ public class RobotContainer {
 
 // line break commit good because if not, error
 
-        drivebase.setDefaultCommand(new DefaultDriveCommand(
-            systems,
-            () -> {
-                double inX = -driver.getLeftY(); // swap intended
-                double inY = -driver.getLeftX();
-                double mag = Math.hypot(inX, inY);
-                double theta = Math.atan2(inY, inX);
-                return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
-            },
-            () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+        // drivebase.setDefaultCommand(new DefaultDriveCommand(
+        //     systems,
+        //     () -> {
+        //         double inX = -driver.getLeftY(); // swap intended
+        //         double inY = -driver.getLeftX();
+        //         double mag = Math.hypot(inX, inY);
+        //         double theta = Math.atan2(inY, inX);
+        //         return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
+        //     },
+        //     () -> modifyAxis(-driver.getRightX()) * Drivebase.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         systems.getLeds().setDefaultCommand(run(
             () -> systems.getLeds().set(getPatternFromAlliance()), 
@@ -104,7 +119,7 @@ public class RobotContainer {
         //     SmartDashboard.putBoolean("pressure switch val", systems.getCompressor().getPressureSwitchValue());
         // }, 0.3));
 
-        List<TalonFX> falcons = systems.getDrivebase().getMotors();
+        // List<TalonFX> falcons = systems.getDrivebase().getMotors();
         List<CANSparkMax> sparks = new ArrayList<>(systems.getArm().getSparks());
         sparks.add(systems.getManipulator().getMotor());
 
@@ -128,15 +143,15 @@ public class RobotContainer {
             "Intake"
         };
 
-        Robot.periodics.add(Pair.of(() -> {
-            for (int i = 0; i < falcons.size(); i++) {
-                //i hate this new way of having to subs
-                SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getDeviceTemp().getValueAsDouble());
-            }
-            for (int i = 0; i < sparks.size(); i++) {
-                SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
-            }
-        }, 0.2));
+        // Robot.periodics.add(Pair.of(() -> {
+        //     for (int i = 0; i < falcons.size(); i++) {
+        //         //i hate this new way of having to subs
+        //         SmartDashboard.putNumber(falconNames[i] + " Temp", falcons.get(i).getDeviceTemp().getValueAsDouble());
+        //     }
+        //     for (int i = 0; i < sparks.size(); i++) {
+        //         SmartDashboard.putNumber(sparkNames[i] + " Temp", sparks.get(i).getMotorTemperature());
+        //     }
+        // }, 0.2));
 
         // ShuffleboardTab tabBB = Shuffleboard.getTab("ButtonBoard Debug");
         // operator.iterate().forEach(t -> {
@@ -184,35 +199,35 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Y button zeros the gyroscope
-        driver.back().onTrue(runOnce(drivebase::zeroGyroscope));
+        driver.back().onTrue(runOnce(drivebase::zeroGyro));
 
         // D-Pad cardinal directions
-        driver.povUp().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
-        driver.povDown().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
-        driver.povLeft().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
-        driver.povRight().whileTrue(run(
-                () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
+        // driver.povUp().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
+        // driver.povDown().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(-Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0, 0)), drivebase));
+        // driver.povLeft().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(0, Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
+        // driver.povRight().whileTrue(run(
+        //         () -> drivebase.drive(new ChassisSpeeds(0, -Drivebase.MAX_VELOCITY_METERS_PER_SECOND*0.15, 0)), drivebase));
 
 
-        Supplier<Pair<Double, Double>> defaultDrive = () -> {
-            double inX = -driver.getLeftY(); // swap intended
-            double inY = -driver.getLeftX();
-            double mag = Math.hypot(inX, inY);
-            double theta = Math.atan2(inY, inX);
-            return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
-        };
+        // Supplier<Pair<Double, Double>> defaultDrive = () -> {
+        //     double inX = -driver.getLeftY(); // swap intended
+        //     double inY = -driver.getLeftX();
+        //     double mag = Math.hypot(inX, inY);
+        //     double theta = Math.atan2(inY, inX);
+        //     return Pair.of(modifyAxis(mag) * Drivebase.MAX_VELOCITY_METERS_PER_SECOND, theta);
+        // };
 
         BooleanSupplier isManualAdjustment = () -> {
             return modifyAxis(-driver.getRightX()) != 0;
         };
 
-        driver.a().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 180, isManualAdjustment));
-        driver.b().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 270, isManualAdjustment));
-        driver.x().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 90, isManualAdjustment));
-        driver.y().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 0, isManualAdjustment));
+        // driver.a().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 180, isManualAdjustment));
+        // driver.b().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 270, isManualAdjustment));
+        // driver.x().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 90, isManualAdjustment));
+        // driver.y().onTrue(new DriveLockedRotCommand(systems, defaultDrive, 0, isManualAdjustment));
         // driver.leftBumper().onTrue(runOnce(() -> systems.getManipulator().setPositive()));
         // driver.rightBumper().onTrue(systems.getManipulator().manipRunCommand(GamePiece.CONE, true));
 

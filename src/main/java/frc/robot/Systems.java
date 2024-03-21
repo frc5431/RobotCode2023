@@ -9,7 +9,6 @@ import frc.team5431.titan.core.leds.BlinkinPattern;
 
 public class Systems {
     private Drivebase drivebase;
-    private Vision vision;
     private Blinkin leds;
 
     private ArmContainer arm;
@@ -22,7 +21,7 @@ public class Systems {
     private CANSparkMax wrist;
 
     public Systems() {
-        drivebase = new Drivebase();
+        drivebase = new Drivebase(TunerConstatns.DrivetrainConstants, TunerConstatns.FrontLeft, TunerConstatns.FrontRight, TunerConstatns.BackLeft, TunerConstatns.BackRight);
         if(Robot.isReal()) {
             // vision = new Vision(drivebase); 
         }
@@ -48,10 +47,6 @@ public class Systems {
 
     public Drivebase getDrivebase() {
         return drivebase;
-    }
-
-    public Vision getVision() {
-        return vision;
     }
 
     public Blinkin getLeds() {

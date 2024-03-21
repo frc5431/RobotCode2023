@@ -464,12 +464,12 @@ public class ArmContainer {
         }
 
         public void setDegrees(double value) {
-            setRadians(degreesToRadians(value));
+            // setRadians(degreesToRadians(value));
         }
 
         public void setRadians(double value) {
-            setpoint = MathUtil.clamp(MathUtil.inputModulus(value, -Math.PI, Math.PI), setpointClamp.getFirst(), setpointClamp.getSecond());
-            runSetter();
+            // setpoint = MathUtil.clamp(MathUtil.inputModulus(value, -Math.PI, Math.PI), setpointClamp.getFirst(), setpointClamp.getSecond());
+            // runSetter();
         }
 
         public void add(double degrees) {
@@ -511,14 +511,14 @@ public class ArmContainer {
         // Will currently require all of the arm, so no other command can
         // be scheduled in parallel
         // TODO make ArmComponent into its own SubsystemBase
-        public Command setDegreesCommand(double degrees) {
-            return runOnce(() -> this.setDegrees(degrees));
-                    // .andThen(Commands.waitUntil(this::atSetpoint));
-        }
+        // public Command setDegreesCommand(double degrees) {
+        //     return runOnce(() -> this.setDegrees(degrees));
+        //             // .andThen(Commands.waitUntil(this::atSetpoint));
+        // }
 
-        public Command setRadiansCommand(double radians) {
-            return runOnce(() -> this.setRadians(radians));
-                    // .andThen(Commands.waitUntil(this::atSetpoint));
-        }
+        // public Command setRadiansCommand(double radians) {
+        //     return runOnce(() -> this.setRadians(radians));
+        //             // .andThen(Commands.waitUntil(this::atSetpoint));
+        // }
     }
 }

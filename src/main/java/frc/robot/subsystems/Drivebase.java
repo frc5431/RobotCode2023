@@ -1,333 +1,145 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.MountPoseConfigs;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import java.util.ConcurrentModificationException;
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
-import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-import com.swervedrivespecialties.swervelib.MotorType;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.SwerveModule;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
-import static frc.robot.Constants.*;
+public class Drivebase extends SwerveDrivetrain implements Subsystem {
+    private static final double kSimLoopPeriod = 0.005; // 5 ms
+    private Notifier m_simNotifier = null;
+    private double m_lastSimTime;
+    private SwerveRequest.ApplyChassisSpeeds drive = new SwerveRequest.ApplyChassisSpeeds();
 
-import java.util.ArrayList;
-import java.util.List;
+    public Drivebase(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
+        super(driveTrainConstants, modules);
+        if (Utils.isSimulation()) {
+            startSimThread();
+        }
 
-public class Drivebase extends SubsystemBase {
-    
-    /**
-     * The maximum voltage that will be delivered to the drive motors.
-     * <p>
-     * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
-     */
-    public static final double MAX_VOLTAGE = 12.0;
-    //  Measure the drivetrain's maximum velocity or calculate the theoretical.
-    //  The formula for calculating the theoretical maximum velocity is:
-    //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
-    //  By default this value is setup for a Mk3 standard module using Falcon500s to drive.
-    //  An example of this constant for a Mk4 L2 module with NEOs to drive is:
-    //   5880.0 / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-    /**
-     * The maximum velocity of the robot in meters per second.
-     * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight line.
-     * 
-     * 
-     * MK4_L2 = 4.96823045476
-     */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-                    SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-                    SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
-    /**
-     * The maximum angular velocity of the robot in radians per second.
-     * <p>
-     * This is a measure of how fast the robot can rotate in place.
-     */
-    // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-                    Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
-
-    public static final double MIN_ANGULAR_VELOCITY = 0.5;
-    // Max input acceleration (ChassisSpeeds meters per second per second) for x/y movement
-    public static final double SLEW_RATE_LIMIT_TRANSLATION = MAX_VELOCITY_METERS_PER_SECOND * 2;
-    // Max input acceleration (ChassisSpeeds radians per second per second) for rotational movement
-    public static final double SLEW_RATE_LIMIT_ROTATION = MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 10;
-
-    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-                    // Front left
-                    new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-                    // Front right
-                    new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-                    // Back left
-                    new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-                    // Back right
-                    new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-    );
-    
-    public final Pigeon2 pigeon2;
-    public final Pigeon2Configuration pigConfig = new Pigeon2Configuration();
-
-    public final SwerveDrivePoseEstimator poseEstimator;
-
-    // These are our modules. We initialize them in the constructor.
-    private final SwerveModule m_frontLeftModule;
-    private final SwerveModule m_frontRightModule;
-    private final SwerveModule m_backLeftModule;
-    private final SwerveModule m_backRightModule;
-
-    private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    private final SlewRateLimiter filter_vx;
-    private final SlewRateLimiter filter_vy;
-    private final SlewRateLimiter filter_or;
-
-    public final Field2d field2d;
-
-    public Drivebase() {
-        pigeon2 = new Pigeon2(ID_PIGEON2, CANBUS_DRIVETRAIN);
-        // m_pigeon2.configFactoryDefault();
-        MountPoseConfigs config = new MountPoseConfigs();
-        config.MountPosePitch = 0;
-        config.MountPoseRoll = 0;
-        config.MountPoseYaw = 180;
-        pigeon2.getConfigurator().apply(config);
-        //pigeon2.configMountPose(AxisDirection.NegativeX, AxisDirection.PositiveZ);
-        // m_pigeon2.zeroGyroBiasNow(200);
-
-        MkModuleConfiguration moduleConfig = MkModuleConfiguration.getDefaultSteerFalcon500();
-        moduleConfig.setDriveCurrentLimit(40.0);
-        moduleConfig.setSteerCurrentLimit(30.0);
-
-        //tbest tibe ccp
-        moduleConfig.setSteerPID(0.05, 0.0, 0.01);
+        AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(8.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(12.0, 0.0, 0.0), // Rotation PID constants
+                        2.5, // Max module speed m/s
+                        0.5125830761935194, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig(true, false) // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
         
-        m_frontLeftModule = new MkSwerveModuleBuilder(moduleConfig)
-                // .withLayout(getSMLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList))
-                //         .withPosition(0, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4_L2)
-                .withDriveMotor(MotorType.FALCON, FRONT_LEFT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerMotor(MotorType.FALCON, FRONT_LEFT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
-                .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET)
-                .build();
-                
-
-        // We will do the same for the other modules
-        m_frontRightModule = new MkSwerveModuleBuilder(moduleConfig)
-                // .withLayout(getSMLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList))
-                //         .withPosition(3, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4_L2)
-                .withDriveMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerEncoderPort(FRONT_RIGHT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
-                .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET)
-                .build();
-
-        m_backLeftModule = new MkSwerveModuleBuilder(moduleConfig)
-                // .withLayout(getSMLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList))
-                //         .withPosition(6, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4_L2)
-                .withDriveMotor(MotorType.FALCON, BACK_LEFT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerMotor(MotorType.FALCON, BACK_LEFT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerEncoderPort(BACK_LEFT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
-                .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET)
-                .build();
-
-        m_backRightModule = new MkSwerveModuleBuilder(moduleConfig)
-                // .withLayout(getSMLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList))
-                //         .withPosition(9, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4_L2)
-                .withDriveMotor(MotorType.FALCON, BACK_RIGHT_MODULE_DRIVE_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerMotor(MotorType.FALCON, BACK_RIGHT_MODULE_STEER_MOTOR, CANBUS_DRIVETRAIN)
-                .withSteerEncoderPort(BACK_RIGHT_MODULE_STEER_ENCODER, CANBUS_DRIVETRAIN)
-                .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET)
-                .build();
-
-        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(), getPositions(), new Pose2d());
-        
-
-        filter_vx = new SlewRateLimiter(SLEW_RATE_LIMIT_TRANSLATION);
-        filter_vy = new SlewRateLimiter(SLEW_RATE_LIMIT_TRANSLATION);
-        filter_or = new SlewRateLimiter(SLEW_RATE_LIMIT_ROTATION);
-
-        // ShuffleboardLayout chassisSpeedsLayout = tab_subsystems.getLayout("ChassisSpeeds", BuiltInLayouts.kList)
-        //         .withSize(2, 3)
-        //         .withPosition(21, 0);
-        // chassisSpeedsLayout.addNumber("vX", () -> m_chassisSpeeds.vxMetersPerSecond);
-        // chassisSpeedsLayout.addNumber("vY", () -> m_chassisSpeeds.vyMetersPerSecond);
-        // chassisSpeedsLayout.addNumber("oR", () -> m_chassisSpeeds.omegaRadiansPerSecond);
-
-        SmartDashboard.putData("Gyro", pigeon2);
-
-        ShuffleboardTab visionTab = Shuffleboard.getTab("Vision");
-
-        field2d = new Field2d();
-
-        visionTab.addString("Pose", this::getFormattedPose)
-            .withPosition(0, 0)
-            .withSize(2, 0);
-        visionTab.add("Field", field2d)
-            .withPosition(2, 0)
-            .withSize(6,4);
     }
 
-    private String getFormattedPose() {
-        Pose2d pose = getEstimatedPosition();
-        return String.format("(%.2f, %.2f) %.2f degrees",
-            pose.getX(),
-            pose.getY(),
-            pose.getRotation().getDegrees());
+    public Pose2d getPose(){
+        return this.getState().Pose;
     }
 
-
-    public void resetOdometry(Pose2d pose) {
-        poseEstimator.resetPosition(getGyroscopeRotation(), getPositions(), pose);
+    public void resetPose(Pose2d newPose){
+        this.seedFieldRelative(newPose);
+    }
+    public ChassisSpeeds getRobotRelativeSpeeds() {
+        return this.m_kinematics.toChassisSpeeds(this.getState().ModuleStates);       
     }
 
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    public void driveRobotRelative(ChassisSpeeds speeds) {
+        this.setControl(drive.withSpeeds(speeds));
     }
 
-    public Pose2d getEstimatedPosition() {
-        return poseEstimator.getEstimatedPosition();
-    }
-
-
-    public void zeroGyroscope() {
-        pigeon2.reset();
-        resetOdometry(getEstimatedPosition());
-    }
-
-    public void resetGyroAt(double yaw) {
-        pigeon2.setYaw(yaw);
-    }
-
-    public Rotation2d getGyroscopeRotation() {
-        return pigeon2.getRotation2d();
+    public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
+        return run(() -> this.setControl(requestSupplier.get()));
     }
 
     public Pigeon2 getGyro() {
-        return pigeon2;
+        return this.m_pigeon2;
     }
 
-
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        ChassisSpeeds speedsModified = new ChassisSpeeds(
-            filter_vx.calculate(chassisSpeeds.vxMetersPerSecond),
-            filter_vy.calculate(chassisSpeeds.vyMetersPerSecond),
-            filter_or.calculate(chassisSpeeds.omegaRadiansPerSecond)
-        );
-        driveRaw(speedsModified);
+    public void set(double angle) {
+        getPigeon2().setYaw(angle);
+        resetPose(getPose());
     }
 
-    public void driveRaw(ChassisSpeeds chassisSpeeds) {
-        m_chassisSpeeds = chassisSpeeds;
-    }
-    public void stop() {
-        driveRaw(new ChassisSpeeds());
+    public void zeroGyro() {
+        getPigeon2().reset();
+        resetPose(getPose());
     }
 
-    public SwerveModulePosition[] getPositions() {
-        return new SwerveModulePosition[] {
-            m_frontLeftModule.getPosition(),
-            m_frontRightModule.getPosition(),
-            m_backLeftModule.getPosition(),
-            m_backRightModule.getPosition()
-        };
-    }
-
-    public List<TalonFX> getMotors() {
-        List<TalonFX> retval = new ArrayList<>();
-        for (SwerveModule s : new SwerveModule[]{ m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule }) {
-            retval.add((TalonFX) s.getSteerMotor());
-            retval.add((TalonFX) s.getDriveMotor());
-        }
-        return retval;
-    }
-
+    Field2d undertale = new Field2d();
 
     @Override
     public void periodic() {
-        poseEstimator.update(getGyroscopeRotation(), getPositions());
-        field2d.setRobotPose(getEstimatedPosition());
-        SmartDashboard.putNumber("Pitch", pigeon2.getPitch().getValueAsDouble());
         
-        final double zeroDeadzone = 0.001;
+        // // SmartDashboard.putNumber("X Speed", this.getRobotRelativeSpeeds().vxMetersPerSecond);
+        // // SmartDashboard.putNumber("Y Speed", this.getRobotRelativeSpeeds().vyMetersPerSecond);
 
-        // Set deadzone on translation
-        if (Math.abs(m_chassisSpeeds.vxMetersPerSecond) < zeroDeadzone) {
-            m_chassisSpeeds.vxMetersPerSecond = 0;
-        }
-        if (Math.abs(m_chassisSpeeds.vyMetersPerSecond) < zeroDeadzone) {
-            m_chassisSpeeds.vyMetersPerSecond = 0;
-        }
+        // m_odometry.update(m_fieldRelativeOffset, m_modulePositions);
+        // // Get estimated poses from VisionSubsystem
+        // var visionEstimatedRobotPoses = LasaVision.getInstance().getEstimatedGlobalPoses();
 
-        // Hockey-lock if stopped by setting rotation to realllly low number
-        if (m_chassisSpeeds.vxMetersPerSecond == 0 && 
-            m_chassisSpeeds.vyMetersPerSecond == 0 && 
-            Math.abs(m_chassisSpeeds.omegaRadiansPerSecond) < zeroDeadzone) {
-            m_chassisSpeeds.omegaRadiansPerSecond = 0.00001;
-        }
+        // // // Exit if no valid vision pose estimates
+        // if (visionEstimatedRobotPoses.isEmpty()) return;
 
-        SmartDashboard.putNumber("DT X spd", m_chassisSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("DT Y spd", m_chassisSpeeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("DT . spd", Math.hypot(m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond));
-        SmartDashboard.putNumber("DT O rot", m_chassisSpeeds.omegaRadiansPerSecond);
+        // try {
+        //     // Add vision measurements to pose estimator
+        //     for (var visionEstimatedRobotPose : visionEstimatedRobotPoses) {
+        //         // if (visionEstimatedRobotPose.estimatedPose.toPose2d().getTranslation().getDistance(m_previousPose.getTranslation()) > 1.0) continue;
+        //         m_odometry.addVisionMeasurement(visionEstimatedRobotPose.estimatedPose.toPose2d(), visionEstimatedRobotPose.timestampSeconds);
+        //     }
+        // }catch(ConcurrentModificationException e) {
+        //     // i am going to throw this dumb robot out a window
+        // }
 
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        // undertale.setRobotPose(m_odometry.getEstimatedPosition());
+        // // SmartDashboard.putData("Field", undertale);
+    }
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+    public SwerveDrivePoseEstimator getOdometry() {
+        return m_odometry;
+    }    
 
-        SwerveModulePosition[] positions = getPositions();
-        for (int i = 0; i < states.length; i++) {
-            states[i] = SwerveModuleState.optimize(states[i], positions[i].angle);
-        }
 
-        double flVoltage;
-        double frVoltage;
-        double blVoltage;
-        double brVoltage;
+    private void startSimThread() {
+        m_lastSimTime = Utils.getCurrentTimeSeconds();
 
-        flVoltage = states[0].speedMetersPerSecond;
-        frVoltage = states[1].speedMetersPerSecond;
-        blVoltage = states[2].speedMetersPerSecond;
-        brVoltage = states[3].speedMetersPerSecond;
+        /* Run simulation at 
+        a faster rate so PID gains behave more reasonably */
+        m_simNotifier = new Notifier(() -> {
+            final double currentTime = Utils.getCurrentTimeSeconds();
+            double deltaTime = currentTime - m_lastSimTime;
+            m_lastSimTime = currentTime;
 
-        // flVoltage = MathUtil.clamp(flVoltage, 0, MAX_VELOCITY_METERS_PER_SECOND);
-        // frVoltage = MathUtil.clamp(frVoltage, 0, MAX_VELOCITY_METERS_PER_SECOND);
-        // blVoltage = MathUtil.clamp(blVoltage, 0, MAX_VELOCITY_METERS_PER_SECOND);
-        // brVoltage = MathUtil.clamp(brVoltage, 0, MAX_VELOCITY_METERS_PER_SECOND);
-
-        // SmartDashboard.putNumber("Front Left Velocity", flVoltage);
-        // SmartDashboard.putNumber("Front Right Velocity", frVoltage);
-        // SmartDashboard.putNumber("Back Left Velocity", blVoltage);
-        // SmartDashboard.putNumber("Back Right Velocity", brVoltage);
-
-        flVoltage = flVoltage / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE;
-        frVoltage = frVoltage / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE;
-        blVoltage = blVoltage / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE;
-        brVoltage = brVoltage / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE;
-
-        m_frontLeftModule.set(flVoltage, states[0].angle.getRadians());
-        m_frontRightModule.set(frVoltage, states[1].angle.getRadians());
-        m_backLeftModule.set(blVoltage, states[2].angle.getRadians());
-        m_backRightModule.set(brVoltage, states[3].angle.getRadians());
+            /* use the measured time delta, get battery voltage from WPILib */
+            updateSimState(deltaTime, RobotController.getBatteryVoltage());
+        });
+        m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 }
