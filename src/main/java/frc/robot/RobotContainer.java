@@ -63,10 +63,10 @@ public class RobotContainer {
         drivebase.applyRequest(() -> {
           return driveFC
               .withVelocityX(
-                  modifyAxis(driver.getLeftY() + (driver.povUp().getAsBoolean() ? 0.1 : 0))
+                  modifyAxis(driver.getLeftY() * 0.4 + (driver.povUp().getAsBoolean() ? 0.1 : 0))
                       * TunerConstatns.kSpeedAt12VoltsMps)
-              .withVelocityY(modifyAxis(driver.getLeftX()) * TunerConstatns.kSpeedAt12VoltsMps)
-              .withRotationalRate(modifyAxis(driver.getRightX()) * OldTunerConstatns.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+              .withVelocityY(modifyAxis(driver.getLeftX() * 0.4) * TunerConstatns.kSpeedAt12VoltsMps)
+              .withRotationalRate(modifyAxis(driver.getRightX() * 0.4) * OldTunerConstatns.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
         }));
 
         //autonLoader = new AutonLoader(systems);
